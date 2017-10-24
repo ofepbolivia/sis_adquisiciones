@@ -386,9 +386,11 @@ BEGIN
 
 						left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
                         left join param.vproveedor pro on pro.id_proveedor = sol.id_proveedor
+			
+			left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud
 				       '||v_inner||'
 
-				        where  '||v_filtro;
+				        where  tsd.estado_reg = ''activo'' and '||v_filtro;
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
