@@ -1866,6 +1866,152 @@ BEGIN
             return v_resp;
 
 		end;
+	/*********************************
+ 	#TRANSACCION:  'ADQ_REVPARPRE_IME'
+ 	#DESCRIPCION:	Revierte el presupuesto parcialmente
+ 	#AUTOR:		FEA
+ 	#FECHA:		27-10-2017 15:43:23
+	***********************************/
+
+	elsif(p_transaccion='ADQ_REVPARPRE_IME')then
+
+		begin
+
+           v_pre_integrar_presupuestos = pxp.f_get_variable_global('pre_integrar_presupuestos');
+
+            select
+               ts.id_solicitud,
+               ts.id_moneda,
+               ts.estado,
+               ts.fecha_soli,
+               ts.num_tramite
+            into
+               v_registros_s
+            from adq.tsolicitud ts
+            where ts.id_solicitud = v_parametros.id_solicitud;
+
+            --Tipo de Cambio
+            select tm.codigo
+            into v_codigo
+            from param.tmoneda tm
+            where tm.id_moneda = v_registros_s.id_moneda;
+            if(v_codigo = '$us')then
+                select tc.oficial
+                into v_tipo_cambio_conv
+                from param.ttipo_cambio tc
+                where tc.id_moneda = 2
+                order by tc.fecha desc limit 1;
+            else
+            	v_tipo_cambio_conv = 1;
+            end if;
+
+            IF v_registros_s.estado = 'finalizado' THEN
+               raise exception 'No puede modificar el presupuesto de obligaciones finalizadas';
+            END IF;
+
+            --validar que no tenga comprobantes  pendientes sin validar
+            IF exists( select 1
+                      from adq.tsolicitud ts
+                      where ts.id_solicitud  = v_parametros.id_solicitud and ts.estado_reg ='activo' and ts.estado = 'pendiente') THEN
+
+                 raise exception 'Tiene algun comprobante pendiente de valiación, eliminelo o validaelo antes de volver a intentar';
+
+             END IF;
+
+
+
+            -- la fecha de solictud es la fecha de compromiso
+            IF  now()  < v_registros_s.fecha_soli THEN
+                v_fecha = v_registros_s.fecha_soli::date;
+            ELSE
+                 -- la fecha de reversion como maximo puede ser el 31 de diciembre
+                 v_fecha = now()::date;
+                 v_ano_1 =  EXTRACT(YEAR FROM  now()::date);
+                 v_ano_2 =  EXTRACT(YEAR FROM  v_registros_s.fecha_soli::date);
+
+                 IF  v_ano_1  >  v_ano_2 THEN
+                   v_fecha = ('31-12-'|| v_ano_2::varchar)::date;
+                 END IF;
+            END IF;
+
+            va_id_obligacion_det_tmp =  string_to_array(v_parametros.id_sol_dets::text,',')::integer[];
+            va_revertir = string_to_array(v_parametros.revertir::text,',')::numeric[];
+            v_tam = array_length(va_id_obligacion_det_tmp, 1);
+
+            v_i = 1;
+            FOR v_registros in (
+                            SELECT  tsd.id_solicitud_det,
+                                    tsd.id_centro_costo,
+                                    tsd.id_partida_ejecucion,
+                                    tsd.id_partida,
+                                    p.id_presupuesto
+                            FROM  adq.tsolicitud_det tsd
+                            INNER JOIN pre.tpresupuesto p on p.id_centro_costo = tsd.id_centro_costo
+                            WHERE tsd.id_solicitud_det = ANY(va_id_obligacion_det_tmp)
+                         ) LOOP
+
+
+                va_id_presupuesto[v_i] = v_registros.id_presupuesto;
+                va_id_partida[v_i] = v_registros.id_partida;
+                va_momento[v_i]	= 2; --el momento 2 con signo negativo  es revertir
+                va_id_moneda[v_i]  = v_registros_s.id_moneda;
+
+
+                va_id_partida_ejecucion[v_i] = v_registros.id_partida_ejecucion;
+                va_columna_relacion[v_i] = 'id_solicitud';
+                va_fk_llave[v_i] = v_registros_s.id_solicitud;
+                va_fecha[v_i] = v_fecha ;
+                va_id_solicitud_det[v_i] = v_registros.id_solicitud_det;
+                va_num_tramite[v_i] =  v_registros_s.num_tramite;
+                v_indice = v_i;
+
+                FOR v_j IN 1..v_tam LOOP
+                   IF v_registros.id_solicitud_det = va_id_obligacion_det_tmp[v_j] THEN
+                       v_indice = v_j;
+                       v_j = v_tam + 1;
+                   END IF;
+                END LOOP;
+
+                va_monto[v_i]  = va_revertir[v_indice]*-1;
+
+                v_i = v_i + 1;
+
+          END LOOP;
+
+
+
+          --si se integra con presupuestos
+          IF v_pre_integrar_presupuestos = 'true' THEN
+
+            va_resp_ges =  pre.f_gestionar_presupuesto(  p_id_usuario ,
+            											                       v_tipo_cambio_conv, -- tipo de cambio
+
+               											                     va_id_presupuesto,
+                                                         va_id_partida,
+                                                         va_id_moneda,
+                                                         va_monto,
+                                                         va_fecha, --p_fecha
+                                                         va_momento,
+                                                         va_id_partida_ejecucion,--  p_id_partida_ejecucion
+                                                         va_columna_relacion,
+                                                         va_fk_llave,
+                                                         va_num_tramite
+                                                         );
+
+
+
+
+
+          END IF;
+            -- Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Se extendio la solicitud de compra a la siguiente gestion');
+            v_resp = pxp.f_agrega_clave(v_resp,'id_solicitud',v_parametros.id_solicitud::varchar);
+
+
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
         
   else
      

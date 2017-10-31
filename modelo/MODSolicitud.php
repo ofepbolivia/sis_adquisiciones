@@ -792,6 +792,58 @@ class MODSolicitud extends MODbase{
 		return $this->respuesta;
 	}
 
+	function listarSolicitudCEP(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='adq.f_solicitud_sel';
+		$this->transaccion='ADQ_COMEJEPAG_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+		$this->setCount(false);
+
+		$this->setParametro('id_solicitud','id_solicitud','int4');
+		$this->setParametro('id_moneda','id_moneda','int4');
+		//Definicion de la lista del resultado del query
+		$this->captura('id_solicitud_det','int4');
+		$this->captura('id_partida','int4');
+		$this->captura('nombre_partida','text');
+		$this->captura('id_concepto_ingas','int4');
+		$this->captura('nombre_ingas','text');
+		$this->captura('id_solicitud','int4');
+		$this->captura('id_centro_costo','int4');
+		$this->captura('codigo_cc','text');
+		$this->captura('id_partida_ejecucion','int4');
+		$this->captura('descripcion','text');
+		$this->captura('comprometido','numeric');
+		$this->captura('ejecutado','numeric');
+		$this->captura('pagado','numeric');
+		$this->captura('revertible','numeric');
+		$this->captura('revertir','numeric');
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
+	function revertirParcialmentePresupuesto(){
+		//Definicion de variables para ejecucion del procedimiento
+		$this->procedimiento='adq.f_solicitud_ime';
+		$this->transaccion='ADQ_REVPARPRE_IME';
+		$this->tipo_procedimiento='IME';
+
+		//Define los parametros para la funcion
+		$this->setParametro('id_sol_dets','id_sol_dets','varchar');
+		$this->setParametro('revertir','revertir','varchar');
+		$this->setParametro('id_solicitud','id_solicitud','integer');
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
 			
 }
 ?>

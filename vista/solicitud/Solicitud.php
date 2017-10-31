@@ -938,7 +938,8 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
         this.getBoton('diagrama_gantt').enable();
         this.getBoton('btnObs').enable();
         this.getBoton('btnDetalleGasto').enable();
-        
+        this.getBoton('verificar_presupuesto').enable();
+
         
         return tb 
      }, 
@@ -952,6 +953,7 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
             this.getBoton('diagrama_gantt').disable();  
             this.getBoton('btnObs').disable();
             this.getBoton('btnDetalleGasto').disable();
+            this.getBoton('verificar_presupuesto').disable();
                     
         }
        return tb

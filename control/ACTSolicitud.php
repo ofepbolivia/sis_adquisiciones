@@ -836,8 +836,26 @@ function groupArray($array,$groupkey,$groupkeyTwo,$id_moneda,$estado_sol, $onlyD
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
 
+	function listarSolicitudCEP(){
+		$this->objParam->defecto('ordenacion','nombre_partida');
+		$this->objParam->defecto('dir_ordenacion','asc');
 
+		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+			$this->objReporte = new Reporte($this->objParam,$this);
+			$this->res = $this->objReporte->generarReporteListado('MODSolicitud','listarSolicitudCEP');
+		} else{
+			$this->objFunc=$this->create('MODSolicitud');
 
+			$this->res=$this->objFunc->listarSolicitudCEP($this->objParam);
+		}
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+
+	function revertirParcialmentePresupuesto(){
+		$this->objFunc=$this->create('MODSolicitud');
+		$this->res=$this->objFunc->revertirParcialmentePresupuesto($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
 	/*
     
     Autor: GSS

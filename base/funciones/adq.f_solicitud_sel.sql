@@ -727,6 +727,99 @@ BEGIN
           RAISE NOTICE 'CONSULTA: %',v_consulta;
 			    return v_consulta;
       END;
+    /*********************************
+ 	#TRANSACCION:  'ADQ_COMEJEPAG_SEL'
+ 	#DESCRIPCION:	Listado Solicitudes + Comprometido Ejecutado Pagado
+ 	#AUTOR:		Franklin Espinoza Alvarez
+ 	#FECHA:		27-10-2017 16:01:32
+	***********************************/
+
+	elsif(p_transaccion='ADQ_COMEJEPAG_SEL')then
+        begin
+    		--Sentencia de la consulta
+            create temp table obligaciones(
+                    id_solicitud_det 	integer,
+                    id_partida			integer,
+                    nombre_partida		text,
+                    id_concepto_ingas	integer,
+                    nombre_ingas			text,
+                    id_solicitud	integer,
+                    id_centro_costo		integer,
+                    codigo_cc			text,
+                    id_partida_ejecucion	integer,
+                    descripcion			text,
+                    comprometido		numeric DEFAULT 0.00,
+                    ejecutado			numeric DEFAULT 0.00,
+                    pagado				numeric DEFAULT 0.00,
+                    revertible			numeric DEFAULT 0.00,
+                    revertir			numeric DEFAULT 0.00
+            ) on commit drop;
+
+            insert into obligaciones (id_solicitud_det,
+                                      id_partida,
+                                      nombre_partida,
+            						  id_concepto_ingas,
+                                      nombre_ingas,
+                                      id_solicitud,
+                                      id_centro_costo,
+                                      codigo_cc,
+                                      id_partida_ejecucion,
+                                      descripcion)
+            select
+                sold.id_solicitud_det,
+                sold.id_partida,
+                par.nombre_partida||'-('||par.codigo||')' as nombre_partida,
+                sold.id_concepto_ingas,
+                cig.desc_ingas||'-('||cig.movimiento||')' as nombre_ingas,
+                sold.id_solicitud,
+                sold.id_centro_costo,
+                cc.codigo_cc,
+                sold.id_partida_ejecucion,
+                sold.descripcion
+           from adq.tsolicitud_det sold
+                inner join param.vcentro_costo cc on cc.id_centro_costo=sold.id_centro_costo
+                inner join segu.tusuario usu1 on usu1.id_usuario = sold.id_usuario_reg
+                inner join pre.tpartida par on par.id_partida=sold.id_partida
+                inner join param.tconcepto_ingas cig on cig.id_concepto_ingas=sold.id_concepto_ingas
+            where sold.id_solicitud=v_parametros.id_solicitud;
+
+            select  obli.id_solicitud_det,
+                obli.id_partida,
+                obli.nombre_partida,
+                obli.id_concepto_ingas,
+                obli.nombre_ingas,
+                obli.id_solicitud,
+                obli.id_centro_costo,
+                obli.codigo_cc,
+                obli.id_partida_ejecucion,
+                obli.descripcion
+            into v_verificar
+            from obligaciones obli
+            where obli.id_solicitud=v_parametros.id_solicitud;
+
+			FOR v_solicitud_partida in (select * from obligaciones)LOOP
+            	v_verificar = pre.f_verificar_com_eje_pag(v_solicitud_partida.id_partida_ejecucion,v_parametros.id_moneda);
+
+            	update obligaciones set
+                comprometido = COALESCE(v_verificar.ps_comprometido,0.00::numeric),
+                ejecutado = COALESCE(v_verificar.ps_ejecutado,0.00::numeric),
+                pagado = COALESCE(v_verificar.ps_pagado,0.00::numeric),
+                revertible =  COALESCE(v_verificar.ps_comprometido,0.00::numeric) - COALESCE(v_verificar.ps_ejecutado,0.00::numeric)
+                where obligaciones.id_solicitud_det=v_solicitud_partida.id_solicitud_det;
+
+        	END LOOP;
+
+              v_consulta:='select * from obligaciones where  ';
+
+              --Definicion de la respuesta
+              v_consulta:=v_consulta||v_parametros.filtro;
+              v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion;
+
+
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
     else
 
 		raise exception 'Transaccion inexistente';

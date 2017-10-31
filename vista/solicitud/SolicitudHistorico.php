@@ -58,8 +58,15 @@ Phx.vista.SolicitudHistorico = {
            }];
         
     	Phx.vista.SolicitudHistorico.superclass.constructor.call(this,config);
-    	   
-               
+
+        this.addButton('verificar_presupuesto', {
+            text : 'Revertir Presup.',
+            grupo:[0,1,2],
+            iconCls : 'bassign',
+            disabled : false,
+            handler : this.onVerificarPresu,
+            tooltip : '<b>Revertir  presupuestos</b><br>Permite ver la evolución presupuestaria y revertir parcialmente.</b>'
+        });
        
         this.store.baseParams={tipo_interfaz:this.nombreVista};
         //coloca filtros para acceso directo si existen
@@ -75,6 +82,16 @@ Phx.vista.SolicitudHistorico = {
         
 		
 	},
+    onVerificarPresu : function() {
+        var rec = this.sm.getSelected();
+        var moneda = rec.data.desc_moneda=='$us'?'Dolares Americanos':'Bolivianos';
+        //Se define el nombre de la columna de la llave primaria
+        Phx.CP.loadWindows('../../../sis_adquisiciones/vista/solicitud/VerificarPresupuesto.php', 'Evolución presupuestaria ('+moneda+')', {
+            modal : true,
+            width : '98%',
+            height : '70%'
+        }, rec.data, this.idContenedor, 'VerificarPresupuesto');
+    },
 	
 	south:
           { 
