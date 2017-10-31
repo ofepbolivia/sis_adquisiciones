@@ -115,7 +115,32 @@ DECLARE
        v_funcionario				varchar = null;
        v_adq_requiere_rpc			varchar;
 
-			    
+       --VARIABLES COMPROMETIDO, EJECUTADO, PAGADO REVERTIR PRESUPUESTO.
+       v_pre_integrar_presupuestos	varchar;
+       v_registros_s				record;
+       v_fecha						date;
+       v_ano_1						integer;
+       v_ano_2						integer;
+	   va_id_presupuesto			integer[];
+       va_id_partida				integer[];
+       va_momento 					integer[];
+       va_id_obligacion_det_tmp   	integer[];
+       v_i							integer;
+       va_id_moneda    				integer[];
+       va_monto          			numeric[];
+       va_revertir  				numeric[];
+       v_tam						integer;
+       va_id_partida_ejecucion		integer[];
+       va_columna_relacion   		varchar[];
+       va_fk_llave             		integer[];
+       va_fecha 					date[];
+       va_id_solicitud_det	  		integer[];
+       va_num_tramite				varchar[];
+       v_indice 					integer;
+       va_resp_ges              	numeric[];
+       v_codigo						varchar;
+       v_tipo_cambio_conv				numeric;
+
 BEGIN
 
     v_nombre_funcion = 'adq.f_solicitud_ime';

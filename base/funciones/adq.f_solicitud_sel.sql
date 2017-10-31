@@ -54,6 +54,10 @@ DECLARE
     v_nro_memo			varchar;
     v_correlativo		varchar;
 
+    --select revertir presupuesto
+    v_solicitud_partida record;
+    v_verificar	record;
+
 BEGIN
 
 	v_nombre_funcion = 'adq.f_solicitud_sel';

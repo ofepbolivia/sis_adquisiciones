@@ -82,6 +82,35 @@ Phx.vista.SolicitudHistorico = {
         
 		
 	},
+
+    preparaMenu:function(n){
+        var data = this.getSelectedData();
+        var tb =this.tbar;
+
+        this.getBoton('btnChequeoDocumentosWf').setDisabled(false);
+        Phx.vista.Solicitud.superclass.preparaMenu.call(this,n);
+        this.getBoton('diagrama_gantt').enable();
+        this.getBoton('btnObs').enable();
+        this.getBoton('btnDetalleGasto').enable();
+        this.getBoton('verificar_presupuesto').enable();
+
+
+        return tb
+    },
+    liberaMenu:function(){
+        var tb = Phx.vista.Solicitud.superclass.liberaMenu.call(this);
+        if(tb){
+            
+            this.getBoton('btnChequeoDocumentosWf').setDisabled(true);
+            this.getBoton('diagrama_gantt').disable();
+            this.getBoton('btnObs').disable();
+            this.getBoton('btnDetalleGasto').disable();
+            this.getBoton('verificar_presupuesto').disable();
+
+        }
+        return tb
+    },
+    
     onVerificarPresu : function() {
         var rec = this.sm.getSelected();
         var moneda = rec.data.desc_moneda=='$us'?'Dolares Americanos':'Bolivianos';
