@@ -238,11 +238,15 @@ Class ROrdenCompra extends Report {
 
 		$pdf->SetFontSize(9);
 		$pdf->Ln();
-		
+
 		if($this->getDataSource()->getParameter('fecha_entrega')!=''){  
     		
             $pdf->SetFont('', 'B');
-            $pdf->Cell($width3, $height, 'Fecha de Entrega:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+			if($tipo != 'Bien') {
+				$pdf->Cell($width3, $height, 'Fecha de Servicio:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+			}else{
+				$pdf->Cell($width3, $height, 'Fecha de Entrega:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+			}
             $pdf->SetFont('', '');
             $pdf->SetFillColor(192,192,192, true);
             $pdf->Cell($width4+$width3+$width2+$width1, $height, $this->getDataSource()->getParameter('fecha_entrega'), $white, 0, 'L', true, '', 0, false, 'T', 'C');        
@@ -252,7 +256,11 @@ Class ROrdenCompra extends Report {
         }
         else{
             $pdf->SetFont('', 'B');
-            $pdf->Cell($width3, $height, 'Tiempo de Entrega:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+			if($tipo != 'Bien'){
+				$pdf->Cell($width3, $height, 'Tiempo de Servicio:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+			}else {
+				$pdf->Cell($width3, $height, 'Tiempo de Entrega:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+			}
             $pdf->SetFont('', '');
             $pdf->SetFillColor(192,192,192, true);
             //$pdf->Cell($width4+$width3+$width2+$width1, $height, $this->getDataSource()->getParameter('tiempo_entrega'), $white, 0, 'L', true, '', 0, false, 'T', 'C');        
@@ -271,7 +279,11 @@ Class ROrdenCompra extends Report {
         */
 		
 		$pdf->SetFont('', 'B');
-        $pdf->Cell($width3, $height, 'Lugar de Entrega:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+		if($tipo != 'Bien') {
+			$pdf->Cell($width3, $height, 'Lugar de Servicio:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+		}else{
+			$pdf->Cell($width3, $height, 'Lugar de Entrega:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+		}
         $pdf->SetFont('', '');
         $pdf->SetFillColor(192,192,192, true);
 		$pdf->MultiCell(0, $height, $this->getDataSource()->getParameter('lugar_entrega'), 0,'L', true ,1);        

@@ -295,7 +295,6 @@ class ACTCotizacion extends ACTbase{
                 $this->objParam->addParametroConsulta('puntero',0);
                 $this->objFunc = $this->create('MODCotizacion');
                 $resultOrdenCompra = $this->objFunc->reporteOrdenCompra();
-				
 				if($resultOrdenCompra->getTipo()=='EXITO'){
 				 	
 					    $datosOrdenCompra = $resultOrdenCompra->getDatos();
@@ -349,13 +348,13 @@ class ACTCotizacion extends ACTbase{
 		
 		                $modCotizacionDet = $this->create('MODCotizacionDet');
 		                $resultCotizacionDet = $modCotizacionDet->listarCotizacionDetReporte();
-						
+
 						if($resultCotizacionDet->getTipo() == 'EXITO'){
 					                //$solicitudDetAgrupado = $this->groupArray($resultSolicitudDet->getDatos(), 'codigo_partida','desc_centro_costo');
 					                $cotizacionDetDataSource = new DataSource();
 					                $cotizacionDetDataSource->setDataSet($resultCotizacionDet->getDatos());
 					                $dataSource->putParameter('detalleDataSource', $cotizacionDetDataSource);
-					
+
 					                //build the report
 					                $reporte = new ROrdenCompra();
 					                $reporte->setDataSource($dataSource);
