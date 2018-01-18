@@ -73,8 +73,13 @@ class ACTSolicitud extends ACTbase{
              $this->objParam->addFiltro("(sol.estado != ''finalizado'' and  sol.estado != ''cancelado'')");
         }
 		
-		
-		$this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]); 
+		if($this->objParam->getParametro('moneda_base')=='base'){
+			$this->objParam->addFiltro("sol.id_moneda = 1");
+		}else{
+			$this->objParam->addFiltro("sol.id_moneda != 1");
+		}
+
+		$this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]);
 		
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
 			$this->objReporte = new Reporte($this->objParam,$this);

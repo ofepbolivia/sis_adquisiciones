@@ -20,11 +20,34 @@ Phx.vista.SolicitudVb = {
 	requireclase: 'Phx.vista.Solicitud',
 	title: 'Solicitud',
 	nombreVista: 'SolicitudVb',
+
+    beditGroups: [],
+    bdelGroups:  [],
+    bactGroups:  [0,1],
+    btestGroups: [],
+    bexcelGroups: [0,1],
+    
+    gruposBarraTareas:[
+        {name:'local',title:'<H1 align="center">Moneda Local</h1>',grupo:0,height:0},
+        {name:'extranjera',title:'<H1 align="center">Moneda Extranjera</h1>',grupo:1,height:0}
+    ],
+
+    actualizarSegunTab: function(name, indice){
+        if(name == 'local'){
+            this.store.baseParams.moneda_base = 'base';
+        }else{
+            this.getBoton('btnDetalleGasto').setVisible(true);
+            this.store.baseParams.moneda_base = 'otros';
+        }
+
+        this.load({params:{start:0, limit:this.tam_pag}});
+
+    },
 	
 	constructor: function(config) {
 	    
 	    this.maestro=config.maestro;
-
+        
         this.Atributos.splice(7,0, {
             config:{
                 name: 'importe_total',
@@ -85,31 +108,31 @@ Phx.vista.SolicitudVb = {
              },
             scope: this
            }];
-        
-    	Phx.vista.SolicitudVb.superclass.constructor.call(this,config);
-    	this.addButton('ini_estado',{  argument: {estado: 'inicio'},text:'Dev. al Solicitante',iconCls: 'batras',disabled:true,handler:this.antEstado,tooltip: '<b>Retorna la Solcitud al estado borrador</b>'});
-        this.addButton('ant_estado',{ argument: {estado: 'anterior'},text:'Rechazar',iconCls: 'batras',disabled:true,handler:this.antEstado,tooltip: '<b>Pasar al Anterior Estado</b>'});
-        this.addButton('sig_estado',{ text:'Aprobar', iconCls: 'badelante', disabled: true, handler: this.sigEstado, tooltip: '<b>Pasar al Siguiente Estado</b>'});
 
-        
-                
-        this.store.baseParams={tipo_interfaz:this.nombreVista};
+    	Phx.vista.SolicitudVb.superclass.constructor.call(this,config);
+    	this.addButton('ini_estado',{ grupo:[0,1], argument: {estado: 'inicio'},text:'Dev. al Solicitante',iconCls: 'batras',disabled:true,handler:this.antEstado,tooltip: '<b>Retorna la Solcitud al estado borrador</b>'});
+        this.addButton('ant_estado',{ grupo:[0,1], argument: {estado: 'anterior'},text:'Rechazar',iconCls: 'batras',disabled:true,handler:this.antEstado,tooltip: '<b>Pasar al Anterior Estado</b>'});
+        this.addButton('sig_estado',{ grupo:[0,1], text:'Aprobar', iconCls: 'badelante', disabled: true, handler: this.sigEstado, tooltip: '<b>Pasar al Siguiente Estado</b>'});
+
+        //(f.e.a)moneda base
+        this.store.baseParams={tipo_interfaz:this.nombreVista, moneda_base : 'base'};
         //coloca filtros para acceso directo si existen
         if(config.filtro_directo){
            this.store.baseParams.filtro_valor = config.filtro_directo.valor;
            this.store.baseParams.filtro_campo = config.filtro_directo.campo;
         }
+
         //carga inicial de la pagina
         this.load({params:{start:0, limit:this.tam_pag}}); 
         
         
         
         if(this.nombreVista == 'solicitudvbpoa') {
-           this.addButton('obs_poa',{ text:'Datos POA', disabled:true, handler: this.initObs, tooltip: '<b>Código de actividad POA</b>'});
+           this.addButton('obs_poa',{ grupo:[0,1], text:'Datos POA', disabled:true, handler: this.initObs, tooltip: '<b>Código de actividad POA</b>'});
            this.crearFormObs();
         }
         if(this.nombreVista == 'solicitudvbpresupuestos') {
-           this.addButton('obs_presu',{text:'Obs. Presupuestos', disabled:true, handler: this.initObs, tooltip: '<b>Observacioens del área de presupuesto</b>'});
+           this.addButton('obs_presu',{grupo:[0,1], text:'Obs. Presupuestos', disabled:true, handler: this.initObs, tooltip: '<b>Observacioens del área de presupuesto</b>'});
            this.crearFormObs();
         }
         
