@@ -147,30 +147,62 @@ header("content-type: text/javascript; charset=UTF-8");
 
 			} ,this);
 
-			this.detCmp.id_concepto_ingas.on('change',function( cmb, rec, ind){
+			this.detCmp.id_concepto_ingas.on('change',function( cmb, rec, ind){ console.log('change id_concepto_ingas');
 				this.detCmp.id_orden_trabajo.reset();
 			},this);
 
-			this.detCmp.id_concepto_ingas.on('select',function( cmb, rec, ind){
+			this.detCmp.id_concepto_ingas.on('select',function( cmb, rec, ind){ console.log('select id_concepto_ingas');
+				console.log('VALOR CENTO COSTOS SELECT',this.detCmp.id_centro_costo.getValue()=='',this.detCmp.id_centro_costo.getValue()==undefined, this.detCmp.id_centro_costo);
+				if(this.detCmp.id_centro_costo.getValue()=='') {
+					this.detCmp.id_orden_trabajo.store.baseParams = {
+						par_filtro: 'codigo#desc_orden#motivo_orden',
+						filtro_ot: rec.data.filtro_ot,
+						requiere_ot: rec.data.requiere_ot,
+						id_grupo_ots: rec.data.id_grupo_ots
+					};
+					this.detCmp.id_orden_trabajo.modificado = true;
+					if (rec.data.requiere_ot == 'obligatorio') {
+						this.detCmp.id_orden_trabajo.allowBlank = false;
+						this.detCmp.id_orden_trabajo.setReadOnly(false);
+					}
+					else {
+						this.detCmp.id_orden_trabajo.allowBlank = true;
+						this.detCmp.id_orden_trabajo.setReadOnly(true);
+					}
+					//(FEA)this.detCmp.id_orden_trabajo.reset();
+				}else{
+					this.detCmp.id_orden_trabajo.store.baseParams = {
+						par_filtro: 'codigo#desc_orden#motivo_orden',
+						filtro_ot: rec.data.filtro_ot,
+						requiere_ot: rec.data.requiere_ot,
+						id_grupo_ots: rec.data.id_grupo_ots,
+						id_centro_costo : this.detCmp.id_centro_costo.getValue()
+					};
+					this.detCmp.id_orden_trabajo.modificado = true;
+					if (rec.data.requiere_ot == 'obligatorio') {
+						this.detCmp.id_orden_trabajo.allowBlank = false;
+						this.detCmp.id_orden_trabajo.setReadOnly(false);
+					}
+					else {
+						this.detCmp.id_orden_trabajo.allowBlank = true;
+						this.detCmp.id_orden_trabajo.setReadOnly(true);
+					}
+					//(FEA)this.detCmp.id_orden_trabajo.reset();
+				}
 
-				this.detCmp.id_orden_trabajo.store.baseParams = {
-					filtro_ot:rec.data.filtro_ot,
-					requiere_ot:rec.data.requiere_ot,
-					id_grupo_ots:rec.data.id_grupo_ots
-				};
+
+			},this);
+
+			//(f.e.a)
+			this.detCmp.id_centro_costo.on('select',function(cmp,rec,ind){
+				this.detCmp.id_orden_trabajo.reset();
+				this.detCmp.id_orden_trabajo.store.baseParams.id_centro_costo = rec.data.id_centro_costo;
 				this.detCmp.id_orden_trabajo.modificado = true;
-				if(rec.data.requiere_ot =='obligatorio'){
-					this.detCmp.id_orden_trabajo.allowBlank = false;
-					this.detCmp.id_orden_trabajo.setReadOnly(false);
-				}
-				else{
-					this.detCmp.id_orden_trabajo.allowBlank = true;
-					this.detCmp.id_orden_trabajo.setReadOnly(true);
-				}
-				this.detCmp.id_orden_trabajo.reset();
 
+				console.log('cmp', cmp);
+				console.log('rec', rec);
 
-			},this);
+			}, this);
 		},
 
 		onInitAdd: function(){

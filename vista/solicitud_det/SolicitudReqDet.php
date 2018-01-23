@@ -103,6 +103,7 @@ Phx.vista.SolicitudReqDet = {
     onButtonEdit:function(){
 	    
 	  Phx.vista.SolicitudReqDet.superclass.onButtonEdit.call(this);
+
 	  this.Cmp.id_orden_trabajo.allowBlank = true;
 	  this.Cmp.id_orden_trabajo.disable();
 	},
@@ -110,6 +111,8 @@ Phx.vista.SolicitudReqDet = {
 	onButtonNew:function(){
 	    
 	  Phx.vista.SolicitudReqDet.superclass.onButtonNew.call(this);
+
+
 	  this.Cmp.id_orden_trabajo.allowBlank = true;
 	  this.Cmp.id_orden_trabajo.disable();  
 	  
@@ -165,10 +168,21 @@ Phx.vista.SolicitudReqDet = {
 			        else{
 			        	this.Cmp.id_orden_trabajo.allowBlank = true;
 			        }
-			        this.Cmp.id_orden_trabajo.reset();
-			        this.Cmp.id_orden_trabajo.enable();
+			        //this.Cmp.id_orden_trabajo.reset();
+			        //this.Cmp.id_orden_trabajo.enable();
         	
              },this);
+
+        //(f.e.a)
+        this.Cmp.id_centro_costo.on('select',function(cmp,rec,ind){
+            this.Cmp.id_orden_trabajo.reset();
+            this.Cmp.id_orden_trabajo.store.baseParams.id_centro_costo = rec.data.id_centro_costo;
+            this.Cmp.id_orden_trabajo.modificado = true;
+
+            console.log('cmp', cmp);
+            console.log('rec', rec);
+
+        }, this);
 	    
         
      }
