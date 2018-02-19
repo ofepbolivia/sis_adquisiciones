@@ -37,7 +37,7 @@ Phx.vista.SolicitudVb = {
             this.store.baseParams.moneda_base = 'base';
         }else{
             this.getBoton('btnDetalleGasto').setVisible(true);
-            this.store.baseParams.moneda_base = 'otros';
+            this.store.baseParams.moneda_base = 'extranjera';
         }
 
         this.load({params:{start:0, limit:this.tam_pag}});
@@ -124,9 +124,7 @@ Phx.vista.SolicitudVb = {
 
         //carga inicial de la pagina
         this.load({params:{start:0, limit:this.tam_pag}}); 
-        
-        
-        
+
         if(this.nombreVista == 'solicitudvbpoa') {
            this.addButton('obs_poa',{ grupo:[0,1], text:'Datos POA', disabled:true, handler: this.initObs, tooltip: '<b>Código de actividad POA</b>'});
            this.crearFormObs();
@@ -135,8 +133,7 @@ Phx.vista.SolicitudVb = {
            this.addButton('obs_presu',{grupo:[0,1], text:'Obs. Presupuestos', disabled:true, handler: this.initObs, tooltip: '<b>Observacioens del área de presupuesto</b>'});
            this.crearFormObs();
         }
-        
-		console.log('configuracion',config, this.nombreVista)
+
 	},
 
 

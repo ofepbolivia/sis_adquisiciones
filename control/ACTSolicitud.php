@@ -72,12 +72,12 @@ class ACTSolicitud extends ACTbase{
         if($this->objParam->getParametro('tipo_interfaz')=='solicitudRpc'){
              $this->objParam->addFiltro("(sol.estado != ''finalizado'' and  sol.estado != ''cancelado'')");
         }
-		
-		if($this->objParam->getParametro('moneda_base')=='base'){
-			$this->objParam->addFiltro("sol.id_moneda = 1");
-		}else{
-			$this->objParam->addFiltro("sol.id_moneda != 1");
-		}
+
+        if($this->objParam->getParametro('moneda_base')=='base' && $this->objParam->getParametro('tipo_interfaz') == 'SolicitudVb'){
+            $this->objParam->addFiltro("sol.id_moneda = 1");
+        }else if($this->objParam->getParametro('moneda_base')=='extranjera' && $this->objParam->getParametro('tipo_interfaz') == 'SolicitudVb'){
+            $this->objParam->addFiltro("sol.id_moneda != 1");
+        }
 
 		$this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]);
 		
