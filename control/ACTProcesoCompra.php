@@ -303,8 +303,6 @@ class ACTProcesoCompra extends ACTbase{
              $this->res = $mensajeExito;
              $this->res->imprimirRespuesta($this->res->generarJson());
 
-  }
-    
+    }
 }
-
 ?>

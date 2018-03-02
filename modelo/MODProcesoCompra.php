@@ -387,7 +387,5 @@ function listarProcesoCompraPedido(){
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-	
-
 }
 ?>

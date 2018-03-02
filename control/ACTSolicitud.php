@@ -73,9 +73,9 @@ class ACTSolicitud extends ACTbase{
              $this->objParam->addFiltro("(sol.estado != ''finalizado'' and  sol.estado != ''cancelado'')");
         }
 
-        if($this->objParam->getParametro('moneda_base')=='base' && $this->objParam->getParametro('tipo_interfaz') == 'SolicitudVb'){
+        if($this->objParam->getParametro('moneda_base')=='base' && ($this->objParam->getParametro('tipo_interfaz') == 'SolicitudVb'||$this->objParam->getParametro('tipo_interfaz') == 'solicitudvbpresupuestos'||$this->objParam->getParametro('tipo_interfaz') == 'solicitudvbpoa')){
             $this->objParam->addFiltro("sol.id_moneda = 1");
-        }else if($this->objParam->getParametro('moneda_base')=='extranjera' && $this->objParam->getParametro('tipo_interfaz') == 'SolicitudVb'){
+        }else if($this->objParam->getParametro('moneda_base')=='extranjera' && ($this->objParam->getParametro('tipo_interfaz') == 'SolicitudVb'||$this->objParam->getParametro('tipo_interfaz') == 'solicitudvbpresupuestos'||$this->objParam->getParametro('tipo_interfaz') == 'solicitudvbpoa')){
             $this->objParam->addFiltro("sol.id_moneda != 1");
         }
 
