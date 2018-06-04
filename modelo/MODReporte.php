@@ -210,7 +210,7 @@ class MODReporte extends MODbase{
 
     function getDatosUsuario(){
         //Definicion de variables para ejecucion del procedimiento
-        $this->procedimiento='adq.f_proceso_compra_ime';
+        $this->procedimiento='adq.f_reporte_ime';
         $this->transaccion='ADQ_USUARIO_GET';
         $this->tipo_procedimiento='IME';
 
@@ -223,6 +223,34 @@ class MODReporte extends MODbase{
 
         //Devuelve la respuesta
         return $this->respuesta;
+    }
+
+    //(f.e.a)
+    function reporteTiempoPresupuesto(){
+
+        $this->procedimiento = 'adq.f_reporte_sel';
+        $this->transaccion = 'ADQ_TIME_PRES_REP';
+        $this->tipo_procedimiento = 'SEL';
+
+        $this->setParametro('id_usuario','id_usuario','int4');
+
+        $this->captura('fun_responsable', 'varchar');
+        $this->captura('desc_depto', 'varchar');
+        $this->captura('tieneform500', 'varchar');
+        $this->captura('conformidad', 'varchar');
+        $this->captura('dias_form_500', 'integer');
+        $this->captura('fecha_inicio', 'date');
+        $this->captura('fecha_fin', 'date');
+        $this->captura('plazo_dias', 'varchar');
+
+        //Ejecutar la instruccion
+        $this->armarConsulta();
+        //var_dump($this->consulta);exit;
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+
     }
 
 

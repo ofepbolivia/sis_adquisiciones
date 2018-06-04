@@ -22,9 +22,10 @@ header("content-type: text/javascript; charset=UTF-8");
         ],
         bactGroups:  [0,1],
         bexcelGroups: [0,1],
-
+        formulario: 'no',
         actualizarSegunTab: function(name, indice){
             this.store.baseParams.chequeado = name;
+            this.formulario = name;
             this.load({params:{start:0, limit:this.tam_pag}});
         },
 
@@ -42,6 +43,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     var reg = Ext.decode(Ext.util.Format.trim(resp.responseText));
                     this.cmbAux.setValue(reg.ROOT.datos.id_usuario);
                     this.cmbAux.setRawValue(reg.ROOT.datos.desc_usuario);
+                    this.store.baseParams.chequeado = this.formulario;
                     this.store.baseParams.id_usuario = reg.ROOT.datos.id_usuario;
                     this.load({params: {start: 0, limit: this.tam_pag}});
                 },
@@ -86,6 +88,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
         capturarFiltros: function () {
             this.store.baseParams.id_usuario=this.cmbAux.getValue();
+            this.store.baseParams.chequeado = this.formulario;
             this.load({params:{start:0, limit:this.tam_pag}});
         },
 
@@ -214,7 +217,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 type:'TextField',
                 bottom_filter: true,
-                filters:{pfiltro:'tc.num_tramite',type:'string'},
+                filters:{pfiltro:'num_tramite',type:'string'},
                 id_grupo:0,
                 grid:true,
                 form:false
@@ -297,7 +300,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 type:'TextField',
                 bottom_filter : true,
-                filters:{pfiltro:' vf.desc_funcionario1',type:'string'},
+                filters:{pfiltro:'fun_solicitante',type:'string'},
                 id_grupo:0,
                 grid:true,
                 form:false

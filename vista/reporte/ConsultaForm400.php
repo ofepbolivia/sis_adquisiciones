@@ -218,7 +218,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 type:'TextField',
                 bottom_filter: true,
-                filters:{pfiltro:'tc.num_tramite',type:'string'},
+                filters:{pfiltro:'num_tramite',type:'string'},
                 id_grupo:0,
                 grid:true,
                 form:false
@@ -300,7 +300,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 type:'TextField',
                 bottom_filter: true,
-                filters:{pfiltro:' vf.desc_funcionario1',type:'string'},
+                filters:{pfiltro:'fun_solicitante',type:'string'},
                 id_grupo:0,
                 grid:true,
                 form:false
