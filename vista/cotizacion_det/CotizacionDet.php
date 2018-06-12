@@ -308,7 +308,10 @@ Phx.vista.CotizacionDet=Ext.extend(Phx.gridInterfaz,{
                 decimalPrecision:3,
                 anchor: '80%',
                 gwidth: 120,
-                maxLength:1245186
+                maxLength:1245186,
+                renderer:function (value,p,record){
+                    return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
+                }
             },
             type:'NumberField',
             filters:{pfiltro:'ctd.precio_unitario',type:'numeric'},
@@ -343,7 +346,10 @@ Phx.vista.CotizacionDet=Ext.extend(Phx.gridInterfaz,{
                 decimalPrecision:2,
 				anchor: '80%',
 				gwidth: 120,
-				maxLength:1245186
+				maxLength:1245186,
+                renderer:function (value,p,record){
+                    return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
+                }
 			},
 			type:'NumberField',
 			filters:{pfiltro:'ctd.precio_unitario',type:'numeric'},
