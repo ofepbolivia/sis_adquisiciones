@@ -1,7 +1,5 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION adq.f_solicitud_sel (
-  p_administrador integer, 
+  p_administrador integer,
   p_id_usuario integer,
   p_tabla varchar,
   p_transaccion varchar
@@ -57,6 +55,7 @@ DECLARE
     --select revertir presupuesto
     v_solicitud_partida record;
     v_verificar	record;
+    v_auxiliar_id		integer;
 
 BEGIN
 
@@ -105,7 +104,6 @@ BEGIN
           IF  lower(v_parametros.tipo_interfaz) in ('solicitudvb','solicitudvbwzd','solicitudvbpoa','solicitudvbpresupuestos') THEN
 
                 IF v_historico =  'no' THEN
-
                     IF p_administrador !=1 THEN
                       v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and (lower(sol.estado)!=''proceso'' ) and ';
                     ELSE
@@ -113,7 +111,13 @@ BEGIN
                     END IF;
                 ELSE
                     IF p_administrador !=1 THEN
-                      v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and ';
+                      if lower(v_parametros.tipo_interfaz) = 'solicitudvbpoa' then
+                          v_auxiliar_id = 75;
+                          v_filtro = ' (ew.id_funcionario='||v_auxiliar_id||') and  (lower(sol.estado)!=''borrador'') and ';
+                      else
+                          v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||') and  (lower(sol.estado)!=''borrador'') and ';
+                      end if;
+                      --v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and ';
                     ELSE
                         v_filtro = ' (lower(sol.estado) != ''borrador'') and ';
                     END IF;
@@ -254,15 +258,15 @@ BEGIN
 
 						left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
                         left join param.vproveedor pro on pro.id_proveedor = sol.id_proveedor
-                        
+
                         left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud
-                        
+
                         '||v_inner||'
                         where  tsd.estado_reg = ''activo'' and '||v_filtro;
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
-			v_consulta:=v_consulta||' group by sol.id_solicitud, usu1.cuenta, usu2.cuenta, 
+			v_consulta:=v_consulta||' group by sol.id_solicitud, usu1.cuenta, usu2.cuenta,
              fun.desc_funcionario1, funa.desc_funcionario1, uo.codigo, uo.nombre_unidad,
              ges.gestion, mon.codigo, dep.codigo, pm.nombre, cat.nombre, funrpc.desc_funcionario1,
              ew.obs, pro.desc_proveedor, funs.desc_funcionario1, ew.id_tipo_estado,
@@ -313,13 +317,19 @@ BEGIN
               IF v_historico =  'no' THEN
 
                 IF p_administrador !=1 THEN
-                  v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and (lower(sol.estado)!=''proceso'' ) and ';
+                  	v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and (lower(sol.estado)!=''proceso'' ) and ';
                 ELSE
                     v_filtro = ' (lower(sol.estado)!=''borrador''  and lower(sol.estado)!=''proceso'' and lower(sol.estado)!=''finalizado'') and ';
                 END IF;
               ELSE
                 IF p_administrador !=1 THEN
-                  v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and ';
+                	if lower(v_parametros.tipo_interfaz) = 'solicitudvbpoa' then
+                    	v_auxiliar_id = 75;
+                    	v_filtro = ' (ew.id_funcionario='||v_auxiliar_id||') and  (lower(sol.estado)!=''borrador'') and ';
+                    else
+                    	v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||') and  (lower(sol.estado)!=''borrador'') and ';
+                    end if;
+                  	--v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and ';
                 ELSE
                     v_filtro = ' (lower(sol.estado)!=''borrador'') and ';
                 END IF;
@@ -390,7 +400,7 @@ BEGIN
 
 						left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
                         left join param.vproveedor pro on pro.id_proveedor = sol.id_proveedor
-			
+
 			left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud
 				       '||v_inner||'
 
