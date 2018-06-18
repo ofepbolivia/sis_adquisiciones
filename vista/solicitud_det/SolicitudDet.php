@@ -152,7 +152,10 @@ Phx.vista.SolicitudDet=Ext.extend(Phx.gridInterfaz,{
                 decimalPrecision: 2,
                 renderer: function(value, p, record){
                 	var num = Number(record.data['precio_unitario'])
-                	return String.format('{0}', num.toFixed(2));
+
+                    return String.format('{0}', Ext.util.Format.number(value, '0,000.00'));
+
+                    //return String.format('{0}', num.toFixed(2));
                 	
                 	},
                 width:100,

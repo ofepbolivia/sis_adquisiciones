@@ -67,8 +67,12 @@ BEGIN
                         ctd.precio_unitario_mb ,
                         sold.precio_unitario_mb as precio_unitario_mb_sol,
                         sold.revertido_mb,
-                        sold.revertido_mo
-						from adq.tcotizacion_det ctd
+                        sold.revertido_mo,
+                        (ctd.cantidad_adju *ctd.precio_unitario)::numeric as total_adjudicado,
+                        (ctd.cantidad_coti *ctd.precio_unitario)::numeric as total_cotizado,
+                        (sold.cantidad *sold.precio_unitario)::numeric as total_solicitado
+
+                        from adq.tcotizacion_det ctd
 						inner join segu.tusuario usu1 on usu1.id_usuario = ctd.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = ctd.id_usuario_mod
 				        inner join adq.tsolicitud_det sold on sold.id_solicitud_det=  ctd.id_solicitud_det
@@ -79,7 +83,8 @@ BEGIN
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
-
+raise notice '%', v_consulta;
+--raise EXCEPTION 'errorrrrrrrrrrrrrrrr';
 			--Devuelve la respuesta
 			return v_consulta;
 
@@ -103,7 +108,7 @@ BEGIN
 				        inner join adq.tsolicitud_det sold on sold.id_solicitud_det=  ctd.id_solicitud_det
 				        inner join param.tconcepto_ingas cig on cig.id_concepto_ingas = sold.id_concepto_ingas
 						inner join param.vcentro_costo cc on cc.id_centro_costo = sold.id_centro_costo
-                        where ctd.id_cotizacion='||v_parametros.id_cotizacion||' and ';
+                        where ctd.id_cotizacion='||v_parametros.id_cotizacion||' and  ';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;

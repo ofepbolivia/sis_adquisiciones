@@ -20,10 +20,11 @@ class ACTProcesoCompra extends ACTbase{
 		$this->objParam->defecto('ordenacion','id_proceso_compra');
 
 		$this->objParam->defecto('fecha_reg','desc');
-		
+
 		if($this->objParam->getParametro('filtro_campo')!=''){
-            $this->objParam->addFiltro($this->objParam->getParametro('filtro_campo')." = ".$this->objParam->getParametro('filtro_valor'));  
-        }
+            $this->objParam->addFiltro($this->objParam->getParametro('filtro_campo')." = ".$this->objParam->getParametro('filtro_valor'));
+        
+		}
 		/*
 		if($this->objParam->getParametro('pendientes')=='1'){
              $this->objParam->addFiltro("(estado in (''pendiente'',''proceso'')) and (desc_cotizacion not like''%pago_habilitado%''  or desc_cotizacion is NULL)");
