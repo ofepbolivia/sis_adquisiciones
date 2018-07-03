@@ -14,31 +14,32 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
     gruposBarraTareas:[{name:'pendientes',title:'<H1 align="center"><i class="fa fa-thumbs-o-down"></i> Pendientes</h1>',grupo:0,height:0},
                        {name:'iniciados',title:'<H1 align="center"><i class="fa fa-eye"></i> Iniciados</h1>',grupo:1,height:0},
                        {name:'contrato',title:'<H1 align="center"><i class="fa fa-file-o"></i> Para Contrato</h1>',grupo:2,height:0},
-                       
+
                        {name:'en pago',title:'<H1 align="center"><i class="fa fa-credit-card"></i> En Pago</h1>',grupo:3,height:0},
-                       
+
                        {name:'anulados',title:'<H1 align="center"><i class="fa fa-bell-o"></i> Anulados</h1>',grupo:4,height:0},
                        {name:'finalizados',title:'<H1 align="center"><i class="fa fa-thumbs-o-up"></i> Finalizados</h1>',grupo:5,height:0}],
-	
+
     beditGroups: [0,1,2,3,4],
     bdelGroups:  [0,1,2,3,4],
     bactGroups:  [0,1,2,3,4,5],
     btestGroups: [0],
     bexcelGroups: [0,1,2,3,4,5],
-    
+
     actualizarSegunTab: function(name, indice){
     	if(this.finCons){
     		 this.store.baseParams.estado = name;
     	     this.load({params:{start:0, limit:this.tam_pag}});
-         }
+
+    	}
     },
-    
+
     stateId:'ProcesoCompra',
-	
+
 	constructor:function(config){
-		
+
 		this.maestro=config.maestro;
-		
+
 		//llama al constructor de la clase padre
 		Phx.vista.ProcesoCompra.superclass.constructor.call(this,config);
 		this.init();
@@ -49,30 +50,33 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
             handler : this.onButtonSolicitud,
             tooltip : '<b> Solicitud</b><br/><b>Reporte de Solicitud de Compra</b>'
         });
-        
+
 		this.addButton('btnCotizacion',{grupo:[0,1,2,3,4], text :'Cotizacion',iconCls:'bdocuments',disabled: true, handler : this.onButtonCotizacion,tooltip : '<b>Cotizacion de solicitud de Compra</b><br/><b>Cotizacion de solicitud de Compra</b>'});
   		this.addButton('btnChequeoDocumentos',{grupo:[0,1,2,3,4], text: 'Documentos',iconCls: 'bchecklist',disabled: true,handler: this.loadCheckDocumentosSol,tooltip: '<b>Documentos del Proceso</b><br/>Subir los documetos requeridos en el proceso seleccionada.'});
         this.addButton('btnCuadroComparativo',{grupo:[0,1,2,3,4], text :'Cuadro Comparativo',iconCls : 'bexcel',disabled: true,handler : this.onCuadroComparativo,tooltip : '<b>Cuadro Comparativo</b><br/><b>Cuadro Comparativo de Cotizaciones</b>'});
 	    this.addButton('btnRevePres',{grupo:[0,1,2,3,4], text:'Rev. Pre.',iconCls: 'balert',disabled:true,handler:this.onBtnRevPres,tooltip: '<b>Revertir Presupuesto</b> Revierte todo el presupuesto no adjudicado para la solicitud.'});
         this.addButton('btnFinPro',{grupo:[0,1,2,3,4], text:'Fin Proc.',iconCls: 'balert',disabled:true,handler:this.onBtnFinPro,tooltip: '<b>Finzalizar Proceso</b> Finaliza el proceso y la solicitud y revierte el presupuesto. No  puede deshacerse'});
         this.addButton('diagrama_gantt',{grupo:[0,1,2,3,4,5], text:'Diagrama Gantt',iconCls: 'bgantt',disabled:true,handler:this.diagramGantt,tooltip: '<b>Diagrama Gantt de proceso macro</b>'});
-        
+
         this.store.baseParams={};
         //coloca filtros para acceso directo si existen
         if(config.filtro_directo){
            this.store.baseParams.filtro_valor = config.filtro_directo.valor;
            this.store.baseParams.filtro_campo = config.filtro_directo.campo;
+         console.log("error ver filtro_campo" );
+
+
         }
         this.store.baseParams.estado = 'pendientes'
         this.load({params:{start:0, limit:this.tam_pag}});
 	    this.iniciarEventos();
 	    this.finCons = true;
-	
+
 	},
-	
-	diagramGantt:function(){  
-		
-		//window.open("../../../sis_workflow/vista/gantt/LineaTiempo.php");         
+
+	diagramGantt:function(){
+
+		//window.open("../../../sis_workflow/vista/gantt/LineaTiempo.php");
             /*
            var data = this.sm.getSelected().data.id_proceso_wf;
            var rec = this.sm.getSelected();
@@ -86,8 +90,8 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
                     rec.data,
                     this.idContenedor,
                     'DinamicGannt');*/
-                    
-                    
+
+
           /* Phx.CP.openEmptyWindows('../../../sis_workflow/vista/gannt/repo.html',
                     'Diagrama Gannt',
                     {
@@ -96,11 +100,11 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
                     },
                     { 'id_proceso_wf' : data },
                     this.idContenedor);*/
-           
 
-           
+
+
            //original ...
-           
+
 
             Phx.CP.loadingShow();
             var data = this.sm.getSelected().data.id_proceso_wf;
@@ -111,13 +115,11 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
                 failure: this.conexionFailure,
                 timeout:this.timeout,
                 scope:this
-            });  
-            
-       
-            
-                   
+            });
+
+
     },
-    
+
     onButtonSolicitud:function(){
         var rec=this.sm.getSelected();
         Ext.Ajax.request({
@@ -127,11 +129,11 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
             failure: this.conexionFailure,
             timeout:this.timeout,
             scope:this
-        });  
+        });
     },
-	
+
 	tam_pag:50,
-			
+
 	Atributos:[
 		{
 			//configuracion del componente
@@ -139,10 +141,10 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
 					labelSeparator:'',
 					inputType:'hidden',
 					name: 'id_proceso_compra',
-					
+
 			},
 			type:'Field',
-			form:true 
+			form:true
 		},
         {
             config:{
@@ -203,7 +205,7 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
         {
             config:{
                 name: 'estados_cotizacion',
-                
+
                 fieldLabel: 'Estados Cot',
                 allowBlank: true,
                 anchor: '80%',
@@ -232,8 +234,8 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
             grid:true,
             form:false
         },
-        
-        
+
+
 		{
             config:{
                     name:'id_depto',
@@ -343,12 +345,12 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
             grid:true,
             form:false
         },
-        
-        
+
+
         {
             config:{
                 name: 'desc_moneda',
-                
+
                 fieldLabel: 'Moneda',
                 allowBlank: true,
                 anchor: '80%',
@@ -391,7 +393,7 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
             grid:true,
             form:true
         },
-        
+
         {
             config:{
                 name: 'fecha_ini_proc',
@@ -399,7 +401,7 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
                 allowBlank: true,
                 anchor: '80%',
                 gwidth: 100,
-                        format: 'd/m/Y', 
+                        format: 'd/m/Y',
                         renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
             },
             type:'DateField',
@@ -506,7 +508,7 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-						format: 'd/m/Y', 
+						format: 'd/m/Y',
 						renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
 			},
 			type:'DateField',
@@ -522,7 +524,7 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-						format: 'd/m/Y', 
+						format: 'd/m/Y',
 						renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
 			},
 			type:'DateField',
@@ -547,7 +549,7 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
 			form:false
 		}
 	],
-	
+
 	title:'Proceso de Compra',
 	ActSave:'../../sis_adquisiciones/control/ProcesoCompra/insertarProcesoCompra',
 	ActDel:'../../sis_adquisiciones/control/ProcesoCompra/eliminarProcesoCompra',
@@ -577,7 +579,7 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
 		'desc_moneda','desc_funcionario',
 		'desc_uo','desc_depto','desc_solicitud','instruc_rpc',
 		'usr_aux','id_moneda','id_funcionario','desc_cotizacion','objeto','estados_cotizacion','numeros_oc','proveedores_cot'
-		
+
 	],
 	rowExpander: new Ext.ux.grid.RowExpander({
 	        tpl : new Ext.Template(
@@ -592,7 +594,7 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
 	            '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Estado Registro:&nbsp;&nbsp;</b> {estado_reg}</p><br>'
 	        )
     }),
-    
+
     arrayDefaultColumHidden:['fecha_mod','usr_reg','usr_mod','estado','numeros_oc','id_depto','id_solicitud','usr_aux','codigo_proceso','fecha_ini_proc','obs_proceso','objeto','num_cotizacion','num_convocatoria','estado_reg','fecha_reg'],
 
 
@@ -602,8 +604,8 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
 	  this.cmpNumTramite = this.getComponente('num_tramite');
 	  this.cmbSolicitud.disable();
 	  this.cmpNumTramite.disable();
-	  
-	  
+
+
 	  this.cmbDepto.on('select',function(){
 	      this.cmbSolicitud.enable();
 	      this.cmbSolicitud.store.baseParams.id_depto =this.cmbDepto.getValue();
@@ -611,37 +613,37 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
 	      this.cmbSolicitud.reset();
 	      this.cmbSolicitud.modificado=true;
 	  },this);
-	  
+
 	  this.cmbSolicitud.on('select',function(cmb,dat,c){
-	      
+
             this.cmpNumTramite.setValue(dat.data.num_tramite)
       },this);
-	  
-	  
-	  
+
+
+
 	},
 	loadCheckDocumentosSol:function() {
             var rec=this.sm.getSelected();
-            
+
             var datos = { nombreVista: this.nombreVista,
             	          gruposBarraTareas: [
             	               {name:'proceso',title:"<H1 align=center><i class=\"fa fa-thumbs-o-down\"></i> del Proceso</h1>",grupo:0,height:0},
                                {name:'legales',title:"<H1 align=center><i class=\"fa fa-eye\"></i> Legales</h1>",grupo:1,height:0}]};
-	
-			
+
+
             Phx.CP.loadWindows(
             	     '../../../sis_workflow/vista/documento_wf/DocumentoWf.php',
                     'Chequear documento del WF',
                     {
                         width:'90%',
                         height:500
-                       
+
                     },
                     Ext.apply(datos, rec.data),
                     this.idContenedor,
                     'DocumentoWf');
     },
-	
+
 	onBtnRevPres:function(){
 	    if(confirm('¿Está seguro de revertir el Presupuesto?. Esta acción no puede deshacerse')){
 	      if(confirm('¿Está realmente seguro?')){
@@ -655,12 +657,12 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
                     timeout:this.timeout,
                     scope:this
                 });
-              
-	        
+
+
 	      }
 	    }
 	},
-	
+
 	onBtnFinPro:function(){
         if(confirm('¿Está seguro Finalizar el Proceso?. Esta acción no puede deshacerse')){
           if(confirm('¿Está realmente seguro?')){
@@ -677,7 +679,7 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
            }
         }
     },
-	
+
 	successRevPre:function(resp){
             Phx.CP.loadingHide();
             var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
@@ -687,7 +689,7 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
                 alert('ocurrio un error durante el proceso')
             }
      },
-	
+
 	 onButtonCotizacion:function() {
             var rec=this.sm.getSelected();
             Phx.CP.loadWindows('../../../sis_adquisiciones/vista/cotizacion/CotizacionAdq.php',
@@ -700,7 +702,7 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
                     this.idContenedor,
                     'CotizacionAdq');
     },
-    
+
 	onCuadroComparativo: function(){
 					var rec=this.sm.getSelected();
          console.debug(rec);
@@ -717,27 +719,27 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
              scope:this
          });
 	   },
-    
-    onButtonNew:function(){         
+
+    onButtonNew:function(){
             Phx.vista.ProcesoCompra.superclass.onButtonNew.call(this);
             this.cmbSolicitud.enable();
-            this.cmbDepto.enable();          
+            this.cmbDepto.enable();
     },
-    onButtonEdit:function(){         
+    onButtonEdit:function(){
             Phx.vista.ProcesoCompra.superclass.onButtonEdit.call(this);
-            this.cmbSolicitud.disable();  
-            this.cmbDepto.disable();        
+            this.cmbSolicitud.disable();
+            this.cmbDepto.disable();
     },
-    
-    
+
+
     preparaMenu:function(n){
       var data = this.getSelectedData();
       var tb =this.tbar;
-        
+
         Phx.vista.ProcesoCompra.superclass.preparaMenu.call(this,n);
         this.getBoton('btnChequeoDocumentos').enable();
         this.getBoton('diagrama_gantt').enable();
-        
+
         if(data.estado=='anulado' || data.estado=='desierto'|| data.estado=='finalizado'){
             this.getBoton('edit').disable();
             this.getBoton('del').disable();
@@ -746,17 +748,17 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
             this.getBoton('btnRevePres').disable();
             this.getBoton('btnFinPro').disable();
             this.getBoton('btnReporte').disable();
-            
+
             if(data.estado=='finalizado'){
-                
+
                 this.getBoton('btnCuadroComparativo').enable();
                 this.getBoton('btnCotizacion').enable();
                 this.getBoton('btnReporte').enable();
-                
-                
+
+
             }
-             
-            
+
+
         }
         else{
             this.getBoton('btnCotizacion').enable();
@@ -764,37 +766,37 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
             this.getBoton('btnRevePres').enable();
             this.getBoton('btnFinPro').enable();
             this.getBoton('btnReporte').enable();
-           
+
         }
-         return tb 
+         return tb
      },
-     
+
      liberaMenu:function(){
         var tb = Phx.vista.ProcesoCompra.superclass.liberaMenu.call(this);
-        if(tb){           
-            this.getBoton('btnCotizacion').setDisabled(true);  
-            this.getBoton('btnChequeoDocumentos').disable(); 
+        if(tb){
+            this.getBoton('btnCotizacion').setDisabled(true);
+            this.getBoton('btnChequeoDocumentos').disable();
             this.getBoton('btnCuadroComparativo').disable();
-            this.getBoton('diagrama_gantt').disable(); 
-            this.getBoton('btnReporte').disable();       
+            this.getBoton('diagrama_gantt').disable();
+            this.getBoton('btnReporte').disable();
         }
        return tb
     },
-    
+
 	sortInfo:{
 		field: 'fecha_reg',
 		direction: 'DESC'
 	},
 	south:
-          { 
+          {
           url:'../../../sis_adquisiciones/vista/solicitud_det/SolicitudVbDet.php',
-          title:'Detalle', 
+          title:'Detalle',
           height:'30%',
           cls:'SolicitudVbDet'
          },
 	bdel:true,
 	bsave:false,
 	bnew:false
-    
+
 })
 </script>

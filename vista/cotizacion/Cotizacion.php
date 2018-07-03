@@ -337,13 +337,33 @@ Phx.vista.Cotizacion=Ext.extend(Phx.gridInterfaz,{
           {
             config:{
                 name: 'total_cotizado',
-                fieldLabel: 'Total Cotizado',
+                fieldLabel: 'Total Cotizado (Ofer.)',
                 allowBlank: false,
                 anchor: '80%',
-                gwidth: 100
+                gwidth: 120,
+                renderer:function (value,p,record){
+                    return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
+                }
             },
             type:'NumberField',
             filters:{pfiltro:'total_cotizado',type:'numeric'},
+            id_grupo:1,
+            grid:true,
+            form:false
+        },
+        {
+            config:{
+                name: 'total_adjudicado',
+                fieldLabel: 'Total Adjudicación',
+                allowBlank: false,
+                anchor: '80%',
+                gwidth: 100,
+                renderer:function (value,p,record){
+                    return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
+                    }
+            },
+            type:'NumberField',
+            filters:{pfiltro:'total_adjudicado',type:'numeric'},
             id_grupo:1,
             grid:true,
             form:false

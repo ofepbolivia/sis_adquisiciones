@@ -19,34 +19,39 @@ class MODCotizacionDet extends MODbase{
 		$this->transaccion='ADQ_CTD_SEL';
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
 			
-		$this->setParametro('id_cotizacion','id_cotizacion','int4');	
+		$this->setParametro('id_cotizacion','id_cotizacion','int4');
+
+       
 		//Definicion de la lista del resultado del query
-		$this->captura('id_cotizacion_det','int4');
-		$this->captura('estado_reg','varchar');
-		$this->captura('id_cotizacion','int4');
-		$this->captura('precio_unitario','numeric');
-		$this->captura('cantidad_adju','numeric');
-		$this->captura('cantidad_coti','numeric');
-		$this->captura('obs','varchar');
-		$this->captura('id_solicitud_det','int4');
-		$this->captura('desc_solicitud_det','varchar');
-		$this->captura('fecha_reg','timestamp');
-		$this->captura('id_usuario_reg','int4');
-		$this->captura('fecha_mod','timestamp');
-		$this->captura('id_usuario_mod','int4');
-		$this->captura('usr_reg','varchar');
-		$this->captura('usr_mod','varchar');
-		
-		
-		$this->captura('desc_centro_costo','text');
+        $this->captura('id_cotizacion_det','int4');
+        $this->captura('estado_reg','varchar');
+        $this->captura('id_cotizacion','int4');
+        $this->captura('precio_unitario','numeric');
+        $this->captura('cantidad_adju','numeric');
+        $this->captura('cantidad_coti','numeric');
+        $this->captura('obs','varchar');
+        $this->captura('id_solicitud_det','int4');
+        $this->captura('desc_solicitud_det','varchar');
+        $this->captura('fecha_reg','timestamp');
+        $this->captura('id_usuario_reg','int4');
+        $this->captura('fecha_mod','timestamp');
+        $this->captura('id_usuario_mod','int4');
+        $this->captura('usr_reg','varchar');
+        $this->captura('usr_mod','varchar');
+
+
+        $this->captura('desc_centro_costo','text');
         $this->captura('cantidad_sol','integer');
         $this->captura('precio_unitario_sol','numeric');
-        $this->captura('descripcion_sol','text'); 
+        $this->captura('descripcion_sol','text');
         $this->captura('precio_unitario_mb','numeric');
         $this->captura('precio_unitario_mb_sol','numeric');
         $this->captura('revertido_mb','numeric');
         $this->captura('revertido_mo','numeric');
-		
+        $this->captura('total_adjudicado','numeric');
+        $this->captura('total_cotizado','numeric');
+        $this->captura('total_solicitado','numeric');
+
 	
 		
 		//Ejecuta la instruccion

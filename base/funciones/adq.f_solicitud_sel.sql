@@ -262,12 +262,14 @@ BEGIN
 
 						left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
                         left join param.vproveedor pro on pro.id_proveedor = sol.id_proveedor
+
                         left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud
 
                         '||v_inner||'
                         where  tsd.estado_reg = ''activo'' and '||v_filtro;
 
 			--Definicion de la respuesta
+
 			v_consulta =v_consulta||v_parametros.filtro;
 			v_consulta =v_consulta||' group by sol.id_solicitud, usu1.cuenta, usu2.cuenta,
              fun.desc_funcionario1, funa.desc_funcionario1, uo.codigo, uo.nombre_unidad,
@@ -402,6 +404,7 @@ BEGIN
 
 						left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
                         left join param.vproveedor pro on pro.id_proveedor = sol.id_proveedor
+
 			left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud
 				       '||v_inner||'
 

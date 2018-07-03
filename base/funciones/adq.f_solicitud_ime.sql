@@ -1,6 +1,4 @@
 --------------- SQL ---------------
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION adq.f_solicitud_ime (
   p_administrador integer,
   p_id_usuario integer,
@@ -333,7 +331,8 @@ BEGIN
             COALESCE(v_parametros.precontrato,'no'),
             trim(both ' ' from v_parametros.nro_po),
             v_parametros.fecha_po,
-			v_parametros.prioridad
+			      v_parametros.prioridad
+
 			)RETURNING id_solicitud into v_id_solicitud;
 
 
