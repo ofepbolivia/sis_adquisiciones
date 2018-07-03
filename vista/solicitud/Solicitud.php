@@ -6,12 +6,37 @@
 *@date 19-02-2013 12:12:51
 *@description Archivo con la interfaz de usuario que permite la ejecucion de todas las funcionalidades del sistema
 */
+include_once ('../../media/styles.php');
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
 Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
-   
+
+    fwidth: '85%',
+    fheight: '65%',
+    viewConfig: {
+        stripeRows: false,
+        getRowClass: function(record) {
+            if(record.data.prioridad == 'C'){
+                return 'prioridad_menor';
+            }else if(record.data.prioridad == 'B'){
+                return 'prioridad_importanteB';
+            }else if(record.data.prioridad == 'AOG'){
+                return 'prioridad_importanteA';
+            }else if(record.data.prioridad == 'A'){
+                return 'prioridad_medio';
+            }
+        }/*,
+        listener: {
+            render: this.createTooltip
+        },*/
+
+    },
 	constructor:function(config){
+        this.tbarItems = ['-',
+            this.cmbGestion,'-'
+
+        ];
 		this.maestro=config.maestro;
     	//llama al constructor de la clase padre
 		
@@ -62,11 +87,71 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
                 tooltip: 'Subir archivo con el detalle de gasto'
             }
         );
+
+        //(f.e.a)Filtro por gestion
+        var fecha = new Date();
+
+        Ext.Ajax.request({
+            url:'../../sis_parametros/control/Gestion/obtenerGestionByFecha',
+            params:{fecha:fecha.getDate()+'/'+(fecha.getMonth()+1)+'/'+fecha.getFullYear()},
+            success:function(resp){
+                var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                this.cmbGestion.setValue(reg.ROOT.datos.id_gestion);
+                this.cmbGestion.setRawValue(reg.ROOT.datos.anho);
+                this.store.baseParams.id_gestion=reg.ROOT.datos.id_gestion;
+                this.load({params:{start:0, limit:this.tam_pag}});
+            },
+            failure: this.conexionFailure,
+            timeout:this.timeout,
+            scope:this
+        });
+
+        this.cmbGestion.on('select',this.capturarEventos, this);
         
         
        
 	},
-	
+
+    capturarEventos: function () {
+        this.store.baseParams.id_gestion=this.cmbGestion.getValue();
+        this.load({params:{start:0, limit:this.tam_pag}});
+    },
+
+    cmbGestion : new Ext.form.ComboBox({
+        name: 'gestion',
+        id: 'gestion_reg',
+        fieldLabel: 'Gestion',
+        allowBlank: true,
+        emptyText:'Gestion...',
+        blankText: 'Año',
+        editable:false,
+        store:new Ext.data.JsonStore(
+            {
+                url: '../../sis_parametros/control/Gestion/listarGestion',
+                id: 'id_gestion',
+                root: 'datos',
+                sortInfo:{
+                    field: 'gestion',
+                    direction: 'DESC'
+                },
+                totalProperty: 'total',
+                fields: ['id_gestion','gestion'],
+                // turn on remote sorting
+                remoteSort: true,
+                baseParams:{par_filtro:'gestion'}
+            }),
+        valueField: 'id_gestion',
+        triggerAction: 'all',
+        displayField: 'gestion',
+        hiddenName: 'id_gestion',
+        mode:'remote',
+        pageSize:50,
+        queryDelay:500,
+        listWidth:'280',
+        hidden:false,
+        width:80
+    }),
+
 	diagramGantt: function (){			
 			var data=this.sm.getSelected().data.id_proceso_wf;
 			Phx.CP.loadingShow();
@@ -139,6 +224,95 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
         });
 		this.tbar.add(this.menuAdqGantt);
     },
+
+    Grupos : [{
+        /*layout: 'column',
+        border: false,
+        defaults: {
+            border: false
+        },
+        items:[
+            {
+                xtype: 'fieldset',*/
+                border: false,
+                //split: true,
+                layout: 'column',
+                //region: 'north',
+                //autoScroll: true,
+                //autoHeight: true,
+                //collapseFirst : false,
+
+                //width: '100%',
+                //autoHeight: true,
+                //padding: '0 10 0 10',
+                items:[
+                    {
+                        bodyStyle: 'padding-right:5px;',
+                        columnWidth: .32,
+                        layout: 'fit',
+                        border: false,
+                        autoHeight: true,
+                        items: [
+                            {
+                                xtype: 'fieldset',
+                                //frame: true,
+                                layout: 'form',
+                                title: ' TIPO ',
+                                width: '32%',
+                                height: 250,
+                                padding: '0 0 0 10',
+                                bodyStyle: 'padding-left:5px;',
+                                id_grupo: 0,
+                                items: []
+                            }
+                        ]
+                    },
+
+                    {
+                        bodyStyle: 'padding-right:5px;',
+                        columnWidth: .32,
+                        layout: 'fit',
+                        border: false,
+                        autoHeight: true,
+                        items: [
+
+                            {
+                                xtype: 'fieldset',
+
+                                layout: 'form',
+                                title: 'DATOS BÁSICOS',
+                                width: '32%',
+                                height: 250,
+                                padding: '0 0 0 10',
+                                bodyStyle: 'padding-left:5px;',
+                                id_grupo: 1,
+                                items: [],
+                            }
+                        ]
+                    },
+
+                    {
+                        bodyStyle: 'padding-right:2px;',
+                        columnWidth: .32,
+                        layout: 'fit',
+                        border: false,
+                        autoHeight: true,
+                        items: [{
+                            xtype: 'fieldset',
+                            //frame: true,
+                            layout: 'form',
+                            title: ' TIEMPO ',
+                            width: '32%',
+                            height: 250,
+                            padding: '0 0 0 10',
+                            bodyStyle: 'padding-left:2px;',
+                            id_grupo: 2,
+                            items: []
+                        }]
+                    }
+                ]
+            //}]
+    }],
 	
 	arrayStore :{
                     'Bien':[
@@ -262,7 +436,7 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
           {
             config:{
                 name: 'tipo_concepto',
-                fieldLabel: 'Subtipo',
+                fieldLabel: 'Datos Solicitud',
                 allowBlank: false,
                 emptyText:'Subtipo...',
                 renderer:function (value, p, record){
@@ -274,7 +448,11 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
                         dato = (dato==''&&value=='vehiculo')?'Vehiculos':dato;
                         dato = (dato==''&&value=='inmueble')?'Inmuebles':dato;
                         dato = (dato==''&&value=='bien')?'Bienes':dato;
-                        return String.format('{0}', dato);
+                        //return String.format('{0}', dato);
+                        return   '<div class="x-combo-list-item"><p><b>Tipo: </b><b style="color: #274d80;">'+dato+'</b>'+
+                        '<p><b>Moneda: <span style="color:#274d80;">'+record.data['desc_moneda']+
+                        '</span></b><p><b>Fecha Sol.: <span style="color:#274d80;">'+record.data['fecha_soli'].dateFormat('d/m/Y')+'</span></b></p>' +
+                        '</div>';
                     },
                 
                 store:new Ext.data.ArrayStore({
@@ -289,7 +467,10 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
                 resizable:true,
                 listWidth:'500',
                 mode: 'local',
-                wisth: 380
+                //width: 380,
+                anchor: '95%',
+                gwidth:150,
+                msgTarget: 'side'
                 },
             type:'ComboBox',
             filters:{pfiltro:'sol.tipo_concepto',type:'string'},
@@ -306,7 +487,8 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
                 fieldLabel:'Moneda',
                 gdisplayField:'desc_moneda',//mapea al store del grid
                 gwidth:50,
-                 renderer:function (value, p, record){return String.format('{0}', record.data['desc_moneda']);}
+                renderer:function (value, p, record){return String.format('{0}', record.data['desc_moneda']);},
+                anchor: '95%'
              },
             type:'ComboRec',
             id_grupo:1,
@@ -314,7 +496,7 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
                 pfiltro:'mon.codigo',
                 type:'string'
             },
-            grid:true,
+            grid:false,
             form:false
           },	     
 		
@@ -325,13 +507,14 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
                 allowBlank: false,
                 disabled: false,
                 gwidth: 100,
-                        format: 'd/m/Y', 
-                        renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
+                format: 'd/m/Y',
+                renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''},
+                anchor: '95%'
             },
             type:'DateField',
             filters:{pfiltro:'sol.fecha_soli',type:'date'},
             id_grupo:1,
-            grid:true,
+            grid:false,
             form:false
         },
 		{
@@ -346,7 +529,8 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
 	   				width:250,
    			        gwidth:180,
 	   				baseParams:{estado:'activo',codigo_subsistema:'ADQ'},//parametros adicionales que se le pasan al store
-	      			renderer:function (value, p, record){return String.format('{0}', record.data['desc_depto']);}
+	      			renderer:function (value, p, record){return String.format('{0}', record.data['desc_depto']);},
+                    anchor: '95%'
    			},
    			//type:'TrigguerCombo',
    			type:'ComboRec',
@@ -375,13 +559,20 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
        		    name:'id_funcionario',
        		     hiddenName: 'id_funcionario',
    				origen:'FUNCIONARIOCAR',
-   				fieldLabel:'Funcionario',
+   				fieldLabel:'Datos Solicitante',
    				allowBlank:false,
-                gwidth:200,
+                gwidth:270,
    				valueField: 'id_funcionario',
    			    gdisplayField: 'desc_funcionario',
    			    baseParams: { es_combo_solicitud : 'si' },
-      			renderer:function(value, p, record){return String.format('{0}', record.data['desc_funcionario']);}
+      			renderer:function(value, p, record){
+       		        //return String.format('{0}', record.data['desc_funcionario']);
+                    return   '<div class="x-combo-list-item"><p><b>Resp: </b><b style="color:#274d80;">'+record.data['desc_funcionario']+'</b>'+
+                             '<p><b>UO: <span style="color:#274d80;">'+record.data['desc_uo']+
+                             '</span></b><p><b>Prioridad:<span style="color:red;"> '+(record.data['prioridad']?record.data['prioridad']:'')+'</span></b></p></div>';
+       		    },
+                anchor: '95%'
+
        	     },
    			type:'ComboRec',//ComboRec
    			id_grupo:0,
@@ -408,7 +599,7 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
 		        pfiltro:'uo.codigo#uo.nombre_unidad',
 				type:'string'
 			},
-   		    grid:true,
+   		    grid:false,
    			form:false
    	      },
         {
@@ -520,6 +711,7 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
 				listWidth:280,
 				minChars: 2,
 				gwidth: 170,
+                anchor: '95%',
 				renderer: function(value, p, record) {
 					return String.format('{0}', record.data['desc_categoria_compra']);
 				},
@@ -546,7 +738,8 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
                 lazyRender: true,
                 mode: 'local',
                 gwidth: 100,
-                store: ['no_necesita','contrato_nuevo','contrato_adhesion','ampliacion_contrato']
+                store: ['no_necesita','contrato_nuevo','contrato_adhesion','ampliacion_contrato'],
+                anchor: '95%'
             },
             type: 'ComboBox',
             id_grupo: 2,
@@ -559,6 +752,32 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
             grid:false,
             form:true
         },
+        {
+            config:{
+                name:'prioridad',
+                fieldLabel:'Prioridad',
+                allowBlank:true,
+                emptyText:'Elija una Prioridad...',
+
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender:true,
+                mode: 'local',
+                anchor: '100%',
+                store:['A','B','C','AOG'],
+                gwidth: 70,
+                anchor: '95%',
+                renderer: function(value, p, record) {
+                    return String.format('<p style="text-align: center;">{0}</p>', record.data['prioridad']?record.data['prioridad']:'');
+                }
+
+            },
+            type:'ComboBox',
+            id_grupo:2,
+            grid:false,
+            form:true
+
+        },
          {
             config:{
                 name:'id_proveedor',
@@ -570,7 +789,9 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
                 gwidth:200,
                 valueField: 'id_proveedor',
                 gdisplayField: 'desc_proveedor',
-                renderer:function(value, p, record){return String.format('{0}', record.data['desc_proveedor']);}
+                renderer:function(value, p, record){return String.format('{0}', record.data['desc_proveedor']);},
+                msgTarget: 'side',
+                anchor: '95%'
              },
             type:'ComboRec',//ComboRec
             id_grupo:0,
@@ -587,7 +808,9 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:500
+				maxLength:500,
+                msgTarget: 'side',
+                anchor: '95%'
 			},
 			type:'TextArea',
 			filters:{pfiltro:'sol.justificacion',type:'string'},
@@ -603,7 +826,9 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:255
+				maxLength:255,
+                msgTarget: 'side',
+                anchor: '95%'
 			},
 			type:'TextArea',
 			filters:{pfiltro:'sol.lugar_entrega',type:'string'},
@@ -639,7 +864,8 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
                 width: 100,
                 gwidth: 100,
                 minValue: 1,
-                maxLength: 10
+                maxLength: 10,
+                anchor: '95%'
             },
             type: 'NumberField',
             filters: { pfiltro: 'sold.cantidad', type: 'numeric' },
@@ -884,7 +1110,8 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
 		'update_enable','codigo_poa','obs_poa','contador_estados',
         'nro_po',
         {name:'fecha_po', type: 'date',dateFormat:'Y-m-d'},
-        {name:'importe_total', type: 'numeric'}
+        {name:'importe_total', type: 'numeric'},
+        'prioridad'
 	],
 	
 	arrayDefaultColumHidden:['id_fecha_reg','id_fecha_mod',
@@ -895,7 +1122,7 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
 	
 	
 	
-	rowExpander: new Ext.ux.grid.RowExpander({
+	/*rowExpander: new Ext.ux.grid.RowExpander({
 		        tpl : new Ext.Template(
 		            '<br>',
 		            '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Número de solicitud:&nbsp;&nbsp;</b> {numero}</p>',
@@ -910,7 +1137,7 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
 		            '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Observaciones de área de presupuestos:&nbsp;&nbsp;</b> {obs_presupuestos}</p><br>'
 		            
 		        )
-	    }),
+	    }),*/
     loadCheckDocumentosSolWf:function() {
             var rec=this.sm.getSelected();
             rec.data.nombreVista = this.nombreVista;

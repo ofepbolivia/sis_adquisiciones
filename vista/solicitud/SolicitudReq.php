@@ -248,9 +248,9 @@ Phx.vista.SolicitudReq = {
        this.Cmp.precontrato.disable();
        this.Cmp.tipo_concepto.disable();
        this.Cmp.id_moneda.disable();
-
-
        Phx.vista.SolicitudReq.superclass.onButtonEdit.call(this);
+       this.Cmp.id_funcionario.label.update('Funcionario Solicitante');
+       this.Cmp.tipo_concepto.label.update('Tipo');
        this.Cmp.id_funcionario.store.baseParams.fecha = this.cmpFechaSoli.getValue().dateFormat(this.cmpFechaSoli.format);
        //this.Cmp.fecha_soli.fireEvent('change');  
 

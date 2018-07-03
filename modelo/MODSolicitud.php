@@ -93,7 +93,8 @@ class MODSolicitud extends MODbase{
 		$this->captura('fecha_po','date');
 
 		$this->captura('importe_total','numeric');
-		
+		$this->captura('prioridad','varchar');
+
 		
 		  
 		
@@ -153,6 +154,8 @@ class MODSolicitud extends MODbase{
 		$this->setParametro('nro_po','nro_po','varchar');
 		$this->setParametro('fecha_po','fecha_po','varchar');
 
+		$this->setParametro('prioridad','prioridad','varchar');
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -202,6 +205,8 @@ class MODSolicitud extends MODbase{
 
 		$this->setParametro('nro_po','nro_po','varchar');
 		$this->setParametro('fecha_po','fecha_po','date');
+
+        $this->setParametro('prioridad','prioridad','varchar');
 
 		
 		//Ejecuta la instruccion
@@ -548,10 +553,7 @@ class MODSolicitud extends MODbase{
      
         		
 	function insertarSolicitudCompleta(){
-		
-		
-		
-		
+
 		//Abre conexion con PDO
 		$cone = new conexion();
 		$link = $cone->conectarpdo();
@@ -601,6 +603,8 @@ class MODSolicitud extends MODbase{
 
 			$this->setParametro('nro_po','nro_po','varchar');
 			$this->setParametro('fecha_po','fecha_po','date');
+
+            $this->setParametro('prioridad','prioridad','varchar');
 
 			//Ejecuta la instruccion
             $this->armarConsulta();

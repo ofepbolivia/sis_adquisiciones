@@ -18,7 +18,8 @@ header("content-type: text/javascript; charset=UTF-8");
 		autoScroll: false,
 		breset: false,
 		labelSubmit: '<i class="fa fa-check"></i> Siguiente',
-		
+
+
 		constructor:function(config){
 
 			//declaracion de eventos
@@ -92,7 +93,7 @@ header("content-type: text/javascript; charset=UTF-8");
 					sysorigen:'sis_contabilidad',
 					fieldLabel: 'Orden Trabajo',
 					origen:'OT',
-					allowBlank:true
+					allowBlank:false
 				}),
 
 				'descripcion': new Ext.form.TextArea({
@@ -480,93 +481,98 @@ header("content-type: text/javascript; charset=UTF-8");
 					}]
 			});
 		},
-		buildGrupos: function(){
-			this.Grupos = [{
-				layout: 'border',
-				border: false,
-				frame:true,
-				items:[
-					{
-						xtype: 'fieldset',
-						border: false,
-						split: true,
-						layout: 'column',
-						region: 'north',
-						autoScroll: true,
-						autoHeight: true,
-						collapseFirst : false,
-						collapsible: true,
-						width: '100%',
-						//autoHeight: true,
-						padding: '0 0 0 10',
-						items:[
-							{
-								bodyStyle: 'padding-right:5px;',
 
-								autoHeight: true,
-								border: false,
-								items:[
-									{
-										xtype: 'fieldset',
-										frame: true,
-										border: false,
-										layout: 'form',
-										title: 'Tipo',
-										width: '33%',
+        buildGrupos: function(){
+            this.Grupos = [{
+                layout: 'border',
+                border: true,
+                frame:true,
+                //labelAlign: 'top',
+                items:[
+                    {
+                        xtype: 'fieldset',
+                        border: false,
+                        split: true,
+                        layout: 'column',
+                        region: 'north',
+                        autoScroll: true,
+                        autoHeight: true,
+                        collapseFirst : false,
+                        collapsible: true,
+                        width: '100%',
+                        padding: '0 0 0 10',
+                        items:[
+                            {
+                                bodyStyle: 'padding-right:5px;',
 
-										//margins: '0 0 0 5',
-										padding: '0 0 0 10',
-										bodyStyle: 'padding-left:5px;',
-										id_grupo: 0,
-										items: [],
-									}]
-							},
-							{
-								bodyStyle: 'padding-right:5px;',
+                                border: false,
+                                autoHeight: true,
+                                columnWidth: .32,
+                                items: [{
+                                    xtype: 'fieldset',
+                                    //frame: true,
+                                    layout: 'form',
+                                    title: ' TIPO ',
+                                    //width: '33%',
 
-								border: false,
-								autoHeight: true,
-								items: [{
-									xtype: 'fieldset',
-									frame: true,
-									layout: 'form',
-									title: ' Datos básicos ',
-									width: '33%',
-									border: false,
-									//margins: '0 0 0 5',
-									padding: '0 0 0 10',
-									bodyStyle: 'padding-left:5px;',
-									id_grupo: 1,
-									items: [],
-								}]
-							},
-							{
-								bodyStyle: 'padding-right:2px;',
+                                    //border: false,
+                                    //margins: '0 0 0 5',
+                                    padding: '0 0 0 10',
+                                    bodyStyle: 'padding-left:5px;',
+                                    id_grupo: 0,
+                                    items: [],
+                                }]
+                            },
+                            {
+                                bodyStyle: 'padding-right:5px;',
 
-								border: false,
-								autoHeight: true,
-								items: [{
-									xtype: 'fieldset',
-									frame: true,
-									layout: 'form',
-									title: 'Tiempo',
-									width: '33%',
-									border: false,
-									//margins: '0 0 0 5',
-									padding: '0 0 0 10',
-									bodyStyle: 'padding-left:2px;',
-									id_grupo: 2,
-									items: [],
-								}]
-							}
-						]
-					},
-					this.megrid
-				]
-			}];
+                                autoHeight: true,
+                                border: false,
+                                columnWidth: .32,
+                                items:[
+                                    {
+                                        xtype: 'fieldset',
+                                        /*frame: true,
+                                        border: false,*/
+                                        layout: 'form',
+                                        title: ' DATOS BÁSICOS ',
+                                        //width: '33%',
+
+                                        //margins: '0 0 0 5',
+                                        padding: '0 0 0 10',
+                                        bodyStyle: 'padding-left:5px;',
+                                        id_grupo: 1,
+                                        items: [],
+                                    }]
+                            },
+                            {
+                                bodyStyle: 'padding-right:2px;',
+
+                                border: true,
+                                autoHeight: true,
+                                columnWidth: .32,
+                                items: [{
+                                    xtype: 'fieldset',
+                                    //frame: true,
+                                    layout: 'form',
+                                    title: 'TIEMPO',
+                                    //width: '33%',
+                                    //border: false,
+                                    //margins: '0 0 0 5',
+                                    padding: '0 0 0 10',
+                                    bodyStyle: 'padding-left:2px;',
+                                    id_grupo: 2,
+                                    items: [],
+                                }]
+                            }
+                        ]
+                    },
+                    this.megrid
+                ]
+            }];
 
 
-		},
+        },
 
 		loadValoresIniciales:function()
 		{
@@ -648,7 +654,8 @@ header("content-type: text/javascript; charset=UTF-8");
 					lazyRender: true,
 					resizable:true,
 					mode: 'local',
-					width: '80%'
+					width: '80%',
+                    msgTarget: 'side'
 				},
 				type:'ComboBox',
 				id_grupo:0,
@@ -662,8 +669,10 @@ header("content-type: text/javascript; charset=UTF-8");
 					fieldLabel:'Funcionario Solicitante',
 					allowBlank: false,
 					valueField: 'id_funcionario',
-					width: '80%',
-					baseParams: { es_combo_solicitud : 'si' }
+					width: '92%',
+                    anchor: '79.5%',
+					baseParams: { es_combo_solicitud : 'si' },
+                    msgTarget: 'side'
 				},
 				type: 'ComboRec',//ComboRec
 				id_grupo: 1,
@@ -679,7 +688,9 @@ header("content-type: text/javascript; charset=UTF-8");
 					fieldLabel: 'Depto',
 					disabled: true,
 					width: '80%',
+                    anchor: '79.5%',
 					baseParams: { estado:'activo', codigo_subsistema: 'ADQ' },
+                    msgTarget: 'side'
 				},
 				type:'ComboRec',
 				id_grupo: 1,
@@ -719,7 +730,9 @@ header("content-type: text/javascript; charset=UTF-8");
 					listWidth:280,
 					minChars: 2,
 					width: '80%',
-					tpl: '<tpl for="."><div class="x-combo-list-item"><p>{nombre}</p>Codigo: <strong>{codigo}</strong> </div></tpl>'
+					tpl: '<tpl for="."><div class="x-combo-list-item"><p>{nombre}</p>Codigo: <strong>{codigo}</strong> </div></tpl>',
+                    msgTarget: 'side'
+
 				},
 				type: 'ComboBox',
 				id_grupo: 0,
@@ -732,7 +745,9 @@ header("content-type: text/javascript; charset=UTF-8");
 					origen:'MONEDA',
 					allowBlank: false ,
 					width: '80%',
-					fieldLabel: 'Moneda'
+                    msgTarget: 'side',
+					fieldLabel: 'Moneda',
+                    msgTarget: 'side'
 				},
 				type: 'ComboRec',
 				id_grupo: 0,
@@ -746,8 +761,10 @@ header("content-type: text/javascript; charset=UTF-8");
 					allowBlank: false,
 					disabled: false,
 					readOnly: false,
-					width: 105,
-					format: 'd/m/Y'
+					width: 177,
+					format: 'd/m/Y',
+                    msgTarget: 'side',
+                    msgTarget: 'side'
 				},
 				type: 'DateField',
 				id_grupo: 2,
@@ -762,7 +779,8 @@ header("content-type: text/javascript; charset=UTF-8");
 					allowBlank: false,
 					disabled: false,
 					format: 'd/m/Y',
-					width: 105
+					width: 177,
+                    msgTarget: 'side'
 				},
 				type:'DateField',
 				id_grupo: 2,
@@ -775,9 +793,10 @@ header("content-type: text/javascript; charset=UTF-8");
 					qtip: '¿Después de cuantos días calendario de emitida  la orden de compra se hara la entrega de los bienes?. EJM. Quedara de esta forma en la orden de Compra:  (Tiempo de entrega: X días calendario  a partir del dia siguiente de emitida la presente orden)',
 					allowBlank: false,
 					allowDecimals: false,
-					width: 100,
+					width: 177,
 					minValue:1,
-					maxLength:10
+					maxLength:10,
+                    msgTarget: 'side'
 				},
 				type:'NumberField',
 				filters:{pfiltro:'sold.dias_plazo_entrega',type:'numeric'},
@@ -789,11 +808,12 @@ header("content-type: text/javascript; charset=UTF-8");
 					name:'id_proveedor',
 					hiddenName: 'id_proveedor',
 					origen:'PROVEEDOR',
-					fieldLabel:'Proveedor Precotizacion',
+					fieldLabel:'Proveedor Precotización',
 					allowBlank:false,
 					tinit:false,
 					width: '80%',
-					valueField: 'id_proveedor'
+					valueField: 'id_proveedor',
+                    msgTarget: 'side'
 				},
 				type:'ComboRec',//ComboRec
 				id_grupo: 0,
@@ -804,7 +824,10 @@ header("content-type: text/javascript; charset=UTF-8");
 					name: 'correo_proveedor',
 					fieldLabel: 'Email Proveedor',
 					qtip: 'El correo del proveedor es necesario para el envió de notificaciones (como la orden de compra o invitación), asegúrese de que sea el correcto',
-					allowBlank: true
+					allowBlank: true,
+                    msgTarget: 'side',
+                    width: '83%',
+                    vtype: 'email'
 				},
 				type: 'TextField',
 				id_grupo: 0,
@@ -813,11 +836,12 @@ header("content-type: text/javascript; charset=UTF-8");
 			{
 				config:{
 					name: 'justificacion',
-					fieldLabel: 'Justificacion/Objeto del Contrato',
+					fieldLabel: 'Justificación Compra',
 					qtip:'Justifique, ¿por que la necesidad de esta compra?',
 					allowBlank: false,
-					width: '100%',
-					maxLength:500
+					width: '92%',
+					maxLength:500,
+                    msgTarget: 'side'
 				},
 				type:'TextArea',
 				id_grupo: 1,
@@ -829,8 +853,9 @@ header("content-type: text/javascript; charset=UTF-8");
 					fieldLabel: 'Lugar de Entrega',
 					qtip:'Proporcionar una buena descripcion para informar al proveedor, Ej. Entrega en oficinas de aeropuerto Cochabamba, Jaime Rivera #28',
 					allowBlank: false,
-					width: '100%',
-					maxLength:255
+					width: '92%',
+					maxLength:255,
+                    msgTarget: 'side'
 				},
 				type:'TextArea',
 				id_grupo: 1,
@@ -848,7 +873,9 @@ header("content-type: text/javascript; charset=UTF-8");
 					lazyRender: true,
 					mode: 'local',
 					gwidth: 100,
-					store: ['no_necesita','contrato_nuevo','contrato_adhesion','ampliacion_contrato']
+					store: ['no_necesita','contrato_nuevo','contrato_adhesion','ampliacion_contrato'],
+                    anchor: '84%',
+                    msgTarget: 'side'
 				},
 				type: 'ComboBox',
 				id_grupo: 2,
@@ -861,6 +888,29 @@ header("content-type: text/javascript; charset=UTF-8");
 				grid:false,
 				form:true
 			},
+            {
+                config:{
+                    name:'prioridad',
+                    fieldLabel:'Prioridad',
+                    allowBlank:false,
+                    emptyText:'Elija una Prioridad...',
+
+                    typeAhead: true,
+                    triggerAction: 'all',
+                    lazyRender:true,
+                    mode: 'local',
+                    anchor: '84%',
+                    width: '100%',
+                    store:['A','B','C','AOG'],
+                    msgTarget: 'side'
+
+                },
+                type:'ComboBox',
+                id_grupo:2,
+                grid:true,
+                form:true
+
+            },
 			{
 				config:{
 					name: 'nro_po',
@@ -868,8 +918,8 @@ header("content-type: text/javascript; charset=UTF-8");
 					qtip:'Ingrese el nro. de P.O.',
 					allowBlank: true,
 					disabled: false,
-					anchor: '80%',
-					gwidth: 100,
+                    anchor: '84%',
+					gwidth: 177,
 					maxLength:255
 				},
 				type:'TextField',
@@ -884,7 +934,8 @@ header("content-type: text/javascript; charset=UTF-8");
 					fieldLabel: 'Fecha de P.O.',
 					qtip:'Fecha del P.O.',
 					allowBlank: true,
-					gwidth: 100,
+					gwidth: 177,
+                    anchor: '84%',
 					format: 'd/m/Y',
 					renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
 				},

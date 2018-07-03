@@ -16,7 +16,7 @@ Phx.vista.SolicitudReqDet = {
     bdel:false,*/
 	require:'../../../sis_adquisiciones/vista/solicitud_det/SolicitudDet.php',
 	requireclase:'Phx.vista.SolicitudDet',
-	title:'Solicitud',
+	title:'Detalle Solicitud',
 	nombreVista: 'solicitudDetVb',
 	
 	constructor: function(config) {

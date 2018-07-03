@@ -11,7 +11,7 @@ header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
 Phx.vista.SolicitudDet=Ext.extend(Phx.gridInterfaz,{
-
+    fheight: '65%',
 	constructor:function(config){
 		this.maestro=config.maestro;
     	//llama al constructor de la clase padre
@@ -50,8 +50,11 @@ Phx.vista.SolicitudDet=Ext.extend(Phx.gridInterfaz,{
                     allowBlank:false,
                     gdisplayField:'desc_centro_costo',//mapea al store del grid
                     gwidth:200,
+                    anchor: '90%',
+                    listWidth:460,
                     baseParams:{filtrar:'grupo_ep'},
-                    renderer:function (value, p, record){return String.format('{0}', record.data['desc_centro_costo']);}
+                    renderer:function (value, p, record){return String.format('{0}', record.data['desc_centro_costo']);},
+                    msgTarget: 'side'
                 },
             type:'ComboRec',
             id_grupo:0,
@@ -86,7 +89,7 @@ Phx.vista.SolicitudDet=Ext.extend(Phx.gridInterfaz,{
                forceSelection:true,
                typeAhead: false,
                triggerAction: 'all',
-                listWidth:500,
+               listWidth:460,
                resizable:true,
                lazyRender:true,
                mode:'remote',
@@ -95,9 +98,11 @@ Phx.vista.SolicitudDet=Ext.extend(Phx.gridInterfaz,{
                width:350,
                gwidth:200,
                minChars:2,
+               anchor: '90%',
                qtip:'Si el conceto de gasto que necesita no existe por favor  comuniquese con el área de presupuestos para solictar la creación',
                tpl: '<tpl for="."><div class="x-combo-list-item"><p><b>{desc_ingas}</b></p><strong>{tipo}</strong><p>PARTIDA: {desc_partida}</p></div></tpl>',
-               renderer:function(value, p, record){return String.format('{0}', record.data['desc_concepto_ingas']);}
+               renderer:function(value, p, record){return String.format('{0}', record.data['desc_concepto_ingas']);},
+               msgTarget: 'side'
             },
             type:'ComboBox',
             filters:{pfiltro:'cig.desc_ingas',type:'string'},
@@ -112,12 +117,14 @@ Phx.vista.SolicitudDet=Ext.extend(Phx.gridInterfaz,{
                     sysorigen:'sis_contabilidad',
                     fieldLabel: 'Orden Trabajo',
 	       		    origen:'OT',
-                    allowBlank:true,
+                    allowBlank:false,
                     renderer:function(value, p, record){return String.format('{0}', record.data['desc_orden_trabajo']);},
                     baseParams:{par_filtro:'desc_orden#motivo_orden'},
                     gdisplayField: 'desc_orden_trabajo',
-                    
-                    gwidth:200
+                    gwidth:200,
+                    listWidth:460,
+                    anchor: '90%',
+                    msgTarget: 'side'
             },
             type:'ComboRec',
             id_grupo:1,
@@ -131,9 +138,10 @@ Phx.vista.SolicitudDet=Ext.extend(Phx.gridInterfaz,{
 				name: 'descripcion',
 				fieldLabel: 'descripcion',
 				allowBlank: false,
-				anchor: '80%',
+				anchor: '90%',
 				gwidth: 250,
-				maxLength:5000
+				maxLength:5000,
+                msgTarget: 'side'
 			},
 			type:'TextArea',
 			filters:{pfiltro:'sold.descripcion',type:'string'},
@@ -156,7 +164,8 @@ Phx.vista.SolicitudDet=Ext.extend(Phx.gridInterfaz,{
                 	
                 	},
                 width:100,
-                gwidth: 110
+                gwidth: 110,
+                msgTarget: 'side'
             },
             type:'NumberField',
             filters:{ pfiltro: 'sold.precio_unitario', type:'numeric'},
@@ -172,7 +181,8 @@ Phx.vista.SolicitudDet=Ext.extend(Phx.gridInterfaz,{
                 allowDecimals: false,
                 width: 100,
                 gwidth: 100,
-                maxLength:10
+                maxLength:10,
+                msgTarget: 'side'
             },
             type:'NumberField',
             filters:{pfiltro:'sold.cantidad',type:'numeric'},
