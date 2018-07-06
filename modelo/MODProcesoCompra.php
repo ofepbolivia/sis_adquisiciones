@@ -55,7 +55,8 @@ class MODProcesoCompra extends MODbase{
 		$this->captura('estados_cotizacion','text');
 		$this->captura('numeros_oc','text');
 		$this->captura('proveedores_cot','text');
-		
+		$this->captura('prioridad','varchar');
+
 		
 		
 	 

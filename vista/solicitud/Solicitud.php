@@ -15,7 +15,8 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
     fwidth: '85%',
     fheight: '65%',
     viewConfig: {
-        stripeRows: false,
+        //stripeRows: false,
+        autoFill: true,
         getRowClass: function(record) {
             if(record.data.prioridad == 'C'){
                 return 'prioridad_menor';
@@ -35,12 +36,13 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
 	constructor:function(config){
         this.tbarItems = ['-',
             this.cmbGestion,'-'
-
         ];
-		this.maestro=config.maestro;
+
     	//llama al constructor de la clase padre
 		
 		Phx.vista.Solicitud.superclass.constructor.call(this,config);
+        this.maestro=config;
+        that = this;
 		this.init();		
 		this.addBotones();
         
@@ -89,11 +91,10 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
         );
 
         //(f.e.a)Filtro por gestion
-        var fecha = new Date();
 
         Ext.Ajax.request({
             url:'../../sis_parametros/control/Gestion/obtenerGestionByFecha',
-            params:{fecha:fecha.getDate()+'/'+(fecha.getMonth()+1)+'/'+fecha.getFullYear()},
+            params:{fecha:new Date()},
             success:function(resp){
                 var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
                 this.cmbGestion.setValue(reg.ROOT.datos.id_gestion);
@@ -107,9 +108,9 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
         });
 
         this.cmbGestion.on('select',this.capturarEventos, this);
-        
-        
-       
+
+
+
 	},
 
     capturarEventos: function () {
@@ -119,7 +120,7 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
 
     cmbGestion : new Ext.form.ComboBox({
         name: 'gestion',
-        id: 'gestion_reg',
+        //id: 'gestion_reg',
         fieldLabel: 'Gestion',
         allowBlank: true,
         emptyText:'Gestion...',
@@ -561,7 +562,7 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
    				origen:'FUNCIONARIOCAR',
    				fieldLabel:'Datos Solicitante',
    				allowBlank:false,
-                gwidth:270,
+                gwidth:320,
    				valueField: 'id_funcionario',
    			    gdisplayField: 'desc_funcionario',
    			    baseParams: { es_combo_solicitud : 'si' },
@@ -739,7 +740,7 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
                 mode: 'local',
                 gwidth: 100,
                 store: ['no_necesita','contrato_nuevo','contrato_adhesion','ampliacion_contrato'],
-                anchor: '95%'
+                anchor: '83%'
             },
             type: 'ComboBox',
             id_grupo: 2,
@@ -752,31 +753,53 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
             grid:false,
             form:true
         },
-        {
-            config:{
-                name:'prioridad',
-                fieldLabel:'Prioridad',
-                allowBlank:true,
-                emptyText:'Elija una Prioridad...',
 
+        {
+            config : {
+                name : 'prioridad',
+                fieldLabel : 'Estación',
+                allowBlank : false,
+                emptyText : 'Estación...',
+                /*tinit: false,
+                origen: 'CATALOGO',
+                baseParams:{
+                    cod_subsistema:'ADQ',
+                    catalogo_tipo:'prioridad'
+                },*/
+                store: new Ext.data.ArrayStore({
+                    fields :['id_prioridad','valor'],
+                    data :  [
+                        ['383','AOG'],
+                        ['384','A'],
+                        ['385','B'],
+                        ['386','C'],
+                        ['387','No Aplica']
+                    ]}
+                ),
+                tpl: new Ext.XTemplate([
+                    '<tpl for=".">',
+                    '<div class="x-combo-list-item">',
+                    '<div class="awesomecombo-item {checked}">',
+                    '<p>Prioridad:<b style="color: green;"> {valor}</b></p>',
+                    '</div>',
+                    '</div><div><p><img src="./../../../sis_adquisiciones/media/images/{valor}.png" width="215" height="25"></p>',
+                    '</div></tpl>'
+                ]),
+                valueField: 'id_prioridad',
+                displayField: 'valor',
                 typeAhead: true,
                 triggerAction: 'all',
-                lazyRender:true,
                 mode: 'local',
-                anchor: '100%',
-                store:['A','B','C','AOG'],
-                gwidth: 70,
-                anchor: '95%',
-                renderer: function(value, p, record) {
-                    return String.format('<p style="text-align: center;">{0}</p>', record.data['prioridad']?record.data['prioridad']:'');
-                }
-
+                editable: false,
+                selectOnFocus: true,
+                anchor: '83%',
+                msgTarget: 'side'
             },
-            type:'ComboBox',
-            id_grupo:2,
-            grid:false,
-            form:true
 
+            type : 'AwesomeCombo',
+            id_grupo : 2,
+            grid : true,
+            form : true
         },
          {
             config:{
@@ -905,6 +928,63 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
             grid: true,
             form: true
         },
+
+        /*{
+            config:{
+                name: 'informacion',
+                fieldLabel: 'Información',
+                qtip:'Permite consultar informacion complementaria al proceso.',
+                allowBlank: false,
+                anchor: '80%',
+                gwidth: 150,
+                maxLength:500,
+                renderer: function(value, meta, record) {
+                    var id = Ext.id();
+
+                    Ext.defer(function(){
+                        new Ext.Button({
+                            text: '',
+                            iconCls: 'bfolder',
+                            handler : function(btn, e) {
+                                console.log('grilla',that.grid);
+                                var view = that.grid.getView();
+
+                                console.log('view', view);
+                                console.log('view', view.el);
+                                console.log('boton', btn, 'event', e);
+                                var tip = new Ext.ToolTip({
+                                    title: '<a href="#">Rich Content Tooltip</a>',
+                                    //id: 'content-anchor-tip',
+                                    target: btn.id,
+                                    anchor: 'left',
+                                    html: null,
+                                    width: 415,
+                                    autoHide: false,
+                                    closable: true,
+                                    contentEl: that, // load content from the page
+                                    listeners: {
+                                        'render': function(){
+                                            this.header.on('click', function(e){
+                                                e.stopEvent();
+                                                Ext.Msg.alert('Link', 'Link to something interesting.');
+                                                Ext.getCmp('content-anchor-tip').hide();
+                                            }, this, {delegate:'a'});
+                                        }
+                                    }
+                                });
+                            }
+                        }).render(document.body, id);
+                    },50);
+                    return String.format('<div style="align-content: center;" id="{0}"></div>', id);
+                }
+            },
+            type:'TextField',
+            //filters:{pfiltro:'sol.justificacion',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:false
+        },*/
+
 		{
 			config:{
 				name: 'posibles_proveedores',
@@ -1119,9 +1199,7 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
 	'id_depto','numero','obs','id_funcionario_aprobador','desc_funcionario_rpc','fecha_apro','id_categoria_compra','justificacion',
 	'lugar_entrega','fecha_inicio','dias_plazo_entrega','posibles_proveedores','comite_calificacion','extendida', 'obs_presupuestos'],
 	
-	
-	
-	
+
 	/*rowExpander: new Ext.ux.grid.RowExpander({
 		        tpl : new Ext.Template(
 		            '<br>',

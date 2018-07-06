@@ -358,6 +358,7 @@ class MODSolicitud extends MODbase{
         $this->setParametro('json_procesos','json_procesos','text');
         $this->setParametro('instruc_rpc','instruc_rpc','varchar');
         $this->setParametro('lista_comision','lista_comision','text');
+        $this->setParametro('prioridad','prioridad','integer');
 
         //Ejecuta la instruccion
         $this->armarConsulta();

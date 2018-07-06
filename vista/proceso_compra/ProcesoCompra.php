@@ -6,11 +6,32 @@
 *@date 19-03-2013 12:55:30
 *@description Archivo con la interfaz de usuario que permite la ejecucion de todas las funcionalidades del sistema
 */
-
+include_once ('../../media/styles.php');
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
 Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
+
+    viewConfig: {
+        stripeRows: false,
+        getRowClass: function(record) {
+            console.log('registro', record.data.prioridad);
+            if(record.data.prioridad == 'C'){
+                return 'prioridad_menor';
+            }else if(record.data.prioridad == 'B'){
+                return 'prioridad_importanteB';
+            }else if(record.data.prioridad == 'AOG'){
+                return 'prioridad_importanteA';
+            }else if(record.data.prioridad == 'A'){
+                return 'prioridad_medio';
+            }
+        }/*,
+        listener: {
+            render: this.createTooltip
+        },*/
+
+    },
+
     gruposBarraTareas:[{name:'pendientes',title:'<H1 align="center"><i class="fa fa-thumbs-o-down"></i> Pendientes</h1>',grupo:0,height:0},
                        {name:'iniciados',title:'<H1 align="center"><i class="fa fa-eye"></i> Iniciados</h1>',grupo:1,height:0},
                        {name:'contrato',title:'<H1 align="center"><i class="fa fa-file-o"></i> Para Contrato</h1>',grupo:2,height:0},
@@ -149,11 +170,18 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
         {
             config:{
                 name: 'instruc_rpc',
-                fieldLabel: 'Ins/RPC',
+                fieldLabel: 'Datos Proc.Compra (Ins/RPC)',
                 allowBlank: true,
                 anchor: '80%',
-                gwidth: 140,
-                maxLength:50
+                gwidth: 250,
+                maxLength:50,
+                renderer:function (value, p, record){
+
+                    return   '<div class="x-combo-list-item"><p><b>Ins/RPC: </b><b style="color: #274d80;">'+record.data['instruc_rpc']+'</b>'+
+                        '<p><b>Departamento: <span style="color:#274d80;">'+record.data['desc_depto']+'</span> Auxiliar: <span style="color:#274d80;">'+record.data['usr_aux']+
+                        '</span></b><p><b>Moneda: <span style="color:#274d80;">'+record.data['desc_moneda']+'</span></b></p>' +
+                        '</div>';
+                },
             },
             type:'Field',
             filters:{pfiltro:'instruc_rpc',type:'string'},
@@ -316,11 +344,18 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
         {
             config:{
                 name: 'desc_funcionario',
-                fieldLabel: 'Funcionario',
+                fieldLabel: 'Datos Solicitante',
                 allowBlank: true,
                 anchor: '80%',
-                gwidth: 200,
-                maxLength:30
+                gwidth: 300,
+                maxLength:30,
+                renderer:function (value, p, record){
+
+                    return   '<div class="x-combo-list-item"><p><b>Ins/RPC: </b><b style="color: #274d80;">'+record.data['desc_funcionario']+'</b>'+
+                        '<p><b>Solicitud N°: <span style="color:#274d80;">'+record.data['desc_solicitud']+
+                        '</span></b><p><b>Orden de Compra: <span style="color:#274d80;">'+(record.data['numeros_oc']?record.data['numeros_oc']:'')+'</span></b></p>' +
+                        '<p><b>Orden de Prioridad: <span style="color:red;">'+(record.data['prioridad']?record.data['prioridad']:'')+'</span></b></p></div>';
+                },
             },
             type:'TextField',
             filters:{pfiltro:'desc_funcionario',type:'string'},
@@ -350,7 +385,6 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
         {
             config:{
                 name: 'desc_moneda',
-
                 fieldLabel: 'Moneda',
                 allowBlank: true,
                 anchor: '80%',
@@ -360,7 +394,7 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
             type:'TextField',
             filters:{pfiltro:'desc_moneda',type:'string'},
             id_grupo:1,
-            grid:true,
+            grid:false,
             form:false
         },
         {
@@ -578,10 +612,11 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_mod', type: 'string'},
 		'desc_moneda','desc_funcionario',
 		'desc_uo','desc_depto','desc_solicitud','instruc_rpc',
-		'usr_aux','id_moneda','id_funcionario','desc_cotizacion','objeto','estados_cotizacion','numeros_oc','proveedores_cot'
+		'usr_aux','id_moneda','id_funcionario','desc_cotizacion','objeto','estados_cotizacion','numeros_oc','proveedores_cot',
+        'prioridad'
 
 	],
-	rowExpander: new Ext.ux.grid.RowExpander({
+	/*rowExpander: new Ext.ux.grid.RowExpander({
 	        tpl : new Ext.Template(
 	            '<br>',
 	            '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Departamento:&nbsp;&nbsp;</b> {desc_depto} , <b>Auxiliar</b>: {usr_aux}</p>',
@@ -593,7 +628,7 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
 	            '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Creado por:&nbsp;&nbsp;</b> {usr_reg}</p>',
 	            '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Estado Registro:&nbsp;&nbsp;</b> {estado_reg}</p><br>'
 	        )
-    }),
+    }),*/
 
     arrayDefaultColumHidden:['fecha_mod','usr_reg','usr_mod','estado','numeros_oc','id_depto','id_solicitud','usr_aux','codigo_proceso','fecha_ini_proc','obs_proceso','objeto','num_cotizacion','num_convocatoria','estado_reg','fecha_reg'],
 

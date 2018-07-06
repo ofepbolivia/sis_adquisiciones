@@ -243,7 +243,6 @@ Phx.vista.SolicitudVb = {
     
     sigEstado:function(){                   
       	var rec=this.sm.getSelected();
-      	
       	this.mostrarWizard(rec);
       	
                
@@ -256,9 +255,9 @@ Phx.vista.SolicitudVb = {
      	 }
 
         //Obtenemos en codigo del proceso macro para verificar si es compra internacional
-
-
-     	if(rec.data.estado == 'vbrpc' && rec.data.num_tramite.split('-')[0] == 'CINTPD'){
+     	if(rec.data.estado == 'vbrpc' && (rec.data.num_tramite.split('-')[0] == 'CINTPD' ||
+            rec.data.num_tramite.split('-')[0] == 'GO' || rec.data.num_tramite.split('-')[0] == 'GM' ||
+            rec.data.num_tramite.split('-')[0] == 'GA' || rec.data.num_tramite.split('-')[0] == 'GC')){
      		 configExtra = [
 					       	{
 					   			config:{
@@ -273,12 +272,55 @@ Phx.vista.SolicitudVb = {
 				                    valueField: 'estilo',
 				                    gwidth: 100,
 				                    value: 'Orden de Bien/Servicio',
-				                    store: ['Iniciar Contrato','Orden de Bien/Servicio','Cotizar']
+				                    store: ['Iniciar Contrato','Orden de Bien/Servicio','Cotizar'],
+                                    msgTarget: 'side',
+                                    anchor: '50%'
 				                },
 					   			type:'ComboBox',
 					   			id_grupo: 1,
 					   			form: true
 					       	},
+
+                             {
+                                 config : {
+                                     name : 'prioridad',
+                                     fieldLabel : 'Prioridad',
+                                     allowBlank : false,
+                                     emptyText : 'Estación...',
+                                     store: new Ext.data.ArrayStore({
+                                         fields :['id_prioridad','valor'],
+                                         data :  [
+                                             ['383','AOG'],
+                                             ['384','A'],
+                                             ['385','B'],
+                                             ['386','C'],
+                                             ['387','No Aplica']
+                                         ]}
+                                     ),
+                                     tpl: new Ext.XTemplate([
+                                         '<tpl for=".">',
+                                         '<div class="x-combo-list-item">',
+                                         '<div class="awesomecombo-item {checked}">',
+                                         '<p>Prioridad:<b style="color: green;"> {valor}</b></p>',
+                                         '</div>',
+                                         '</div><div><p><img src="./../../../sis_adquisiciones/media/images/{valor}.png" width="215" height="25"></p>',
+                                         '</div></tpl>'
+                                     ]),
+                                     valueField: 'id_prioridad',
+                                     displayField: 'valor',
+                                     typeAhead: true,
+                                     triggerAction: 'all',
+                                     mode: 'local',
+                                     selectOnFocus: true,
+                                     msgTarget:'side',
+                                     anchor: '50%',
+                                     editable: false
+                                 },
+                                 type : 'AwesomeCombo',
+                                 id_grupo : 2,
+                                 grid : true,
+                                 form : true
+                             },
 
                             {
                                 config:{
@@ -287,10 +329,11 @@ Phx.vista.SolicitudVb = {
                                     qtip:'Ingrese el nro. de P.O.',
                                     allowBlank: true,
                                     disabled: true,
-                                    anchor: '47%',
+                                    anchor: '45%',
                                     gwidth: 100,
                                     maxLength:255,
-                                    value: rec.data.nro_po
+                                    value: rec.data.nro_po,
+                                    msgTarget: 'side'
                                 },
                                 type:'TextField',
                                 id_grupo:1,
@@ -304,11 +347,12 @@ Phx.vista.SolicitudVb = {
                                     fieldLabel: 'Fecha de P.O.',
                                     qtip:'Fecha del P.O.',
                                     allowBlank: false,
-                                    width: 188,
+                                    anchor: '45.5%',
                                     gwidth: 100,
                                     value: rec.data.fecha_po || new Date() ,
                                     format: 'd/m/Y',
-                                    renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
+                                    renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''},
+                                    msgTarget: 'side'
                                 },
                                 type:'DateField',
                                 id_grupo:1,
@@ -352,7 +396,8 @@ Phx.vista.SolicitudVb = {
                                     minChars: 2,
                                     resizable:true,
                                     //listWidth:'240',
-                                    enableMultiSelect: true
+                                    enableMultiSelect: true,
+                                    msgTarget: 'side'
                                 },
 
                                 type:'AwesomeCombo',
@@ -360,7 +405,7 @@ Phx.vista.SolicitudVb = {
                                 form: true
                             }
 					     ];
-     	 }/*else{
+     	 }else if(rec.data.estado == 'vbrpc' && rec.data.num_tramite.split('-')[0] == 'CNAPD'){
 
                 configExtra = [
                     {
@@ -375,15 +420,58 @@ Phx.vista.SolicitudVb = {
                             mode: 'local',
                             valueField: 'estilo',
                             gwidth: 100,
+                            anchor: '50%',
                             value: 'Orden de Bien/Servicio',
                             store: ['Iniciar Contrato','Orden de Bien/Servicio','Cotizar']
                         },
                         type:'ComboBox',
                         id_grupo: 1,
                         form: true
-                    }
+                    },
+                    {
+                        config : {
+                            name : 'prioridad',
+                            fieldLabel : 'Prioridad',
+                            allowBlank : false,
+                            emptyText : 'Estación...',
+                            store: new Ext.data.ArrayStore({
+                                fields :['id_prioridad','valor'],
+                                data :  [
+                                    ['383','AOG'],
+                                    ['384','A'],
+                                    ['385','B'],
+                                    ['386','C'],
+                                    ['387','No Aplica']
+                                ]}
+                            ),
+                            //tpl : '<tpl for="."><div class="x-combo-list-item"><p style="color: green;">Código: {codigo}</p><p>Nombre: {nombre}</p></div></tpl>',
+                            tpl: new Ext.XTemplate([
+                                '<tpl for=".">',
+                                '<div class="x-combo-list-item">',
+                                '<div class="awesomecombo-item {checked}">',
+                                '<p>Prioridad:<b style="color: green;"> {valor}</b></p>',
+                                '</div>',
+                                '</div><div><p><img src="./../../../sis_adquisiciones/media/images/{valor}.png" width="215" height="25"></p>',
+                                '</div></tpl>'
+                            ]),
+                            valueField: 'id_prioridad',
+                            displayField: 'valor',
+                            typeAhead: true,
+                            triggerAction: 'all',
+                            mode: 'local',
+                            selectOnFocus: true,
+                            msgTarget:'side',
+                            anchor: '50%',
+                            editable: false
+                        },
+
+                        type : 'AwesomeCombo',
+                        id_grupo : 2,
+                        grid : true,
+                        form : true
+                    },
                 ]
-        }*/
+        }
      	 
      	
      	this.objWizard = Phx.CP.loadWindows('../../../sis_workflow/vista/estado_wf/FormEstadoWf.php',
@@ -391,7 +479,7 @@ Phx.vista.SolicitudVb = {
                                 {
                                     modal: true,
                                     width: 700,
-                                    height: 480
+                                    height: 500
                                 }, {
                                 	configExtra: configExtra,
                                 	data:{
@@ -440,6 +528,7 @@ Phx.vista.SolicitudVb = {
 	                obs:                resp.obs,
 	                instruc_rpc:		resp.instruc_rpc,
                     lista_comision:     resp.lista_comision,
+                    prioridad:          resp.prioridad,
 	                json_procesos:      Ext.util.JSON.encode(resp.procesos)
                 },
             success: this.successWizard,

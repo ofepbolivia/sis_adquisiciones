@@ -229,7 +229,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Fecha Solicitud',
                     allowBlank: true,
                     anchor: '80%',
-                    gwidth: 90,
+                    gwidth: 150,
                     format: 'd/m/Y H:i',
                     renderer: function (value, p, record) {
                         return value ? value.dateFormat('d/m/Y') : ''

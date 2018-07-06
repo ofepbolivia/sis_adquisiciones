@@ -874,7 +874,7 @@ header("content-type: text/javascript; charset=UTF-8");
 					mode: 'local',
 					gwidth: 100,
 					store: ['no_necesita','contrato_nuevo','contrato_adhesion','ampliacion_contrato'],
-                    anchor: '84%',
+                    anchor: '83%',
                     msgTarget: 'side'
 				},
 				type: 'ComboBox',
@@ -888,29 +888,55 @@ header("content-type: text/javascript; charset=UTF-8");
 				grid:false,
 				form:true
 			},
-            {
-                config:{
-                    name:'prioridad',
-                    fieldLabel:'Prioridad',
-                    allowBlank:false,
-                    emptyText:'Elija una Prioridad...',
 
+            {
+                config : {
+                    name : 'prioridad',
+                    fieldLabel : 'Estación',
+                    allowBlank : false,
+                    emptyText : 'Estación...',
+                    /*tinit: false,
+                    origen: 'CATALOGO',
+                    baseParams:{
+                        cod_subsistema:'ADQ',
+                        catalogo_tipo:'prioridad'
+                    },*/
+                    store: new Ext.data.ArrayStore({
+                        fields :['id_prioridad','valor'],
+                        data :  [
+                            ['383','AOG'],
+                            ['384','A'],
+                            ['385','B'],
+                            ['386','C'],
+                            ['387','No Aplica']
+                        ]}
+                    ),
+                    tpl: new Ext.XTemplate([
+                        '<tpl for=".">',
+                        '<div class="x-combo-list-item">',
+                        '<div class="awesomecombo-item {checked}">',
+                        '<p>Prioridad:<b style="color: green;"> {valor}</b></p>',
+                        '</div>',
+                        '</div><div><p><img src="./../../../sis_adquisiciones/media/images/{valor}.png" width="215" height="25"></p>',
+                        '</div></tpl>'
+                    ]),
+                    valueField: 'id_prioridad',
+                    displayField: 'valor',
                     typeAhead: true,
                     triggerAction: 'all',
-                    lazyRender:true,
                     mode: 'local',
-                    anchor: '84%',
-                    width: '100%',
-                    store:['A','B','C','AOG'],
-                    msgTarget: 'side'
-
+                    selectOnFocus: true,
+                    anchor: '83%',
+                    msgTarget: 'side',
+                    editable: false
                 },
-                type:'ComboBox',
-                id_grupo:2,
-                grid:true,
-                form:true
 
+                type : 'AwesomeCombo',
+                id_grupo : 2,
+                grid : true,
+                form : true
             },
+
 			{
 				config:{
 					name: 'nro_po',

@@ -31,26 +31,26 @@ class ACTProcesoCompra extends ACTbase{
         }*/
 		
 		if(strtolower($this->objParam->getParametro('estado'))=='pendientes'){
-             $this->objParam->addFiltro("(estado in (''pendiente'',''proceso'')) and (array_estados_cot is NULL  or  ''borrador''=ANY(array_estados_cot))");
+             $this->objParam->addFiltro("(pc.estado in (''pendiente'',''proceso'')) and (array_estados_cot is NULL  or  ''borrador''=ANY(array_estados_cot))");
         }
 		
 		if(strtolower($this->objParam->getParametro('estado'))=='anulados'){
-             $this->objParam->addFiltro("(estado in (''pendiente'',''proceso'')) and (''anulado''=ANY(array_estados_cot))");
+             $this->objParam->addFiltro("(pc.estado in (''pendiente'',''proceso'')) and (''anulado''=ANY(array_estados_cot))");
         }
 
 
 		if(strtolower($this->objParam->getParametro('estado'))=='iniciados'){
-             $this->objParam->addFiltro("(estado in (''pendiente'',''proceso'')) and (''cotizado''=ANY(array_estados_cot)  or ''adjudicado''=ANY(array_estados_cot) or ''recomendado''=ANY(array_estados_cot))");
+             $this->objParam->addFiltro("(pc.estado in (''pendiente'',''proceso'')) and (''cotizado''=ANY(array_estados_cot)  or ''adjudicado''=ANY(array_estados_cot) or ''recomendado''=ANY(array_estados_cot))");
         }
 		if(strtolower($this->objParam->getParametro('estado'))=='contrato'){
-             $this->objParam->addFiltro("(estado in (''pendiente'',''proceso'')) and ( ''contrato_pendiente''=ANY(array_estados_cot) or ''contrato_elaborado''=ANY(array_estados_cot))");
+             $this->objParam->addFiltro("(pc.estado in (''pendiente'',''proceso'')) and ( ''contrato_pendiente''=ANY(array_estados_cot) or ''contrato_elaborado''=ANY(array_estados_cot))");
         }
         
 		if(strtolower($this->objParam->getParametro('estado'))=='en pago'){
              $this->objParam->addFiltro(" (''pago_habilitado''=ANY(array_estados_cot)  or  ''finalizada''=ANY(array_estados_cot))  and estado != ''finalizado'' ");
         }
         if(strtolower($this->objParam->getParametro('estado'))=='finalizados'){
-             $this->objParam->addFiltro("(estado in (''finalizado'',''anulado''))");
+             $this->objParam->addFiltro("(pc.estado in (''finalizado'',''anulado''))");
 			 //$this->objParam->addFiltro("(''finalizada''=ANY(array_estados_cot) or (estado in (''finalizado'',''anulado'')))");
         }
 		

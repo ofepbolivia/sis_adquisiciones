@@ -33,6 +33,10 @@ class ACTSolicitud extends ACTbase{
 		if($this->objParam->getParametro('id_depto')!=''){
             $this->objParam->addFiltro("sol.id_depto = ".$this->objParam->getParametro('id_depto'));    
         }
+
+        if($this->objParam->getParametro('id_gestion')!=''){
+		    $this->objParam->addFiltro("sol.id_gestion=".$this->objParam->getParametro('id_gestion'));
+        }
         
         if($this->objParam->getParametro('estado')!=''){
             $this->objParam->addFiltro("sol.estado = ''".$this->objParam->getParametro('estado')."''");
@@ -861,6 +865,29 @@ function groupArray($array,$groupkey,$groupkeyTwo,$id_moneda,$estado_sol, $onlyD
 		$this->res=$this->objFunc->revertirParcialmentePresupuesto($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
+
+    function reporteResponsablePresupuesto(){
+
+        $this->objFunc=$this->create('MODReporte');
+        $this->res=$this->objFunc->reporteResponsablePresupuesto($this->objParam);
+
+        $this->datos=$this->res->getDatos();
+        $titulo_archivo = 'Lista de Correos';
+        $nombreArchivo = uniqid(md5(session_id()).$titulo_archivo).'.xls';
+        $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+        $this->objParam->addParametro('titulo_archivo',$titulo_archivo);
+        $this->objParam->addParametro('datos',$this->datos);
+
+        $this->objReporte = new RCorreosDeEmpleadosXls($this->objParam);
+        $this->objReporte->generarReporte();
+
+
+        $mensajeExito = new Mensaje();
+        $mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado', 'Se generó con éxito el reporte: ' . $nombreArchivo, 'control');
+        $mensajeExito->setArchivoGenerado($nombreArchivo);
+        $this->res = $mensajeExito;
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
 	/*
     
     Autor: GSS

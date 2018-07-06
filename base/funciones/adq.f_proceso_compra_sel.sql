@@ -69,22 +69,22 @@ BEGIN
     		--Sentencia de la consulta
 			v_consulta:='select
                               id_proceso_compra,
-                              id_depto,
+                              pc.id_depto,
                               num_convocatoria,
-                              id_solicitud,
-                              id_estado_wf,
+                              pc.id_solicitud,
+                              pc.id_estado_wf,
                               fecha_ini_proc,
                               obs_proceso,
-                              id_proceso_wf,
-                              num_tramite,
+                              pc.id_proceso_wf,
+                              pc.num_tramite,
                               codigo_proceso,
-                              estado_reg,
-                              estado,
+                              pc.estado_reg,
+                              pc.estado,
                               num_cotizacion,
-                              id_usuario_reg,
-                              fecha_reg,
-                              fecha_mod,
-                              id_usuario_mod,
+                              pc.id_usuario_reg,
+                              pc.fecha_reg,
+                              pc.fecha_mod,
+                              pc.id_usuario_mod,
                               usr_reg,
                               usr_mod,
                               desc_depto,
@@ -94,14 +94,17 @@ BEGIN
                               instruc_rpc,
                               id_categoria_compra,
                               usr_aux,
-                              id_moneda,
-                              id_funcionario,
+                              pc.id_moneda,
+                              pc.id_funcionario,
                               id_usuario_auxiliar,
                               objeto,
                               estados_cotizacion,
                               numeros_oc,
-                              proveedores_cot
-                   from adq.vproceso_compra
+                              proveedores_cot,
+                              tca.codigo
+                   from adq.vproceso_compra pc
+                   left join adq.tsolicitud tso on tso.id_solicitud = pc.id_solicitud
+                   left join param.tcatalogo tca on tca.id_catalogo = tso.prioridad
                    where  '||v_filadd||'  ';
 
 			--Definicion de la respuesta
@@ -276,9 +279,11 @@ BEGIN
           END IF;
 
 			--Sentencia de la consulta de conteo de registros
-			v_consulta:='select count(id_proceso_compra)
+			v_consulta:='select count(pc.id_proceso_compra)
 
-                        from adq.vproceso_compra
+                        from adq.vproceso_compra pc
+                        left join adq.tsolicitud tso on tso.id_solicitud = pc.id_solicitud
+                        left join param.tcatalogo tca on tca.id_catalogo = tso.prioridad
                         where  '||v_filadd||'  ';
 
 			--Definicion de la respuesta

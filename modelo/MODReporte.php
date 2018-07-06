@@ -37,6 +37,7 @@ class MODReporte extends MODbase{
         $this->captura('dias_form_400', 'integer');
         $this->captura('fecha_inicio', 'date');
         $this->captura('tipo_doc', 'varchar');
+        $this->captura('fecha_aprob', 'date');
 
         //Ejecuta la instruccion
         $this->armarConsulta();

@@ -103,6 +103,7 @@ BEGIN
             END IF;
 
           IF  lower(v_parametros.tipo_interfaz) in ('solicitudvb','solicitudvbwzd','solicitudvbpoa','solicitudvbpresupuestos') THEN
+
                 IF v_historico =  'no' THEN
                     IF p_administrador !=1 THEN
                       v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and (lower(sol.estado)!=''proceso'' ) and ';
@@ -241,17 +242,14 @@ BEGIN
 						            sol.nro_po,
                         sol.fecha_po,
                         sum(tsd.precio_total) as importe_total,
-                        sol.prioridad
+                        tcat.codigo as prioridad
 						from adq.tsolicitud sol
-
 						inner join segu.tusuario usu1 on usu1.id_usuario = sol.id_usuario_reg
                         inner join wf.tproceso_wf pwf on pwf.id_proceso_wf = sol.id_proceso_wf
                         inner join orga.vfuncionario fun on fun.id_funcionario = sol.id_funcionario
-
                         inner join orga.tuo uo on uo.id_uo = sol.id_uo
                         inner join param.tmoneda mon on mon.id_moneda = sol.id_moneda
                         inner join param.tgestion ges on ges.id_gestion = sol.id_gestion
-
                         inner join param.tdepto dep on dep.id_depto = sol.id_depto
                         inner join wf.tproceso_macro pm on pm.id_proceso_macro = sol.id_proceso_macro
                         inner join adq.tcategoria_compra cat on cat.id_categoria_compra = sol.id_categoria_compra
@@ -260,18 +258,17 @@ BEGIN
                         inner join orga.vfuncionario funa on funa.id_funcionario = sol.id_funcionario_aprobador
                         left join orga.vfuncionario funs on funs.id_funcionario = sol.id_funcionario_supervisor
 
-						left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
+						            left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
                         left join param.vproveedor pro on pro.id_proveedor = sol.id_proveedor
 
                         left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud
-
+                        left join param.tcatalogo tcat on tcat.id_catalogo = sol.prioridad
                         '||v_inner||'
                         where  tsd.estado_reg = ''activo'' and '||v_filtro;
 
 			--Definicion de la respuesta
-
-			v_consulta =v_consulta||v_parametros.filtro;
-			v_consulta =v_consulta||' group by sol.id_solicitud, usu1.cuenta, usu2.cuenta,
+			v_consulta:=v_consulta||v_parametros.filtro;
+			v_consulta:=v_consulta||' group by sol.id_solicitud, usu1.cuenta, usu2.cuenta,
              fun.desc_funcionario1, funa.desc_funcionario1, uo.codigo, uo.nombre_unidad,
              ges.gestion, mon.codigo, dep.codigo, pm.nombre, cat.nombre, funrpc.desc_funcionario1,
              ew.obs, pro.desc_proveedor, funs.desc_funcionario1, ew.id_tipo_estado,
@@ -339,7 +336,10 @@ BEGIN
                     v_filtro = ' (lower(sol.estado)!=''borrador'') and ';
                 END IF;
               END IF;
+
+
             END IF;
+
             --la interface de vbpresupuestos mustra todas las solcitudes no importa el funcionario asignado
             IF  lower(v_parametros.tipo_interfaz) = 'solicitudvbpresupuestos' and v_historico =  'no' THEN
                  v_filtro = v_filtro||' (lower(sol.estado)=''vbpresupuestos'' ) and ';
@@ -389,11 +389,9 @@ BEGIN
 						inner join segu.tusuario usu1 on usu1.id_usuario = sol.id_usuario_reg
 
                         inner join orga.vfuncionario fun on fun.id_funcionario = sol.id_funcionario
-
                         inner join orga.tuo uo on uo.id_uo = sol.id_uo
                         inner join param.tmoneda mon on mon.id_moneda = sol.id_moneda
                         inner join param.tgestion ges on ges.id_gestion = sol.id_gestion
-
                         inner join param.tdepto dep on dep.id_depto = sol.id_depto
                         inner join wf.tproceso_macro pm on pm.id_proceso_macro = sol.id_proceso_macro
                         inner join adq.tcategoria_compra cat on cat.id_categoria_compra = sol.id_categoria_compra
@@ -402,10 +400,11 @@ BEGIN
                         inner join orga.vfuncionario funa on funa.id_funcionario = sol.id_funcionario_aprobador
                         left join orga.vfuncionario funs on funs.id_funcionario = sol.id_funcionario_supervisor
 
-						left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
+						            left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
                         left join param.vproveedor pro on pro.id_proveedor = sol.id_proveedor
 
-			left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud
+			                  left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud
+			                  left join param.tcatalogo tcat on tcat.id_catalogo = sol.prioridad
 				       '||v_inner||'
 
 				        where  tsd.estado_reg = ''activo'' and '||v_filtro;

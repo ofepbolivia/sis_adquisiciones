@@ -331,7 +331,7 @@ BEGIN
             COALESCE(v_parametros.precontrato,'no'),
             trim(both ' ' from v_parametros.nro_po),
             v_parametros.fecha_po,
-			      v_parametros.prioridad
+			v_parametros.prioridad
 
 			)RETURNING id_solicitud into v_id_solicitud;
 
@@ -1335,7 +1335,9 @@ BEGIN
            -- ACTUALIZAMOS LISTA COMISION SI ES DISTINTO DE VACIO O DISTINTO DE NULL
            IF(v_codigo_estado = 'vbrpc')THEN
               update adq.tsolicitud set
-                 comite_calificacion= v_parametros.lista_comision
+                 comite_calificacion= v_parametros.lista_comision,
+                 instruc_rpc = v_parametros.instruc_rpc,
+                 prioridad = v_parametros.prioridad
                where id_proceso_wf = v_id_proceso_wf;
            END IF;
 

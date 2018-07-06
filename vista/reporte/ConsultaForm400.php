@@ -226,18 +226,18 @@ header("content-type: text/javascript; charset=UTF-8");
 
             {
                 config: {
-                    name: 'fecha_inicio',
-                    fieldLabel: 'Fecha Solicitud',
+                    name: 'fecha_aprob',
+                    fieldLabel: 'Fecha OC, Contrato',
                     allowBlank: true,
                     anchor: '80%',
-                    gwidth: 90,
+                    gwidth: 150,
                     format: 'd/m/Y H:i',
                     renderer: function (value, p, record) {
                         return value ? value.dateFormat('d/m/Y') : ''
                     }
                 },
                 type: 'DateField',
-                filters: {pfiltro: 'ts.fecha_inicio', type: 'date'},
+                //filters: {pfiltro: 'ts.fecha_aprob', type: 'date'},
                 id_grupo: 0,
                 grid: true,
                 form: true
@@ -361,6 +361,7 @@ header("content-type: text/javascript; charset=UTF-8");
             {name:'dias_form_400', type: 'numeric'},
             {name:'fecha_inicio', type: 'date', dateFormat: 'Y-m-d'},
             {name:'fecha_fin', type: 'date', dateFormat: 'Y-m-d'},
+            {name:'fecha_aprob', type: 'date', dateFormat: 'Y-m-d'},
             'tipo_doc'
         ],
         sortInfo:{
