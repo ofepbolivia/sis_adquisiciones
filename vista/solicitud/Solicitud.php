@@ -91,21 +91,22 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
         );
 
         //(f.e.a)Filtro por gestion
-
-        Ext.Ajax.request({
-            url:'../../sis_parametros/control/Gestion/obtenerGestionByFecha',
-            params:{fecha:new Date()},
-            success:function(resp){
-                var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-                this.cmbGestion.setValue(reg.ROOT.datos.id_gestion);
-                this.cmbGestion.setRawValue(reg.ROOT.datos.anho);
-                this.store.baseParams.id_gestion=reg.ROOT.datos.id_gestion;
-                this.load({params:{start:0, limit:this.tam_pag}});
-            },
-            failure: this.conexionFailure,
-            timeout:this.timeout,
-            scope:this
-        });
+        if(this.nombreVista != 'solicitudApro'){
+            Ext.Ajax.request({
+                url:'../../sis_parametros/control/Gestion/obtenerGestionByFecha',
+                params:{fecha:new Date()},
+                success:function(resp){
+                    var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                    this.cmbGestion.setValue(reg.ROOT.datos.id_gestion);
+                    this.cmbGestion.setRawValue(reg.ROOT.datos.anho);
+                    this.store.baseParams.id_gestion=reg.ROOT.datos.id_gestion;
+                    this.load({params:{start:0, limit:this.tam_pag}});
+                },
+                failure: this.conexionFailure,
+                timeout:this.timeout,
+                scope:this
+            });
+        }
 
         this.cmbGestion.on('select',this.capturarEventos, this);
 
@@ -757,9 +758,9 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
         {
             config : {
                 name : 'prioridad',
-                fieldLabel : 'Estación',
+                fieldLabel : 'Prioridad',
                 allowBlank : false,
-                emptyText : 'Estación...',
+                emptyText : 'Prioridad...',
                 /*tinit: false,
                 origen: 'CATALOGO',
                 baseParams:{
@@ -798,7 +799,7 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
 
             type : 'AwesomeCombo',
             id_grupo : 2,
-            grid : true,
+            grid : false,
             form : true
         },
          {
@@ -1191,7 +1192,8 @@ Phx.vista.Solicitud=Ext.extend(Phx.gridInterfaz,{
         'nro_po',
         {name:'fecha_po', type: 'date',dateFormat:'Y-m-d'},
         {name:'importe_total', type: 'numeric'},
-        'prioridad'
+        'prioridad',
+        'list_proceso'
 	],
 	
 	arrayDefaultColumHidden:['id_fecha_reg','id_fecha_mod',

@@ -892,9 +892,9 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config : {
                     name : 'prioridad',
-                    fieldLabel : 'Estación',
+                    fieldLabel : 'Prioridad',
                     allowBlank : false,
-                    emptyText : 'Estación...',
+                    emptyText : 'Prioridad...',
                     /*tinit: false,
                     origen: 'CATALOGO',
                     baseParams:{
@@ -1166,7 +1166,7 @@ header("content-type: text/javascript; charset=UTF-8");
 			this.Cmp.fecha_soli.fireEvent('change');
 			this.Cmp.tipo.enable();
 			this.Cmp.tipo_concepto.enable();
-			this.Cmp.id_moneda.enable();
+			this.Cmp.id_moneda.disable();
 
 
 			this.Cmp.id_categoria_compra.store.load({params:{start:0,limit:this.tam_pag},

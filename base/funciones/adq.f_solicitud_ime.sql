@@ -140,7 +140,14 @@ DECLARE
        v_codigo						varchar;
        v_tipo_cambio_conv				numeric;
        v_fecha_aux					integer;
-
+	   v_record						record;
+       --validación clones gestion materiales
+       v_id_proceso					integer;
+       v_mensaje_clon				varchar;
+       v_mensaje					varchar;
+       v_tiene_clon					boolean;
+       v_estado_clon				boolean;
+       v_list_proceso				integer[];
 BEGIN
 
     v_nombre_funcion = 'adq.f_solicitud_ime';
@@ -2055,12 +2062,68 @@ BEGIN
             return v_resp;
 
 		end;
+  /*********************************
+    #TRANSACCION:  'ADQ_GET_LIST_CLON'
+    #DESCRIPCION:	Verifica si un proceso tiene clonaciones
+    #AUTOR:		franklin.espinoza
+    #FECHA:		25/7/2018
+    ***********************************/
 
+  elsif(p_transaccion='ADQ_GET_LIST_CLON')then
+      begin
+
+		select ts.list_proceso
+        into v_record
+        from adq.tsolicitud  ts
+        where ts.id_solicitud = v_parametros.id_solicitud;
+        --array de los ids de los procesos original, clonado
+
+		if(v_record.list_proceso is not null)then
+        	v_tiene_clon = true;
+            v_mensaje_clon = '<b>Estimado Usuario:</b><br> Usted no puede asignar este proceso, debido a que tiene procesos similares que fueron clonados.<br>
+            Una vez que todos los proceso se encuentren en el estado <b style="color: green">APROBADO</b>, podra realizar la asignación respectiva.<br>
+            Aclararle que todos los procesos relacionados por clonación seran asignados al Auxiliar seleccionado por su persona.<br> <ol>';
+            v_cont = 1;
+            foreach v_id_proceso in array v_record.list_proceso loop
+              select '<b>'||v_cont||'. '||(tsa.num_tramite||'</b> --> <b style="color:green;">Estado:</b> '||tsa.estado)::varchar , tsa.estado, tsa.id_solicitud
+              into v_mensaje, v_estado_actual, v_id_solicitud
+              from mat.tsolicitud tsm
+              inner join adq.tsolicitud tsa on tsa.num_tramite = tsm.nro_tramite
+              where tsm.id_solicitud = v_id_proceso;
+              v_mensaje_clon = v_mensaje_clon || '<li>' || v_mensaje||'</li>';
+
+              if(v_estado_actual = 'aprobado')then
+              	v_contador = v_contador + 1;
+              end if;
+              v_list_proceso = array_append(v_list_proceso, v_id_solicitud);
+              v_cont = v_cont + 1;
+            end loop;
+            v_mensaje_clon = v_mensaje_clon || '</ol>';
+            if(array_length(v_record.list_proceso,1) = v_contador)then
+            	v_estado_clon = false;
+            else
+            	v_estado_clon = true;
+            end if;
+
+        else
+        	v_tiene_clon = false;
+        end if;
+        --raise exception 'v_tiene_clon: % v_mensaje_clon: %', v_tiene_clon, v_mensaje_clon;
+        -- Definicion de la respuesta
+      	v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Se verifico correctamente los procesos clones');
+        v_resp = pxp.f_agrega_clave(v_resp,'p_mensaje',v_mensaje_clon::varchar);
+        v_resp = pxp.f_agrega_clave(v_resp,'p_tiene_clon',v_tiene_clon::varchar);
+        v_resp = pxp.f_agrega_clave(v_resp,'p_estado_clon',v_estado_clon::varchar);
+        v_resp = pxp.f_agrega_clave(v_resp,'p_list_proceso',(array_to_string(v_list_proceso,','))::varchar);
+
+        --Devuelve la respuesta
+        return v_resp;
+      end;
   else
 
     	raise exception 'Transaccion inexistente: %',p_transaccion;
 
-	end if;
+  end if;
 
 EXCEPTION
 

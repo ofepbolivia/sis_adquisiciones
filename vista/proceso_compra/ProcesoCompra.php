@@ -199,7 +199,7 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
                 maxLength:200
             },
             type:'TextField',
-            filters:{pfiltro:'num_tramite',type:'string'},
+            filters:{pfiltro:'pc.num_tramite',type:'string'},
             bottom_filter: true,
             id_grupo:1,
             grid:true,
@@ -351,10 +351,10 @@ Phx.vista.ProcesoCompra=Ext.extend(Phx.gridInterfaz,{
                 maxLength:30,
                 renderer:function (value, p, record){
 
-                    return   '<div class="x-combo-list-item"><p><b>Ins/RPC: </b><b style="color: #274d80;">'+record.data['desc_funcionario']+'</b>'+
+                    return   '<div class="x-combo-list-item"><p><b>Resp.: </b><b style="color: #274d80;">'+record.data['desc_funcionario']+'</b>'+
                         '<p><b>Solicitud N°: <span style="color:#274d80;">'+record.data['desc_solicitud']+
                         '</span></b><p><b>Orden de Compra: <span style="color:#274d80;">'+(record.data['numeros_oc']?record.data['numeros_oc']:'')+'</span></b></p>' +
-                        '<p><b>Orden de Prioridad: <span style="color:red;">'+(record.data['prioridad']?record.data['prioridad']:'')+'</span></b></p></div>';
+                        '<p><b>Prioridad: <span style="color:red;">'+(record.data['prioridad']?record.data['prioridad']:'')+'</span></b></p></div>';
                 },
             },
             type:'TextField',

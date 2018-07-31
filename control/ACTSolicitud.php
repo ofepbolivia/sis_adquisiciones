@@ -381,7 +381,7 @@ class ACTSolicitud extends ACTbase{
     $this->objParam->addParametroConsulta('dir_ordenacion','ASC');
     $this->objParam->addParametroConsulta('cantidad',1000);
     $this->objParam->addParametroConsulta('puntero',0);
-    
+
     $this->objFunc = $this->create('MODSolicitud');
     
     $resultSolicitud = $this->objFunc->reporteSolicitud();
@@ -888,6 +888,23 @@ function groupArray($array,$groupkey,$groupkeyTwo,$id_moneda,$estado_sol, $onlyD
         $this->res = $mensajeExito;
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
+
+    //lista que nos retorna si hay proceso clonados para no dejar pasar al siguiente estado
+    function getListaProcesoClonado(){
+        $this->objFunc=$this->create('MODSolicitud');
+        $this->res=$this->objFunc->getListaProcesoClonado($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
+    function getDatosSolicitud(){ 
+        if($this->objParam->getParametro('id_solicitud')!=''){
+            $this->objParam->addFiltro("sol.id_solicitud = ".$this->objParam->getParametro('id_solicitud'));
+        }
+        $this->objFunc=$this->create('MODSolicitud');
+        $this->res=$this->objFunc->getDatosSolicitud($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
 	/*
     
     Autor: GSS

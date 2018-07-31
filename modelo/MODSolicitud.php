@@ -94,10 +94,9 @@ class MODSolicitud extends MODbase{
 
 		$this->captura('importe_total','numeric');
 		$this->captura('prioridad','varchar');
+		$this->captura('list_proceso','integer[]');
 
-		
-		  
-		
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -154,7 +153,7 @@ class MODSolicitud extends MODbase{
 		$this->setParametro('nro_po','nro_po','varchar');
 		$this->setParametro('fecha_po','fecha_po','varchar');
 
-		$this->setParametro('prioridad','prioridad','varchar');
+		$this->setParametro('prioridad','prioridad','integer');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -206,7 +205,7 @@ class MODSolicitud extends MODbase{
 		$this->setParametro('nro_po','nro_po','varchar');
 		$this->setParametro('fecha_po','fecha_po','date');
 
-        $this->setParametro('prioridad','prioridad','varchar');
+        $this->setParametro('prioridad','prioridad','integer');
 
 		
 		//Ejecuta la instruccion
@@ -605,7 +604,7 @@ class MODSolicitud extends MODbase{
 			$this->setParametro('nro_po','nro_po','varchar');
 			$this->setParametro('fecha_po','fecha_po','date');
 
-            $this->setParametro('prioridad','prioridad','varchar');
+            $this->setParametro('prioridad','prioridad','integer');
 
 			//Ejecuta la instruccion
             $this->armarConsulta();
@@ -848,6 +847,52 @@ class MODSolicitud extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+
+    function getListaProcesoClonado(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='adq.f_solicitud_ime';
+        $this->transaccion='ADQ_GET_LIST_CLON';
+        $this->tipo_procedimiento='IME';
+
+        //Define los parametros para la funcion
+        $this->setParametro('id_solicitud','id_solicitud','integer');
+
+        $this->captura('p_mensaje','varchar');
+        $this->captura('p_tiene_clon','varchar');
+        $this->captura('p_estado_clon','varchar');
+        $this->captura('p_list_proceso','varchar');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
+    function getDatosSolicitud(){
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento='adq.f_solicitud_sel';
+        $this->transaccion='ADQ_GET_DAT_SOL_SEL';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+
+        $this->setCount(false);
+        //$this->setParametro('id_solicitud','id_solicitud','int4');
+
+
+        //Definicion de la lista del resultado del query
+        $this->captura('id_solicitud','int4');
+        $this->captura('num_tramite','varchar');
+        $this->captura('id_depto','int4');
+        $this->captura('instruc_rpc','text');
+
+
+        $this->armarConsulta();//echo $this->consulta; exit;
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
+
 
 			
 }

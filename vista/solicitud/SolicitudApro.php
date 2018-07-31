@@ -107,12 +107,27 @@ Phx.vista.SolicitudApro = {
         this.bloquearOrdenamientoGrid();
         
         //evento del combo depto
-        this.sw_init = true
+        this.sw_init = true;
         this.cmbDeptoAdq.on('select',function(){
              this.desbloquearOrdenamientoGrid();
+            Ext.Ajax.request({
+                url:'../../sis_parametros/control/Gestion/obtenerGestionByFecha',
+                params:{fecha:new Date()},
+                success:function(resp){
+                    var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                    this.cmbGestion.setValue(reg.ROOT.datos.id_gestion);
+                    this.cmbGestion.setRawValue(reg.ROOT.datos.anho);
+                    this.store.baseParams.id_gestion=reg.ROOT.datos.id_gestion;
+                    //this.load({params:{start:0, limit:this.tam_pag}});
+                },
+                failure: this.conexionFailure,
+                timeout:this.timeout,
+                scope:this
+            });
              this.store.baseParams.id_depto =this.cmbDeptoAdq.getValue();
+
              if(this.sw_init){
-                  
+
                   this.store.load({params:{start:0, limit:this.tam_pag}}); 
                   this.sw_init = true;
               }
@@ -462,7 +477,7 @@ Phx.vista.SolicitudApro = {
             maximizable: true,
              autoDestroy: true,
             width: 430,
-            height: 350,
+            height: 450,
             layout: 'fit',
             plain: true,
             bodyStyle: 'padding:5px;',
@@ -596,7 +611,9 @@ Phx.vista.SolicitudApro = {
     initProceso:function(){
        
         var d= this.sm.getSelected().data;
+
         if(d){
+
             this.formProceso.getForm().reset();
             this.cmbNumTramite.setValue(d.num_tramite);
             this.cmbIdSolicitud.setValue(d.id_solicitud);
@@ -656,23 +673,82 @@ Phx.vista.SolicitudApro = {
         
     /*Registra nuevos procesos*/    
     guardarProceso :function() {                   
-            var d= this.sm.getSelected().data;
-            
-            if (this.formProceso.getForm().isValid()){
-                 Phx.CP.loadingShow();
-                    Ext.Ajax.request({
-                        // form:this.form.getForm().getEl(),
-                        url:'../../sis_adquisiciones/control/ProcesoCompra/insertarProcesoCompra',
-                        params:this.formProceso.getForm().getValues(),
-                        success:this.successSinc,
-                        failure: this.conexionFailure,
-                        timeout:this.timeout,
-                        scope:this
-                    }); 
-            }
-            
-                
-        }, 
+        var d= this.sm.getSelected().data;
+
+        var that = this;
+
+        Ext.Ajax.request({
+            url:'../../sis_adquisiciones/control/Solicitud/getListaProcesoClonado',
+            params:{id_solicitud:d.id_solicitud},
+            success:function(resp){
+                var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+
+                if(JSON.parse(reg.ROOT.datos.p_tiene_clon) && JSON.parse(reg.ROOT.datos.p_estado_clon)){
+                    Ext.Msg.show({
+                        title: 'Información',
+                        msg: reg.ROOT.datos.p_mensaje,
+                        buttons: Ext.Msg.OK,
+                        width: 512,
+                        icon: Ext.Msg.INFO
+                    });
+                }else {
+
+                    var items = this.formProceso.getForm().getValues();
+                    if(JSON.parse(reg.ROOT.datos.p_tiene_clon)){
+
+                        list_proceso = reg.ROOT.datos.p_list_proceso.split(',');;
+                        list_proceso.forEach( function(valor, indice, array) {
+
+                            Ext.Ajax.request({
+                                url: '../../sis_adquisiciones/control/Solicitud/getDatosSolicitud',
+                                params: {id_solicitud: valor},
+                                success: function(resp){
+                                    var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+
+                                    param = reg.datos[0];
+                                    param.id_depto_usuario = items.id_depto_usuario;
+                                    param.fecha_ini_proc = items.fecha_ini_proc;
+                                    param.codigo_proceso = items.codigo_proceso;
+                                    param.objeto = items.objeto;
+                                    param.obs_proceso = items.obs_proceso;
+                                    
+                                    Ext.Ajax.request({
+                                        url: '../../sis_adquisiciones/control/ProcesoCompra/insertarProcesoCompra',
+                                        params: param,
+                                        success: this.successSinc,
+                                        failure: this.conexionFailure,
+                                        timeout: this.timeout,
+                                        scope: this
+                                    });
+                                },
+                                failure: this.conexionFailure,
+                                timeout: this.timeout,
+                                scope: this
+                            });
+                        });
+                    }else {
+                        if (that.formProceso.getForm().isValid()) {
+                            Phx.CP.loadingShow();
+
+                            Ext.Ajax.request({
+                                // form:this.form.getForm().getEl(),
+                                url: '../../sis_adquisiciones/control/ProcesoCompra/insertarProcesoCompra',
+                                params: this.formProceso.getForm().getValues(),
+                                success: this.successSinc,
+                                failure: this.conexionFailure,
+                                timeout: this.timeout,
+                                scope: this
+                            });
+                        }
+                    }
+                }
+            },
+            failure: this.conexionFailure,
+            timeout:this.timeout,
+            scope:this
+        });
+
+    },
      
       /*asgina usuario a los procesos de la solcitud*/    
     guardarAsigUsu :function() {                   
