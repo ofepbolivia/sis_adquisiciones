@@ -28,10 +28,10 @@ header("content-type: text/javascript; charset=UTF-8");
                 config:{
                     name: 'monto_mayor',
                     fieldLabel: 'Montos mayor a',
-                    allowBlank: true,
+                    allowBlank: false,
                     anchor: '35%',
                     gwidth: 180,
-                    maxLength:6
+                    maxLength:8
                 },
                 type:'NumberField',
                 grid:true,

@@ -409,8 +409,8 @@ function listarProcesoCompraPedido(){
         //$this->captura('proveedor_recomendado','varchar');
         $this->captura('proveedor_adjudicado','text');
         $this->captura('fecha_ini_proc','date');
-        $this->captura('precio_bs','numeric');
-        $this->captura('precio_moneda_solicitada','numeric');
+        $this->captura('precio_bs','varchar');
+        $this->captura('precio_moneda_solicitada','varchar');
         $this->captura('moneda_solicitada','varchar');
         $this->captura('requiere_contrato','text');
 
