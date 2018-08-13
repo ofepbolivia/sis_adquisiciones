@@ -388,5 +388,60 @@ function listarProcesoCompraPedido(){
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+    function reporteProcesosContratacion(){
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento='adq.f_proceso_compra_sel';
+        $this->transaccion='ADQ_REPROCONTRA_SEL';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+        //$this->setCount(false);
+
+        $this->setParametro('fecha_ini','fecha_ini','date');
+        $this->setParametro('fecha_fin','fecha_fin','date');
+        $this->setParametro('monto_mayor','monto_mayor','varchar');
+
+        //Definicion de la lista del resultado del query
+        $this->captura('nombre_depto','varchar');
+        $this->captura('num_tramite','varchar');
+        $this->captura('justificacion','text');
+        $this->captura('solicitante','text');
+        $this->captura('proveedor_adjudicado','text');
+        $this->captura('fecha_ini_proc','date');
+        $this->captura('precio_bs','varchar');
+        $this->captura('precio_moneda_solicitada','varchar');
+        $this->captura('moneda_solicitada','varchar');
+        $this->captura('requiere_contrato','text');
+
+
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        //echo $this->consulta;exit;
+        $this->ejecutarConsulta();
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+    function procesosIniContratacion(){
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento='adq.f_proceso_compra_sel';
+        $this->transaccion='ADQ_INADEJRES_SEL';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+
+        $this->setParametro('fecha_ini','fecha_ini','date');
+        $this->setParametro('fecha_fin','fecha_fin','date');
+        $this->setParametro('id_depto','id_depto','integer');
+        $this->setParametro('monto_mayor','monto_mayor','varchar');
+
+        //Definicion de la lista del resultado del query
+        $this->captura('estado','text');
+        $this->captura('nombre','varchar');
+        $this->captura('total','bigint');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
 }
 ?>

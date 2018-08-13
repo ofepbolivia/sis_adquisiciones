@@ -12,13 +12,13 @@ $body$
  DESCRIPCION:   Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla 'adq.tproceso_compra'
  AUTOR: 		 (admin)
  FECHA:	        19-03-2013 12:55:30
- COMENTARIOS:	
+ COMENTARIOS:
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
 
- DESCRIPCION:	
- AUTOR:			
- FECHA:		
+ DESCRIPCION:
+ AUTOR:
+ FECHA:
 ***************************************************************************/
 
 DECLARE
@@ -27,9 +27,9 @@ DECLARE
 	v_parametros  		record;
 	v_nombre_funcion   	text;
 	v_resp				varchar;
-    
+
     v_filadd 			varchar;
-    
+
     va_id_depto integer[];
     v_filtro			varchar;
 
@@ -61,7 +61,7 @@ BEGIN
                where depu.id_usuario =  p_id_usuario and depu.cargo = 'responsable';
 
 
-               v_filadd='( (id_depto  in ('|| COALESCE(array_to_string(va_id_depto,','),'0')||'))   or   id_usuario_auxiliar = '||p_id_usuario::varchar ||' ) and ';
+               v_filadd='( (pc.id_depto  in ('|| COALESCE(array_to_string(va_id_depto,','),'0')||'))   or   id_usuario_auxiliar = '||p_id_usuario::varchar ||' ) and ';
 
           END IF;
 
@@ -91,8 +91,8 @@ BEGIN
                               desc_funcionario,
                               desc_solicitud,
                               desc_moneda,
-                              instruc_rpc,
-                              id_categoria_compra,
+                              pc.instruc_rpc,
+                              pc.id_categoria_compra,
                               usr_aux,
                               pc.id_moneda,
                               pc.id_funcionario,
@@ -273,7 +273,7 @@ BEGIN
              from param.tdepto_usuario depu
              where depu.id_usuario =  p_id_usuario and depu.cargo = 'responsable';
 
-             v_filadd='( (id_depto  in ('|| COALESCE(array_to_string(va_id_depto,','),'0')||'))   or   id_usuario_auxiliar = '||p_id_usuario::varchar ||' ) and ';
+             v_filadd='( (pc.id_depto  in ('|| COALESCE(array_to_string(va_id_depto,','),'0')||'))   or   id_usuario_auxiliar = '||p_id_usuario::varchar ||' ) and ';
 
 
           END IF;
@@ -282,8 +282,8 @@ BEGIN
 			v_consulta:='select count(pc.id_proceso_compra)
 
                         from adq.vproceso_compra pc
-                        left join adq.tsolicitud tso on tso.id_solicitud = pc.id_solicitud
-                        left join param.tcatalogo tca on tca.id_catalogo = tso.prioridad
+                   		left join adq.tsolicitud tso on tso.id_solicitud = pc.id_solicitud
+                   		left join param.tcatalogo tca on tca.id_catalogo = tso.prioridad
                         where  '||v_filadd||'  ';
 
 			--Definicion de la respuesta
@@ -643,14 +643,59 @@ BEGIN
 			   return v_consulta;
       END;
 
+         /*********************************
+ 	#TRANSACCION:  'ADQ_REPROCONTRA_SEL'
+ 	#DESCRIPCION:	Obtener procesos iniciados, adjudicados y ejecutados
+ 	#AUTOR:		admin
+ 	#FECHA:		03-08-2018
+	***********************************/
+
+	elsif(p_transaccion='ADQ_REPROCONTRA_SEL')then
+
+    	begin
+
+			v_consulta = 'select
+                                 sol.nombre_depto,
+                                 sol.num_tramite,
+            					 sol.justificacion,
+                                 sol.desc_funcionario1 as solicitante,
+       		  					 --usu.desc_persona as tecnico_adquisiciones,
+                                 --sol.desc_proveedor as proveedor_recomendado,
+            					 pro.proveedores_cot as proveedor_adjudicado,
+                                 pro.fecha_ini_proc,
+                                 (to_char(sol.precio_total_mb,''999G999G999G999D99''))::varchar as precio_bs,
+                                 (to_char(sol.precio_total,''999G999G999G999D99''))::varchar as precio_moneda_solicitada,
+                                 sol.codigo as moneda_solicitada,
+           						 	case when pro.requiere_contrato = ''si'' then ''Contrato''
+                				 	else case when sol.tipo=''bien'' then ''Orden de Bien''
+                      				when sol.tipo=''servicio'' then ''Orden de Servicio''
+                      				end
+                 					end as contrato_orden
+
+                        from adq.vsolicitud_compra sol
+                        left join adq.vproceso_compra pro on pro.id_solicitud=sol.id_solicitud and pro.estados_cotizacion!=''anulado''
+                        inner join segu.vusuario usu on usu.cuenta=pro.usr_aux
+
+                        where pro.fecha_ini_proc BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin ||'''
+                        and sol.precio_total_mb > ' || v_parametros.monto_mayor||'
+                        and pro.estado != ''anulado''
+
+
+        				order by pro.fecha_ini_proc, pro.num_tramite';
+   raise notice '%',v_consulta;
+        	return v_consulta;
+
+        end;
+
+
 	else
-					     
+
 		raise exception 'Transaccion inexistente';
-					         
+
 	end if;
-					
+
 EXCEPTION
-					
+
 	WHEN OTHERS THEN
 			v_resp='';
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
