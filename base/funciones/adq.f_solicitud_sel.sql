@@ -1,4 +1,3 @@
---------------- SQL ---------------
 CREATE OR REPLACE FUNCTION adq.f_solicitud_sel (
   p_administrador integer,
   p_id_usuario integer,
@@ -242,7 +241,9 @@ BEGIN
 						            sol.nro_po,
                         sol.fecha_po,
                         sum(tsd.precio_total) as importe_total,
-                        tcat.codigo as prioridad
+                        tcat.codigo as prioridad,
+                        tcat.id_catalogo as id_prioridad,
+                        sol.list_proceso
 						from adq.tsolicitud sol
 						inner join segu.tusuario usu1 on usu1.id_usuario = sol.id_usuario_reg
                         inner join wf.tproceso_wf pwf on pwf.id_proceso_wf = sol.id_proceso_wf
@@ -258,10 +259,11 @@ BEGIN
                         inner join orga.vfuncionario funa on funa.id_funcionario = sol.id_funcionario_aprobador
                         left join orga.vfuncionario funs on funs.id_funcionario = sol.id_funcionario_supervisor
 
-						            left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
+						left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
                         left join param.vproveedor pro on pro.id_proveedor = sol.id_proveedor
 
                         left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud
+
                         left join param.tcatalogo tcat on tcat.id_catalogo = sol.prioridad
                         '||v_inner||'
                         where  tsd.estado_reg = ''activo'' and '||v_filtro;
@@ -272,7 +274,7 @@ BEGIN
              fun.desc_funcionario1, funa.desc_funcionario1, uo.codigo, uo.nombre_unidad,
              ges.gestion, mon.codigo, dep.codigo, pm.nombre, cat.nombre, funrpc.desc_funcionario1,
              ew.obs, pro.desc_proveedor, funs.desc_funcionario1, ew.id_tipo_estado,
-             pwf.id_tipo_estado_wfs order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+             pwf.id_tipo_estado_wfs, tcat.codigo, tcat.id_catalogo order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
 			--Devuelve la respuesta
 			return v_consulta;
@@ -400,11 +402,12 @@ BEGIN
                         inner join orga.vfuncionario funa on funa.id_funcionario = sol.id_funcionario_aprobador
                         left join orga.vfuncionario funs on funs.id_funcionario = sol.id_funcionario_supervisor
 
-						            left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
+						left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
                         left join param.vproveedor pro on pro.id_proveedor = sol.id_proveedor
 
-			                  left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud
-			                  left join param.tcatalogo tcat on tcat.id_catalogo = sol.prioridad
+						left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud
+
+                        left join param.tcatalogo tcat on tcat.id_catalogo = sol.prioridad
 				       '||v_inner||'
 
 				        where  tsd.estado_reg = ''activo'' and '||v_filtro;
