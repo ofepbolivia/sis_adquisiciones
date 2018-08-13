@@ -309,31 +309,9 @@ class ACTProcesoCompra extends ACTbase{
     }
     function reporteProcesosContratacion(){
 
-//        if($this->objParam->getParametro('id_depto')!=''){
-//            $this->objParam->addFiltro($this->objParam->getParametro('id_depto')." = ".$this->objParam->getParametro('id_depto'));
-//
-//        }
-
-        $this->objParam->addParametro('tipo','iniciados');
-        $this->objFunc=$this->create('MODProcesoCompra');
+        $this->objFunc = $this->create('MODProcesoCompra');
         $this->res=$this->objFunc->reporteProcesosContratacion($this->objParam);
-        $this->objParam->addParametro('iniciados',$this->res->datos);
-
-        $this->objParam->addParametro('tipo','adjudicados');
-        $this->objFunc=$this->create('MODProcesoCompra');
-        $this->res=$this->objFunc->reporteProcesosContratacion($this->objParam);
-        $this->objParam->addParametro('adjudicados',$this->res->datos);
-
-        $this->objParam->addParametro('tipo','ejecutados');
-        $this->objFunc=$this->create('MODProcesoCompra');
-        $this->res=$this->objFunc->reporteProcesosContratacion($this->objParam);
-        $this->objParam->addParametro('ejecutados',$this->res->datos);
-
-//        $this->objFunc=$this->create('MODProcesoCompra');
-//        $this->res=$this->objFunc->procesosIniContratacion($this->objParam);
-//        $this->objParam->addParametro('datos_resumen',$this->res->datos);
-
-
+        //var_dump( $this->res);exit;
         //obtener titulo del reporte
         $titulo = 'RepProcContra';
 
@@ -342,12 +320,11 @@ class ACTProcesoCompra extends ACTbase{
         $nombreArchivo.='.xls';
         $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
 
+        $this->objParam->addParametro('datos', $this->res->datos);
+        //Instancia la clase de excel
         $this->objReporteFormato=new RepProcContra($this->objParam);
-        $this->objReporteFormato->imprimeIniciados();
-        $this->objReporteFormato->imprimeAdjudicados();
-        $this->objReporteFormato->imprimeEjecutados();
-        //$this->objReporteFormato->imprimeResumen();
 
+        $this->objReporteFormato->generarDatos();
         $this->objReporteFormato->generarReporte();
         $this->mensajeExito=new Mensaje();
         $this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado',

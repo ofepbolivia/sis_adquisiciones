@@ -654,17 +654,6 @@ BEGIN
 
     	begin
 
-        	IF v_parametros.tipo='iniciados' THEN
-                v_filtro = ' and (pro.estados_cotizacion not like ''%adjudicado%'' and pro.estados_cotizacion not like ''%contrato_pendiente%''
-            				and pro.estados_cotizacion not like ''%contrato_elaborado%'' and pro.estados_cotizacion not like ''%pago_habilitado%''
-            				and pro.estados_cotizacion not like ''%finalizada%'' or pro.estados_cotizacion is null)';
-            ELSIF v_parametros.tipo='adjudicados' THEN
-            	v_filtro = ' and (pro.estados_cotizacion like ''%adjudicado%'' or pro.estados_cotizacion like ''%contrato_pendiente%''
-                			or pro.estados_cotizacion like ''%contrato_elaborado%'')';
-            ELSIF v_parametros.tipo='ejecutados' THEN
-            	v_filtro = ' and (pro.estados_cotizacion like ''%pago_habilitado%'' or pro.estados_cotizacion like ''%finalizada%'')';
-            END IF;
-
 			v_consulta = 'select
                                  sol.nombre_depto,
                                  sol.num_tramite,
@@ -688,12 +677,12 @@ BEGIN
                         inner join segu.vusuario usu on usu.cuenta=pro.usr_aux
 
                         where pro.fecha_ini_proc BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin ||'''
-                        and sol.precio_total_mb > ' || v_parametros.monto_mayor||v_filtro||'
+                        and sol.precio_total_mb > ' || v_parametros.monto_mayor||'
                         and pro.estado != ''anulado''
 
 
         				order by pro.fecha_ini_proc, pro.num_tramite';
-
+   raise notice '%',v_consulta;
         	return v_consulta;
 
         end;
