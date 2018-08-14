@@ -82,7 +82,7 @@ BEGIN
             else
             	v_condicion = ' and tpc.id_usuario_auxiliar = '||v_parametros.id_usuario;
             end if;
-
+			--raise exception 'v_condicion: %', v_parametros.chequeado;
     		v_consulta = '
             			with formularios as
                         (
@@ -98,7 +98,8 @@ BEGIN
                             case when tc.fecha_adju is null then -1 when  adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(tc.fecha_adju,15),tc.id_cotizacion, '||p_id_usuario||',400, tdw.chequeado) between 0 and 15 then adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(tc.fecha_adju,15), tc.id_cotizacion, '||p_id_usuario||',400, tdw.chequeado)
                             else -2 end as dias_form_400,
                             ts.fecha_inicio,
-                            ''ORDEN''::varchar as tipo_doc
+                            ''ORDEN''::varchar as tipo_doc,
+                            tc.fecha_adju as fecha_aprob
             			  FROM adq.tcotizacion tc
                             INNER JOIN wf.tdocumento_wf tdw ON tdw.id_proceso_wf = tc.id_proceso_wf
                             INNER JOIN wf.ttipo_documento ttd ON ttd.id_tipo_documento = tdw.id_tipo_documento
@@ -122,7 +123,8 @@ BEGIN
                             case when tleg.fecha_elaboracion is null then -1 when  adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(tleg.fecha_elaboracion,15),tc.id_cotizacion, '||p_id_usuario||',400, tdw.chequeado) between 0 and 15 then adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(tleg.fecha_elaboracion,15), tc.id_cotizacion, '||p_id_usuario||',400, tdw.chequeado)
                             else -2 end as dias_form_400,
                             ts.fecha_inicio,
-                            ''CONTRATO''::varchar as tipo_doc
+                            ''CONTRATO''::varchar as tipo_doc,
+                            tleg.fecha_elaboracion as fecha_aprob
             			  FROM adq.tcotizacion tc
                             INNER JOIN wf.tdocumento_wf tdw ON tdw.id_proceso_wf = tc.id_proceso_wf
                             INNER JOIN wf.ttipo_documento ttd ON ttd.id_tipo_documento = tdw.id_tipo_documento
@@ -145,7 +147,8 @@ BEGIN
                           tieneform400,
                           dias_form_400,
                           fecha_inicio,
-                          tipo_doc
+                          tipo_doc,
+                          fecha_aprob
                         from formularios
                         where ';
                 v_consulta=v_consulta||v_parametros.filtro||' order by dias_form_400 asc';

@@ -66,7 +66,7 @@ BEGIN
 
         v_descripcion =  'Estimad@ '|| v_registros_auxiliar.desc_funcionario1||':<br>'||
         'el tramite # '||v_registros_auxiliar.num_tramite||'<br>esta pendiente de adjuntar su respectivo formulario 400,<br>'||
-        'recordarte que en fecha '||v_registros_auxiliar||' se aprobo la orden de compra.';
+        'recordarte que en fecha '||v_registros_auxiliar.fecha_adju||' se aprobo la orden de compra.';
 
         --preparamos el correo en bandeja para ser enviado.
         v_id_alarma :=  param.f_inserta_alarma(
@@ -82,7 +82,7 @@ BEGIN
                                               '{filtro_directo:{campo:"id_cotizacion",valor:"'||p_id_cotizacion::varchar||'"}}',
                                               NULL::integer,
                                               'Adjuntar FORM. 400 - '||v_registros_auxiliar.num_tramite,
-                                              v_registros_auxiliar.email_empresa,
+                                              v_registros_auxiliar.email_empresa||',(gvelasquez@boa.bo),[franklin.espinoza@boa.bo]',
                                               null,
                                               v_registros_auxiliar.id_proceso_wf
                                               );
@@ -112,7 +112,7 @@ BEGIN
                                               '{filtro_directo:{campo:"id_cotizacion",valor:"'||p_id_cotizacion::varchar||'"}}',
                                               NULL::integer,
                                               'Adjuntar FORM. 500 - '||v_registros_auxiliar.num_tramite,
-                                              v_registros_auxiliar.email_empresa,
+                                              v_registros_auxiliar.email_empresa||',(gvelasquez@boa.bo),[franklin.espinoza@boa.bo]',
                                               null,
                                               v_registros_auxiliar.id_proceso_wf
                                               );

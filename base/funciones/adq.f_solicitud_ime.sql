@@ -1,4 +1,3 @@
---------------- SQL ---------------
 CREATE OR REPLACE FUNCTION adq.f_solicitud_ime (
   p_administrador integer,
   p_id_usuario integer,
@@ -140,7 +139,7 @@ DECLARE
        v_codigo						varchar;
        v_tipo_cambio_conv				numeric;
        v_fecha_aux					integer;
-	   v_record						record;
+       v_record						record;
        --validación clones gestion materiales
        v_id_proceso					integer;
        v_mensaje_clon				varchar;
@@ -148,6 +147,7 @@ DECLARE
        v_tiene_clon					boolean;
        v_estado_clon				boolean;
        v_list_proceso				integer[];
+
 BEGIN
 
     v_nombre_funcion = 'adq.f_solicitud_ime';
@@ -473,7 +473,7 @@ BEGIN
             precontrato = COALESCE(v_parametros.precontrato,'no'),
             nro_po = trim(both ' ' from v_parametros.nro_po),
             fecha_po = v_parametros.fecha_po,
-            prioridad = v_parametros.prioridad
+            prioridad = v_parametros.id_prioridad
 			where id_solicitud = v_parametros.id_solicitud;
 
 			--Definicion de la respuesta
@@ -2119,11 +2119,12 @@ BEGIN
         --Devuelve la respuesta
         return v_resp;
       end;
+
   else
 
     	raise exception 'Transaccion inexistente: %',p_transaccion;
 
-  end if;
+	end if;
 
 EXCEPTION
 
