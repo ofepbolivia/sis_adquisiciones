@@ -67,6 +67,8 @@ class RepProcContra
         $this->docexcel->getActiveSheet()->getColumnDimension('H')->setWidth(20);
         $this->docexcel->getActiveSheet()->getColumnDimension('I')->setWidth(20);
         $this->docexcel->getActiveSheet()->getColumnDimension('J')->setWidth(20);
+        $this->docexcel->getActiveSheet()->getColumnDimension('K')->setWidth(25);
+        $this->docexcel->getActiveSheet()->getColumnDimension('L')->setWidth(25);
 
 
         $styleTitulos = array(
@@ -90,9 +92,9 @@ class RepProcContra
                     'style' => PHPExcel_Style_Border::BORDER_THIN
                 )
             ));
-        $this->docexcel->getActiveSheet()->getStyle('A1:J1')->getAlignment()->setWrapText(true);
+        $this->docexcel->getActiveSheet()->getStyle('A1:L1')->getAlignment()->setWrapText(true);
 
-        $this->docexcel->getActiveSheet()->getStyle('A1:J1')->applyFromArray($styleTitulos);
+        $this->docexcel->getActiveSheet()->getStyle('A1:L1')->applyFromArray($styleTitulos);
 
         //*************************************Cabecera*****************************************
         $this->docexcel->getActiveSheet()->setCellValue('A1','Depto');
@@ -100,11 +102,13 @@ class RepProcContra
         $this->docexcel->getActiveSheet()->setCellValue('C1','Justificación');
         $this->docexcel->getActiveSheet()->setCellValue('D1','Solicitante');
         $this->docexcel->getActiveSheet()->setCellValue('E1','Proveedor Adjudicado');
-        $this->docexcel->getActiveSheet()->setCellValue('F1','Inicio Proceso');
+        $this->docexcel->getActiveSheet()->setCellValue('F1','Inicio Solicitud');
         $this->docexcel->getActiveSheet()->setCellValue('G1','Precio en Bs');
         $this->docexcel->getActiveSheet()->setCellValue('H1','Precio del Proceso');
         $this->docexcel->getActiveSheet()->setCellValue('I1','Moneda del Proceso');
         $this->docexcel->getActiveSheet()->setCellValue('J1','Contrato');
+        $this->docexcel->getActiveSheet()->setCellValue('K1','Estado Solicitud');
+        $this->docexcel->getActiveSheet()->setCellValue('L1','Estado Compra');
 
 
          }

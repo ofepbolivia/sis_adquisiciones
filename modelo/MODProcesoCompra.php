@@ -405,11 +405,14 @@ function listarProcesoCompraPedido(){
         $this->captura('justificacion','text');
         $this->captura('solicitante','text');
         $this->captura('proveedor_adjudicado','text');
-        $this->captura('fecha_ini_proc','date');
+        //$this->captura('fecha_ini_proc','date');
+        $this->captura('fecha_soli','date');
         $this->captura('precio_bs','varchar');
         $this->captura('precio_moneda_solicitada','varchar');
         $this->captura('moneda_solicitada','varchar');
         $this->captura('requiere_contrato','text');
+        $this->captura('estado_solicitud','text');
+        $this->captura('estado_compra','text');
 
 
 

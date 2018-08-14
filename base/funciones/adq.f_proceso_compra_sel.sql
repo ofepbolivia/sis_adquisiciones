@@ -659,10 +659,8 @@ BEGIN
                                  sol.num_tramite,
             					 sol.justificacion,
                                  sol.desc_funcionario1 as solicitante,
-       		  					 --usu.desc_persona as tecnico_adquisiciones,
-                                 --sol.desc_proveedor as proveedor_recomendado,
-            					 pro.proveedores_cot as proveedor_adjudicado,
-                                 pro.fecha_ini_proc,
+       		  					 pro.proveedores_cot as proveedor_adjudicado,
+                                 sol.fecha_soli,
                                  (to_char(sol.precio_total_mb,''999G999G999G999D99''))::varchar as precio_bs,
                                  (to_char(sol.precio_total,''999G999G999G999D99''))::varchar as precio_moneda_solicitada,
                                  sol.codigo as moneda_solicitada,
@@ -670,18 +668,21 @@ BEGIN
                 				 	else case when sol.tipo=''bien'' then ''Orden de Bien''
                       				when sol.tipo=''servicio'' then ''Orden de Servicio''
                       				end
-                 					end as contrato_orden
+                 					end as contrato_orden,
+                                 sol.estado::text as estado_solicitud,
+                                 pro.estados_cotizacion::text as estado_compra
+
 
                         from adq.vsolicitud_compra sol
-                        left join adq.vproceso_compra pro on pro.id_solicitud=sol.id_solicitud and pro.estados_cotizacion!=''anulado''
+                        inner join adq.vproceso_compra pro on pro.id_solicitud=sol.id_solicitud
                         inner join segu.vusuario usu on usu.cuenta=pro.usr_aux
 
-                        where pro.fecha_ini_proc BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin ||'''
+                        where sol.fecha_soli BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin ||'''
                         and sol.precio_total_mb > ' || v_parametros.monto_mayor||'
-                        and pro.estado != ''anulado''
 
 
-        				order by pro.fecha_ini_proc, pro.num_tramite';
+
+        				order by sol.fecha_soli, pro.num_tramite';
    raise notice '%',v_consulta;
         	return v_consulta;
 
