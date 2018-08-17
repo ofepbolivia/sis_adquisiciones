@@ -956,5 +956,7 @@ VALUES
   
 /***********************************F-DAT-RAC-ADQ-0-12/10/2017*****************************************/
   
-  
+/***********************************I-DAT-MAY-ADQ-0-17/08/2018****************************************/
+select pxp.f_insert_tgui ('Reporte Gerencial de Procesos de Contratación', 'Reporte Gerencial de Procesos de Contratación', 'PROCONRES', 'si', 5, 'sis_adquisiciones/vista/reporte_procesos_contratacion/ReporteProcesosContratacionResumido.php', 3, '', 'ReporteProcesosContratacionResumido', 'ADQ');
+/***********************************F-DAT-MAY-ADQ-0-17/08/2018****************************************/
   

@@ -423,6 +423,31 @@ function listarProcesoCompraPedido(){
         //Devuelve la respuesta
         return $this->respuesta;
     }
+    function reporteProcesosContratacionResumido(){
+
+            //Definicion de variables para ejecucion del procedimientp
+            $this->procedimiento='adq.f_proceso_compra_sel';
+            $this->transaccion='ADQ_REPROCONRES_SEL';
+            $this->tipo_procedimiento='SEL';//tipo de transaccion
+
+            $this->setParametro('fecha_ini','fecha_ini','date');
+            $this->setParametro('fecha_fin','fecha_fin','date');
+            $this->setParametro('tipo','tipo','varchar');
+            $this->setParametro('monto_mayor','monto_mayor','varchar');
+
+            //Definicion de la lista del resultado del query
+            $this->captura('num_tramite','varchar');
+            $this->captura('importe','varchar');
+            $this->captura('estados_cotizacion','varchar');
+            $this->captura('estado','varchar');
+
+            //Ejecuta la instruccion
+            $this->armarConsulta();
+            $this->ejecutarConsulta();
+            //Devuelve la respuesta
+            return $this->respuesta;
+    }
+
     function procesosIniContratacion(){
         //Definicion de variables para ejecucion del procedimientp
         $this->procedimiento='adq.f_proceso_compra_sel';

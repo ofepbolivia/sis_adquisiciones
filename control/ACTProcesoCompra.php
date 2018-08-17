@@ -14,6 +14,7 @@ require_once(dirname(__FILE__).'/../reportes/RTiemposProcesoCompra.php');
 require_once(dirname(__FILE__).'/../reportes/RepProcIniAdjEje.php');
 
 require_once(dirname(__FILE__).'/../reportes/RepProcContra.php');
+require_once(dirname(__FILE__).'/../reportes/RepProcContraResumido.php');
 
 
 class ACTProcesoCompra extends ACTbase{    
@@ -332,6 +333,55 @@ class ACTProcesoCompra extends ACTbase{
 
         $this->mensajeExito->setArchivoGenerado($nombreArchivo);
         $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+    }
+    function reporteProcesosContratacionResumido(){
+
+        $this->objParam->addParametro('tipo','iniciados');
+        $this->objFunc=$this->create('MODProcesoCompra');
+        $this->res=$this->objFunc->reporteProcesosContratacionResumido($this->objParam);
+        $this->objParam->addParametro('iniciados',$this->res->datos);
+
+        $this->objParam->addParametro('tipo','adjudicados');
+        $this->objFunc=$this->create('MODProcesoCompra');
+        $this->res=$this->objFunc->reporteProcesosContratacionResumido($this->objParam);
+        $this->objParam->addParametro('adjudicados',$this->res->datos);
+
+        $this->objParam->addParametro('tipo','ejecutados');
+        $this->objFunc=$this->create('MODProcesoCompra');
+        $this->res=$this->objFunc->reporteProcesosContratacionResumido($this->objParam);
+        $this->objParam->addParametro('ejecutados',$this->res->datos);
+
+        $this->objParam->addParametro('tipo','concluidos');
+        $this->objFunc=$this->create('MODProcesoCompra');
+        $this->res=$this->objFunc->reporteProcesosContratacionResumido($this->objParam);
+        $this->objParam->addParametro('concluidos',$this->res->datos);
+  //var_dump( $this->res);exit;
+
+
+        //obtener titulo del reporte
+        $titulo = 'RepProcContraResumido';
+
+        //Genera el nombre del archivo (aleatorio + titulo)
+        $nombreArchivo=uniqid(md5(session_id()).$titulo);
+        $nombreArchivo.='.xls';
+        $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+
+        $this->objReporteFormato=new RepProcContraResumido($this->objParam);
+        $this->objReporteFormato->imprimeCabecera();
+        $this->objReporteFormato->imprimeIniciados();
+        $this->objReporteFormato->imprimeAdjudicados();
+        $this->objReporteFormato->imprimeEjecutados();
+        $this->objReporteFormato->imprimeConcluidos();
+
+        $this->objReporteFormato->generarReporte();
+
+        $this->mensajeExito=new Mensaje();
+        $this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado',
+            'Se generó con éxito el reporte: '.$nombreArchivo,'control');
+
+        $this->mensajeExito->setArchivoGenerado($nombreArchivo);
+        $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+
     }
 
 }
