@@ -30,8 +30,13 @@ DECLARE
 
     v_filadd 			varchar;
 
-    va_id_depto integer[];
+    va_id_depto 		integer[];
     v_filtro			varchar;
+
+    v_num_iniciados		varchar;
+    v_num_adjudicados	varchar;
+    v_num_ejecutados	varchar;
+    v_num_concluidos	varchar;
 
 BEGIN
 
@@ -582,35 +587,56 @@ BEGIN
 
     	begin
 
-            v_consulta = 'select ''Iniciados'' as estado, cc.nombre, count(pro.id_proceso_compra) as total
-						  from adq.vsolicitud_compra sol
-			left join adq.vproceso_compra pro on pro.id_solicitud=sol.id_solicitud and pro.estados_cotizacion!=''anulado''
-			inner join adq.tcategoria_compra cc on cc.id_categoria_compra=pro.id_categoria_compra
-			where pro.fecha_ini_proc BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin||'''
+            v_consulta = 'select ''Iniciados'' as estado,
+            					cc.nombre,
+                                count(pro.id_proceso_compra) as total
+
+                          from adq.vsolicitud_compra sol
+                          left join adq.vproceso_compra pro on pro.id_solicitud=sol.id_solicitud and pro.estados_cotizacion!=''anulado''
+                          inner join adq.tcategoria_compra cc on cc.id_categoria_compra=pro.id_categoria_compra
+
+            where pro.fecha_ini_proc BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin||'''
 			and sol.precio_total_mb > ' || v_parametros.monto_mayor || '
 			and pro.estado != ''anulado'' and pro.id_depto=' ||v_parametros.id_depto||'
-			and (pro.estados_cotizacion not like ''%adjudicado%'' and pro.estados_cotizacion not like ''%contrato_pendiente%''
-			and pro.estados_cotizacion not like ''%contrato_elaborado%'' and pro.estados_cotizacion not like ''%pago_habilitado%''
-			and pro.estados_cotizacion not like ''%finalizada%'' or pro.estados_cotizacion is null)
-			group by cc.nombre UNION ALL
-			select ''Adjudicados'' as estado, cc.nombre, count(pro.id_proceso_compra) as total
-			from adq.vsolicitud_compra sol
+			and (pro.estados_cotizacion not like ''%adjudicado%''
+            and pro.estados_cotizacion not like ''%contrato_pendiente%''
+			and pro.estados_cotizacion not like ''%contrato_elaborado%''
+            and pro.estados_cotizacion not like ''%pago_habilitado%''
+			and pro.estados_cotizacion not like ''%finalizada%''
+            or pro.estados_cotizacion is null)
+			group by cc.nombre
+
+            UNION ALL
+			select ''Adjudicados'' as estado,
+            cc.nombre,
+            count(pro.id_proceso_compra) as total
+
+            from adq.vsolicitud_compra sol
 			left join adq.vproceso_compra pro on pro.id_solicitud=sol.id_solicitud and pro.estados_cotizacion!=''anulado''
 			inner join adq.tcategoria_compra cc on cc.id_categoria_compra=pro.id_categoria_compra
-			where pro.fecha_ini_proc BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin||'''
+
+            where pro.fecha_ini_proc BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin||'''
 			and sol.precio_total_mb > '||v_parametros.monto_mayor||'
-            and pro.estado != ''anulado'' and pro.id_depto='||v_parametros.id_depto||'
-			and (pro.estados_cotizacion like ''%adjudicado%'' or pro.estados_cotizacion like ''%contrato_pendiente%''
+            and pro.estado != ''anulado''
+            and pro.id_depto='||v_parametros.id_depto||'
+			and (pro.estados_cotizacion like ''%adjudicado%''
+            or pro.estados_cotizacion like ''%contrato_pendiente%''
 			or pro.estados_cotizacion like ''%contrato_elaborado%'')
-			group by cc.nombre UNION ALL
-			select ''Ejecutados'' as estado, cc.nombre, count(pro.id_proceso_compra) as total
-			from adq.vsolicitud_compra sol
+			group by cc.nombre
+
+            UNION ALL
+			select ''Ejecutados'' as estado,
+            cc.nombre,
+            count(pro.id_proceso_compra) as total
+
+            from adq.vsolicitud_compra sol
 			left join adq.vproceso_compra pro on pro.id_solicitud=sol.id_solicitud and pro.estados_cotizacion!=''anulado''
 			inner join adq.tcategoria_compra cc on cc.id_categoria_compra=pro.id_categoria_compra
 			where pro.fecha_ini_proc BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin||'''
 			and sol.precio_total_mb > '||v_parametros.monto_mayor||'
 			and pro.estado != ''anulado'' and pro.id_depto=' ||v_parametros.id_depto||'
-			and (pro.estados_cotizacion like ''%pago_habilitado%'' or pro.estados_cotizacion like ''%finalizada%'')
+			and (pro.estados_cotizacion like ''%pago_habilitado%''
+            or pro.estados_cotizacion like ''%finalizada%'')
 			group by cc.nombre';
 
         	return v_consulta;
@@ -687,6 +713,51 @@ BEGIN
         	return v_consulta;
 
         end;
+
+      /*********************************
+ 	#TRANSACCION:  'ADQ_REPROCONRES_SEL'
+ 	#DESCRIPCION:	Obtener procesos iniciados, adjudicados y ejecutados
+ 	#AUTOR:		admin
+ 	#FECHA:		14-08-2018
+	***********************************/
+
+	elsif(p_transaccion='ADQ_REPROCONRES_SEL')then
+
+    	begin
+
+        	IF v_parametros.tipo='iniciados' THEN
+	        	v_filtro = '';
+            ELSIF v_parametros.tipo='adjudicados' THEN
+            	v_filtro = '';
+
+            ELSIF v_parametros.tipo='ejecutados' THEN
+            	v_filtro = ' ';
+            ELSIF v_parametros.tipo='concluidos' THEN
+            	v_filtro = ' ';
+            END IF;
+
+        	v_consulta = 'select sol.num_tramite,
+            					 (to_char(sol.precio_total,''999G999G999G999D99'')||'' ''||sol.codigo)::varchar as importe,
+                                  pro.estados_cotizacion::varchar,
+                                 sol.estado
+
+
+                  from adq.vsolicitud_compra sol
+                  left join adq.vproceso_compra pro on pro.id_solicitud=sol.id_solicitud and pro.estados_cotizacion not like ''%anulado%''
+                  left join segu.vusuario usu on usu.cuenta=pro.usr_aux
+
+                  where sol.fecha_soli BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin ||'''
+                  		and sol.precio_total_mb > ' || v_parametros.monto_mayor ||v_filtro||'
+                  		and sol.estado != ''anulado''
+
+
+
+
+                  order by pro.num_tramite';
+        	return v_consulta;
+
+--raise notice '%', v_consulta;
+     end;
 
 
 	else
