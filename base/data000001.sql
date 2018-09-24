@@ -959,4 +959,7 @@ VALUES
 /***********************************I-DAT-MAY-ADQ-0-17/08/2018****************************************/
 select pxp.f_insert_tgui ('Reporte Gerencial de Procesos de Contratación', 'Reporte Gerencial de Procesos de Contratación', 'PROCONRES', 'si', 5, 'sis_adquisiciones/vista/reporte_procesos_contratacion/ReporteProcesosContratacionResumido.php', 3, '', 'ReporteProcesosContratacionResumido', 'ADQ');
 /***********************************F-DAT-MAY-ADQ-0-17/08/2018****************************************/
-  
+
+/***********************************I-DAT-MAY-ADQ-0-24/09/2018****************************************/
+select pxp.f_insert_tgui ('Reportes Gerenciales', 'Reportes Gerenciales', 'REGEIAC', 'si', 6, 'sis_adquisiciones/vista/reporte_procesos_contratacion/ReporteProcesosContraDet.php', 2, '', 'ReporteProcesosContraDet', 'ADQ');
+/***********************************F-DAT-MAY-ADQ-0-24/09/2018****************************************/

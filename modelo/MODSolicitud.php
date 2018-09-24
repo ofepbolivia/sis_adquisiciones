@@ -882,10 +882,10 @@ class MODSolicitud extends MODbase{
 
 
         //Definicion de la lista del resultado del query
-        $this->captura('id_solicitud','int4');
+        $this->captura('id_solicitud','integer');
         $this->captura('num_tramite','varchar');
-        $this->captura('id_depto','int4');
-        $this->captura('instruc_rpc','text');
+        $this->captura('id_depto','integer');
+        $this->captura('instruc_rpc','varchar');
 
 
         $this->armarConsulta();//echo $this->consulta; exit;

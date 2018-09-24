@@ -38,6 +38,10 @@ DECLARE
     v_num_ejecutados	varchar;
     v_num_concluidos	varchar;
 
+    v_forma_pago  		varchar;
+    v_nro_cuota			varchar;
+
+
 BEGIN
 
 	v_nombre_funcion = 'adq.f_proceso_compra_sel';
@@ -758,6 +762,149 @@ BEGIN
 
 --raise notice '%', v_consulta;
      end;
+
+     /*********************************
+ 	#TRANSACCION:  'ADQ_REPRODET_SEL'
+ 	#DESCRIPCION:	Obtener procesos iniciados, adjudicados, con contrato, orden de compra y ejecutados
+ 	#AUTOR:		admin
+ 	#FECHA:		07-09-2018
+	***********************************/
+
+	elsif(p_transaccion='ADQ_REPRODET_SEL')then
+
+    	begin
+        	IF v_parametros.tipo='iniciados' THEN
+	        	v_filtro = '';
+
+           ELSIF v_parametros.tipo='adjudicados' THEN
+            	v_filtro = ' and ( cot.estado like ''%adjudicado%'' or
+                				  cot.estado like ''%contrato_pendiente%'' or
+                			      cot.estado like ''%contrato_elaborado%'' or
+                                  cot.estado like ''%pago_habilitado%''
+                                  or cot.estado like ''%finalizada%''
+                                )';
+
+         ELSIF v_parametros.tipo='contrato' THEN
+            	v_filtro = ' and (cot.requiere_contrato = ''si'' and
+                				  cot.estado != ''borrador'' and
+                                  cot.estado != ''cotizado''
+                			     )';
+
+         ELSIF v_parametros.tipo='compraservicio' THEN
+            	v_filtro = ' and (cot.requiere_contrato = ''no'' and
+                				  cot.estado != ''borrador'' and
+                                  cot.estado != ''cotizado''
+                                  )';
+
+         ELSIF v_parametros.tipo='ejecutados' THEN
+            	v_filtro = ' and (cot.estado like ''%pago_habilitado%''
+                				 or cot.estado like ''%finalizada%'')';
+
+     	 ELSIF v_parametros.tipo='concluidos' THEN
+            	v_filtro = ' and (cot.estado like ''%finalizada%'')';
+            END IF;
+
+
+v_consulta = '                      select  sol.num_tramite,
+                                    (((COALESCE(per.nombre, ''''::character varying)::text || '' ''::text) || COALESCE(per.apellido_paterno, ''''::character varying)::text) || '' ''::text) || COALESCE(per.apellido_materno, ''''::character varying)::text AS solicitante,
+                                    p.desc_proveedor::text as proveedor_adjudicado,
+                                    pc.fecha_ini_proc::date,
+                                    sol.fecha_soli::date,
+                                    cot.fecha_adju::date,
+                                    (to_char(COALESCE(sum(sd.precio_total), 0::numeric),''999G999G999G999D99''))::varchar AS precio_bs,
+                                    (to_char(COALESCE(sum(sd.precio_unitario_mb * sd.cantidad::numeric), 0::numeric),''999G999G999G999D99''))::varchar AS precio_moneda_solicitada,
+                                    cot.requiere_contrato::text,
+                                    sol.tipo::text,
+                                    cot.nro_contrato::varchar,
+                                    pc.objeto::varchar,
+
+                                    (select list(pp.nro_cuota||''-''||pp.forma_pago)
+                                     from tes.tplan_pago pp
+                                     join tes.tobligacion_pago opa on opa.id_obligacion_pago = pp.id_obligacion_pago
+                                     where
+                                     pp.fecha_conformidad is not null
+                                     and opa.num_tramite = sol.num_tramite)::VARCHAR as forma_pago,
+                                   COALESCE(cot.fecha_entrega::varchar, cot.tiempo_entrega)::varchar as tiempo_entrega,
+                                   (to_char(COALESCE(sum(cd.cantidad_adju * cd.precio_unitario_mb), 0::numeric),''999G999G999G999D99''))::varchar AS monto_total_adjudicado_mb,
+                                   (to_char(COALESCE(sum(cd.cantidad_adju * cd.precio_unitario), 0::numeric),''999G999G999G999D99''))::varchar AS monto_total_adjudicado,
+                                   COALESCE(cot.numero_oc,''S/N'')::varchar as numero_oc,
+                                   p.desc_proveedor::varchar,
+                                   cot.fecha_entrega::date,
+                                   dep.codigo::varchar as desc_depto,
+                                   cot.estado::varchar as estados_cotizacion,
+                                   (uo.codigo||''-''||uo.nombre_unidad)::varchar as nombre_unidad,
+                                   con.numero::varchar,
+                                   COALESCE(con.fecha_elaboracion,cot.fecha_adju)::date as fecha_elaboracion,
+                                   COALESCE(con.fecha_inicio::varchar,cot.fecha_adju::varchar)::varchar as fecha_inicio,
+                                   COALESCE(con.fecha_fin::varchar,(COALESCE(cot.fecha_entrega::varchar, cot.tiempo_entrega)))::varchar as fecha_fin,
+                                   op.nro_cuota_vigente::numeric,
+                                   (to_char((select sum(pp.monto)
+                                    from tes.tplan_pago pp
+                                    join tes.tobligacion_pago opa on opa.id_obligacion_pago = pp.id_obligacion_pago
+                                    where
+                                    pp.fecha_conformidad is not null
+                                    and pp.estado != ''anulado''
+                                    and opa.num_tramite = sol.num_tramite
+                                     ),''999G999G999G999D99''))::VARCHAR as total_pagado,
+                                    mon.codigo::varchar
+
+               from adq.tsolicitud sol
+            left join adq.tproceso_compra pc on pc.id_solicitud = sol.id_solicitud
+            left join adq.tcotizacion cot on cot.id_proceso_compra = pc.id_proceso_compra and cot.estado != ''anulado''
+            LEFT JOIN adq.tcotizacion_det cd ON cd.id_cotizacion = cot.id_cotizacion
+            LEFT JOIN adq.tsolicitud_det sd ON sd.id_solicitud_det = cd.id_solicitud_det
+            left join tes.tobligacion_pago op on op.id_obligacion_pago = cot.id_obligacion_pago
+            left join tes.tplan_pago pp on pp.id_obligacion_pago = op.id_obligacion_pago and pp.fecha_conformidad is not null
+            JOIN param.tmoneda mon ON mon.id_moneda = sol.id_moneda
+            join orga.tfuncionario func on func.id_funcionario = sol.id_funcionario and func.estado_reg::text = ''activo''::text
+            join segu.tpersona per on per.id_persona =func.id_persona
+            LEFT JOIN param.vproveedor p ON p.id_proveedor = cot.id_proveedor
+            JOIN param.tdepto dep ON dep.id_depto = pc.id_depto
+            JOIN orga.tuo uo ON uo.id_uo = sol.id_uo
+            join adq.vcotizacion vcot on vcot.id_solicitud = sol.id_solicitud and vcot.monto_total_adjudicado_mb != ''0''
+            left join leg.tcontrato con on con.id_cotizacion = cot.id_cotizacion
+
+            where sol.fecha_soli BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin ||'''
+            and vcot.precio_total_mb > ' || v_parametros.monto_mayor ||v_filtro||'
+            and sol.estado != ''anulado''
+
+
+
+          group by               sol.num_tramite,
+            					 per.nombre,
+                                 per.apellido_paterno,
+                                 per.apellido_materno,
+                                 p.desc_proveedor,
+                                 pc.fecha_ini_proc,
+                                 sol.fecha_soli,
+                                 cot.fecha_adju,
+                                 cot.requiere_contrato,
+                                 sol.tipo,
+                                 cot.nro_contrato,
+                                 pc.objeto,
+                                 cot.fecha_entrega,
+                                 cot.tiempo_entrega,
+                                 cot.numero_oc,
+                                 cot.fecha_entrega,
+                                 dep.codigo,
+                                 cot.estado,
+                                 uo.codigo,
+                                 uo.nombre_unidad,
+                                 con.numero,
+                                 con.fecha_elaboracion,
+                                 con.fecha_inicio,
+                                 con.fecha_fin,
+                                 mon.codigo,
+       		  			         op.nro_cuota_vigente
+
+
+              order by sol.num_tramite';
+
+
+        	return v_consulta;
+
+        end;
+
 
 
 	else
