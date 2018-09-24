@@ -202,7 +202,7 @@ class RepProcContraDet
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['solicitante']);
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['nombre_unidad']);
 
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['estados_cotizacion']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['estados_cotizacion']);
                 }else{
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['fecha_soli']);
@@ -211,7 +211,7 @@ class RepProcContraDet
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['solicitante']);
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['nombre_unidad']);
 
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['estados_cotizacion']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['estados_cotizacion']);
                 }
             }
 
@@ -386,7 +386,7 @@ class RepProcContraDet
                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['tipo']);
                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['tiempo_entrega']);
 
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['estados_cotizacion']);
+                  //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['estados_cotizacion']);
               }else{
                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, '');
@@ -401,7 +401,7 @@ class RepProcContraDet
                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['fecha_inicio']);
                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['fecha_fin']);
 
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['estados_cotizacion']);
+                  //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['estados_cotizacion']);
 
               }
 
@@ -586,7 +586,7 @@ class RepProcContraDet
                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['tipo']);
                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['forma_pago']);
 
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
+                  //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
               }else{
                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
                   //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['precio_bs']);
@@ -603,7 +603,7 @@ class RepProcContraDet
                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['tipo']);
                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['forma_pago']);
 
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
+                  //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
               }
 
             }
@@ -788,7 +788,7 @@ class RepProcContraDet
                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['objeto']);
                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['forma_pago']);
 
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
+                  // $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
                }else{
                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['tipo']);
@@ -805,7 +805,7 @@ class RepProcContraDet
                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['objeto']);
                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['forma_pago']);
 
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
+                   //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
                }
 
             }
@@ -990,7 +990,7 @@ class RepProcContraDet
                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['nro_cuota_vigente']);
                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['forma_pago']);
 
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
+                   //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
                }else{
                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['fecha_elaboracion']);
@@ -1007,7 +1007,7 @@ class RepProcContraDet
                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['nro_cuota_vigente']);
                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['forma_pago']);
 
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
+                   //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
                }
 
             }
@@ -1164,7 +1164,7 @@ class RepProcContraDet
                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['solicitante']);
                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['nombre_unidad']);
 
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['estados_cotizacion']);
+                   //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['estados_cotizacion']);
                }else{
                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['fecha_elaboracion']);
@@ -1178,7 +1178,7 @@ class RepProcContraDet
                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['solicitante']);
                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['nombre_unidad']);
 
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['estados_cotizacion']);
+                   //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['estados_cotizacion']);
                }
 
             }

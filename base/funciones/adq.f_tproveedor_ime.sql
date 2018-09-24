@@ -265,7 +265,8 @@ BEGIN
             id_usuario_mod = p_id_usuario,
             fecha_mod = now(),
             rotulo_comercial = v_parametros.rotulo_comercial,
-            contacto = v_parametros.contacto
+            contacto = v_parametros.contacto,
+            tipo = v_parametros.tipo_prov
             where id_proveedor=v_parametros.id_proveedor;
 
 			--Definicion de la respuesta

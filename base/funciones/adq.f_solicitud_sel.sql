@@ -851,8 +851,26 @@ BEGIN
 			return v_consulta;
 
 		end;
-    else
+    /*********************************
+ 	#TRANSACCION:  'ADQ_GET_DAT_SOL_SEL'
+ 	#DESCRIPCION:	Datos de Solicitud de Compra
+ 	#AUTOR:		F.E.A
+ 	#FECHA:		02-06-2018
+	***********************************/
+    elsif(p_transaccion='ADQ_GET_DAT_SOL_SEL')then
+    	begin
+        v_consulta:='select
+                            ts.id_solicitud,
+                            ts.num_tramite,
+                            ts.id_depto,
+                            ts.instruc_rpc
+                            from adq.tsolicitud ts
+                            where '||v_parametros.filtro;
+        --Devuelve la respuesta
+          return v_consulta;
+        end;
 
+    else
 		raise exception 'Transaccion inexistente';
 
 	end if;
