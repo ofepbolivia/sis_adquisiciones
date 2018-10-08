@@ -32,7 +32,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     allowBlank: true,
                     anchor: '35%',
                     gwidth: 80,
-                    maxLength:6
+                    maxLength:10
                 },
                 type:'NumberField',
                 grid:true,

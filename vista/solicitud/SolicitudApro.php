@@ -696,7 +696,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         var items = this.formProceso.getForm().getValues();
                         if(JSON.parse(reg.ROOT.datos.p_tiene_clon)){
 
-                            list_proceso = reg.ROOT.datos.p_list_proceso.split(',');;
+                            list_proceso = reg.ROOT.datos.p_list_proceso.split(',');
                             list_proceso.forEach( function(valor, indice, array) {
                                 console.log('valor', valor);
                                 Ext.Ajax.request({

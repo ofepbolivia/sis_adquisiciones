@@ -811,8 +811,8 @@ v_consulta = '                      select  sol.num_tramite,
                                     pc.fecha_ini_proc::date,
                                     sol.fecha_soli::date,
                                     cot.fecha_adju::date,
-                                    (to_char(COALESCE(sum(sd.precio_total), 0::numeric),''999G999G999G999D99''))::varchar AS precio_bs,
-                                    (to_char(COALESCE(sum(sd.precio_unitario_mb * sd.cantidad::numeric), 0::numeric),''999G999G999G999D99''))::varchar AS precio_moneda_solicitada,
+                                    (COALESCE(sum(sd.precio_total), 0::numeric))::varchar AS precio_bs,
+                                    (COALESCE(sum(sd.precio_unitario_mb * sd.cantidad::numeric), 0::numeric))::varchar AS precio_moneda_solicitada,
                                     cot.requiere_contrato::text,
                                     sol.tipo::text,
                                     cot.nro_contrato::varchar,
@@ -825,8 +825,8 @@ v_consulta = '                      select  sol.num_tramite,
                                      pp.fecha_conformidad is not null
                                      and opa.num_tramite = sol.num_tramite)::VARCHAR as forma_pago,
                                    COALESCE(cot.fecha_entrega::varchar, cot.tiempo_entrega)::varchar as tiempo_entrega,
-                                   (to_char(COALESCE(sum(cd.cantidad_adju * cd.precio_unitario_mb), 0::numeric),''999G999G999G999D99''))::varchar AS monto_total_adjudicado_mb,
-                                   (to_char(COALESCE(sum(cd.cantidad_adju * cd.precio_unitario), 0::numeric),''999G999G999G999D99''))::varchar AS monto_total_adjudicado,
+                                   (COALESCE(sum(cd.cantidad_adju * cd.precio_unitario_mb), 0::numeric))::varchar AS monto_total_adjudicado_mb,
+                                   (COALESCE(sum(cd.cantidad_adju * cd.precio_unitario), 0::numeric))::varchar AS monto_total_adjudicado,
                                    COALESCE(cot.numero_oc,''S/N'')::varchar as numero_oc,
                                    p.desc_proveedor::varchar,
                                    cot.fecha_entrega::date,
@@ -838,14 +838,14 @@ v_consulta = '                      select  sol.num_tramite,
                                    COALESCE(con.fecha_inicio::varchar,cot.fecha_adju::varchar)::varchar as fecha_inicio,
                                    COALESCE(con.fecha_fin::varchar,(COALESCE(cot.fecha_entrega::varchar, cot.tiempo_entrega)))::varchar as fecha_fin,
                                    op.nro_cuota_vigente::numeric,
-                                   (to_char((select sum(pp.monto)
+                                   ((select sum(pp.monto)
                                     from tes.tplan_pago pp
                                     join tes.tobligacion_pago opa on opa.id_obligacion_pago = pp.id_obligacion_pago
                                     where
                                     pp.fecha_conformidad is not null
                                     and pp.estado != ''anulado''
                                     and opa.num_tramite = sol.num_tramite
-                                     ),''999G999G999G999D99''))::VARCHAR as total_pagado,
+                                     ))::VARCHAR as total_pagado,
                                     mon.codigo::varchar
 
                from adq.tsolicitud sol
@@ -854,7 +854,6 @@ v_consulta = '                      select  sol.num_tramite,
             LEFT JOIN adq.tcotizacion_det cd ON cd.id_cotizacion = cot.id_cotizacion
             LEFT JOIN adq.tsolicitud_det sd ON sd.id_solicitud_det = cd.id_solicitud_det
             left join tes.tobligacion_pago op on op.id_obligacion_pago = cot.id_obligacion_pago
-            left join tes.tplan_pago pp on pp.id_obligacion_pago = op.id_obligacion_pago and pp.fecha_conformidad is not null
             JOIN param.tmoneda mon ON mon.id_moneda = sol.id_moneda
             join orga.tfuncionario func on func.id_funcionario = sol.id_funcionario and func.estado_reg::text = ''activo''::text
             join segu.tpersona per on per.id_persona =func.id_persona
@@ -862,7 +861,7 @@ v_consulta = '                      select  sol.num_tramite,
             JOIN param.tdepto dep ON dep.id_depto = pc.id_depto
             JOIN orga.tuo uo ON uo.id_uo = sol.id_uo
             join adq.vcotizacion vcot on vcot.id_solicitud = sol.id_solicitud and vcot.monto_total_adjudicado_mb != ''0''
-            left join leg.tcontrato con on con.id_cotizacion = cot.id_cotizacion
+            left join leg.tcontrato con on con.id_cotizacion = cot.id_cotizacion and con.estado != ''anulado''
 
             where sol.fecha_soli BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin ||'''
             and vcot.precio_total_mb > ' || v_parametros.monto_mayor ||v_filtro||'
