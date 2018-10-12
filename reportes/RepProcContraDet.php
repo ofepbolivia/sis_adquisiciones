@@ -373,37 +373,37 @@ class RepProcContraDet
 
             foreach ($value as $key => $val) {
 
-              if ($value['codigo'] == 'Bs') {
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['precio_bs']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, '');
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['fecha_adju']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['proveedor_adjudicado']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['monto_total_adjudicado_mb']);
-                  //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['monto_total_adjudicado']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['solicitante']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['requiere_contrato']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['tipo']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['tiempo_entrega']);
+                if ($value['codigo'] == 'Bs') {
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['precio_bs']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, '');
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['fecha_adju']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['proveedor_adjudicado']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['monto_total_adjudicado_mb']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['monto_total_adjudicado']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['solicitante']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['requiere_contrato']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['tipo']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['tiempo_entrega']);
 
-                  //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['estados_cotizacion']);
-              }else{
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, '');
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['precio_moneda_solicitada']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['fecha_adju']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['proveedor_adjudicado']);
-                  //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['monto_total_adjudicado_mb']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['monto_total_adjudicado']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['solicitante']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['requiere_contrato']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['tipo']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['fecha_inicio']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['fecha_fin']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['estados_cotizacion']);
+                }else{
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, '');
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['precio_moneda_solicitada']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['fecha_adju']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['proveedor_adjudicado']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['monto_total_adjudicado_mb']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['monto_total_adjudicado']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['solicitante']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['requiere_contrato']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['tipo']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['fecha_inicio']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['fecha_fin']);
 
-                  //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['estados_cotizacion']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['estados_cotizacion']);
 
-              }
+                }
 
 
             }
@@ -570,41 +570,41 @@ class RepProcContraDet
 
             foreach ($value as $key => $val) {
 
-              if ($value['codigo'] == 'Bs') {
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['precio_bs']);
-                  //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['precio_moneda_solicitada']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['numero']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['fecha_elaboracion']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['fecha_inicio']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['fecha_fin']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['proveedor_adjudicado']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['monto_total_adjudicado_mb']);
-                  //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['monto_total_adjudicado']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['conformidad_final']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['objeto']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['tipo']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['forma_pago']);
+                if ($value['codigo'] == 'Bs') {
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['precio_bs']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['precio_moneda_solicitada']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['numero']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['fecha_elaboracion']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['fecha_inicio']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['fecha_fin']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['proveedor_adjudicado']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['monto_total_adjudicado_mb']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['monto_total_adjudicado']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['conformidad_final']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['objeto']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['tipo']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['forma_pago']);
 
-                  //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
-              }else{
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
-                  //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['precio_bs']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['precio_moneda_solicitada']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['numero']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['fecha_elaboracion']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['fecha_inicio']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['fecha_fin']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['proveedor_adjudicado']);
-                  //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['monto_total_adjudicado_mb']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['monto_total_adjudicado']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['conformidad_final']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['objeto']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['tipo']);
-                  $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['forma_pago']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
+                }else{
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['precio_bs']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['precio_moneda_solicitada']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['numero']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['fecha_elaboracion']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['fecha_inicio']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['fecha_fin']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['proveedor_adjudicado']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['monto_total_adjudicado_mb']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['monto_total_adjudicado']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['conformidad_final']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['objeto']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['tipo']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['forma_pago']);
 
-                  //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
-              }
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
+                }
 
             }
 
@@ -771,42 +771,42 @@ class RepProcContraDet
 
             foreach ($value as $key => $val) {
 
-               if ($value['codigo'] == 'Bs') {
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['tipo']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['precio_bs']);
-                   //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['precio_moneda_solicitada']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['numero_oc']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['fecha_adju']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['fecha_inicio']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['fecha_fin']);
+                if ($value['codigo'] == 'Bs') {
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['tipo']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['precio_bs']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['precio_moneda_solicitada']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['numero_oc']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['fecha_adju']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['fecha_inicio']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['fecha_fin']);
 
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['desc_proveedor']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['monto_total_adjudicado_mb']);
-                   //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['monto_total_adjudicado']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['conformidad_final']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['objeto']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['forma_pago']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['desc_proveedor']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['monto_total_adjudicado_mb']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['monto_total_adjudicado']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['conformidad_final']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['objeto']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['forma_pago']);
 
-                  // $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
-               }else{
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['tipo']);
-                   //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['precio_bs']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['precio_moneda_solicitada']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['numero_oc']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['fecha_adju']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['fecha_inicio']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['fecha_fin']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['desc_proveedor']);
-                   //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['monto_total_adjudicado_mb']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['monto_total_adjudicado']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['conformidad_final']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['objeto']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['forma_pago']);
+                    // $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
+                }else{
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['tipo']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['precio_bs']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['precio_moneda_solicitada']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['numero_oc']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['fecha_adju']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['fecha_inicio']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['fecha_fin']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['desc_proveedor']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['monto_total_adjudicado_mb']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['monto_total_adjudicado']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['conformidad_final']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['objeto']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['forma_pago']);
 
-                   //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
-               }
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
+                }
 
             }
 
@@ -974,41 +974,41 @@ class RepProcContraDet
             $fila = $indice + 7;
 
             foreach ($value as $key => $val) {
-               if ($value['codigo'] == 'Bs') {
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['fecha_elaboracion']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['fecha_inicio']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['fecha_fin']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['monto_total_adjudicado_mb']);
-                   //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['monto_total_adjudicado']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['proveedor_adjudicado']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['total_pagado']);
+                if ($value['codigo'] == 'Bs') {
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['fecha_elaboracion']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['fecha_inicio']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['fecha_fin']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['monto_total_adjudicado_mb']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['monto_total_adjudicado']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['proveedor_adjudicado']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['total_pagado']);
 //                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['precio_moneda_solicitada']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['solicitante']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['nombre_unidad']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['tipo']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['nro_cuota_vigente']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['forma_pago']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['solicitante']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['nombre_unidad']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['tipo']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['nro_cuota_vigente']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['forma_pago']);
 
-                   //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
-               }else{
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['fecha_elaboracion']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['fecha_inicio']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['fecha_fin']);
-                   //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['monto_total_adjudicado_mb']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['monto_total_adjudicado']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['proveedor_adjudicado']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['total_pagado']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
+                }else{
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['fecha_elaboracion']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['fecha_inicio']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['fecha_fin']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['monto_total_adjudicado_mb']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['monto_total_adjudicado']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['proveedor_adjudicado']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['total_pagado']);
 //                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['precio_moneda_solicitada']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['solicitante']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['nombre_unidad']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['tipo']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['nro_cuota_vigente']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['forma_pago']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['solicitante']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['nombre_unidad']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['tipo']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['nro_cuota_vigente']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['forma_pago']);
 
-                   //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
-               }
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['estados_cotizacion']);
+                }
 
             }
 
@@ -1053,7 +1053,7 @@ class RepProcContraDet
 
         //titulos
 
-        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, 2, 'DETALLE DE PROCESOS EN EJECUCIÓN');
+        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, 2, 'DETALLE DE PROCESOS CONCLUIDOS');
         $this->docexcel->getActiveSheet()->getStyle('A2:K2')->applyFromArray($styleTitulos1);
         $this->docexcel->getActiveSheet()->mergeCells('A2:K2');
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, 3, 'Del: ' . $this->objParam->getParametro('fecha_ini') . '   Al: ' . $this->objParam->getParametro('fecha_fin'));
@@ -1151,35 +1151,35 @@ class RepProcContraDet
             $fila = $indice + 7;
 
             foreach ($value as $key => $val) {
-               if ($value['codigo'] == 'Bs') {
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['fecha_elaboracion']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['fecha_inicio']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['fecha_fin']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['monto_total_adjudicado_mb']);
-                   //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['monto_total_adjudicado']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['proveedor_adjudicado']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['total_pagado']);
+                if ($value['codigo'] == 'Bs') {
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['fecha_elaboracion']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['fecha_inicio']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['fecha_fin']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['monto_total_adjudicado_mb']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['monto_total_adjudicado']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['proveedor_adjudicado']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['total_pagado']);
 //                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['solicitante']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['nombre_unidad']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['solicitante']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['nombre_unidad']);
 
-                   //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['estados_cotizacion']);
-               }else{
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['fecha_elaboracion']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['fecha_inicio']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['fecha_fin']);
-                   //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['monto_total_adjudicado_mb']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['monto_total_adjudicado']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['proveedor_adjudicado']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['total_pagado']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['estados_cotizacion']);
+                }else{
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['num_tramite']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['fecha_elaboracion']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['fecha_inicio']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['fecha_fin']);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['monto_total_adjudicado_mb']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['monto_total_adjudicado']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['proveedor_adjudicado']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['total_pagado']);
 //
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['solicitante']);
-                   $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['nombre_unidad']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['solicitante']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['nombre_unidad']);
 
-                   //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['estados_cotizacion']);
-               }
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['estados_cotizacion']);
+                }
 
             }
 

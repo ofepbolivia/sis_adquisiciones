@@ -269,6 +269,11 @@ BEGIN
             tipo = v_parametros.tipo_prov
             where id_proveedor=v_parametros.id_proveedor;
 
+            update param.tinstitucion set
+            email2=v_parametros.email2_institucion,
+            email1=v_parametros.email1_institucion
+            where id_institucion=v_parametros.id_institucion;
+
 			--Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Proveedor modificado(a)');
             v_resp = pxp.f_agrega_clave(v_resp,'id_proveedor',v_parametros.id_proveedor::varchar);

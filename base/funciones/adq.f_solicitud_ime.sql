@@ -147,6 +147,7 @@ DECLARE
        v_tiene_clon					boolean;
        v_estado_clon				boolean;
        v_list_proceso				integer[];
+       v_numero_tramite				varchar='';
 
 BEGIN
 
@@ -2084,13 +2085,20 @@ BEGIN
             Una vez que todos los proceso se encuentren en el estado <b style="color: green">APROBADO</b>, podra realizar la asignación respectiva.<br>
             Aclararle que todos los procesos relacionados por clonación seran asignados al Auxiliar seleccionado por su persona.<br> <ol>';
             v_cont = 1;
+
             foreach v_id_proceso in array v_record.list_proceso loop
-              select '<b>'||v_cont||'. '||(tsa.num_tramite||'</b> --> <b style="color:green;">Estado:</b> '||tsa.estado)::varchar , tsa.estado, tsa.id_solicitud
-              into v_mensaje, v_estado_actual, v_id_solicitud
+
+              select '<b>'||v_cont||'. '||(tsa.num_tramite||'</b> --> <b style="color:green;">Estado:</b> '||tsa.estado)::varchar , tsa.estado, tsa.id_solicitud, tsm.nro_tramite
+              into v_mensaje, v_estado_actual, v_id_solicitud, v_numero_tramite
               from mat.tsolicitud tsm
-              inner join adq.tsolicitud tsa on tsa.num_tramite = tsm.nro_tramite
+              left join adq.tsolicitud tsa on tsa.num_tramite = tsm.nro_tramite
               where tsm.id_solicitud = v_id_proceso;
-              v_mensaje_clon = v_mensaje_clon || '<li>' || v_mensaje||'</li>';
+
+              if v_mensaje is null or v_mensaje = '' then
+              	v_mensaje_clon = v_mensaje_clon || '<li>' || v_cont||'. El proceso <b>'|| v_numero_tramite||'</b> actualmente se encuentra en el Sistema Materiales que es Clon, para poder continuar el proceso debe estar en estado <b style="color:green;">Aprobado</b>.</li>';
+              else
+              	v_mensaje_clon = v_mensaje_clon || '<li>' || v_mensaje||'</li>';
+              end if;
 
               if(v_estado_actual = 'aprobado')then
               	v_contador = v_contador + 1;
@@ -2108,7 +2116,8 @@ BEGIN
         else
         	v_tiene_clon = false;
         end if;
-        --raise exception 'v_tiene_clon: % v_mensaje_clon: %', v_tiene_clon, v_mensaje_clon;
+
+
         -- Definicion de la respuesta
       	v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Se verifico correctamente los procesos clones');
         v_resp = pxp.f_agrega_clave(v_resp,'p_mensaje',v_mensaje_clon::varchar);
