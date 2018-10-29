@@ -68,6 +68,11 @@ class MODSolicitudDet extends MODbase{
 		
 		$this->captura('id_categoria_prog','integer');
 		$this->captura('codigo_categoria','varchar');
+
+        $this->captura('id_activo_fijo','varchar');
+        $this->captura('fecha_ini_act','date');
+        $this->captura('fecha_fin_act','date');
+        $this->captura('lista', 'varchar');
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -95,6 +100,10 @@ class MODSolicitudDet extends MODbase{
 		$this->setParametro('precio_total','precio_total','numeric');
 		$this->setParametro('cantidad_sol','cantidad','int4');
 		$this->setParametro('estado_reg','estado_reg','varchar');
+
+        $this->setParametro('id_activo_fijo','id_activo_fijo','varchar');
+        $this->setParametro('fecha_ini_act','fecha_ini_act','date');
+        $this->setParametro('fecha_fin_act','fecha_fin_act','date');
 		
 
 		//Ejecuta la instruccion
@@ -168,6 +177,10 @@ class MODSolicitudDet extends MODbase{
         $this->setParametro('precio_total','precio_total','numeric');
         $this->setParametro('cantidad_sol','cantidad','int4');
         $this->setParametro('estado_reg','estado_reg','varchar');
+
+        $this->setParametro('id_activo_fijo','id_activo_fijo','varchar');
+        $this->setParametro('fecha_ini_act','fecha_ini_act','date');
+        $this->setParametro('fecha_fin_act','fecha_fin_act','date');
         
 
 		//Ejecuta la instruccion

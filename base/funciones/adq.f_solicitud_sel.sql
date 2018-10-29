@@ -157,12 +157,8 @@ BEGIN
                v_strg_obs = '''---''::text';
 
                IF p_administrador = 1 THEN
-
-                  v_filtro = ' (lower(sol.estado)!=''borrador'' ) and ';
-
-               END IF;
-
-
+					v_filtro = ' (lower(sol.estado)!=''borrador'' ) and ';
+			   END IF;
 
             ELSE
 
@@ -266,7 +262,7 @@ BEGIN
 
                         left join param.tcatalogo tcat on tcat.id_catalogo = sol.prioridad
                         '||v_inner||'
-                        where  tsd.estado_reg = ''activo'' and '||v_filtro;
+                        where  sol.estado_reg = ''activo'' and '||v_filtro;
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -293,7 +289,11 @@ BEGIN
 	elsif(p_transaccion='ADQ_SOL_CONT')then
 
 		begin
+
             v_filtro='';
+            if (v_parametros.id_funcionario_usu is null) then
+              	v_parametros.id_funcionario_usu = -1;
+            end if;
 
             IF  pxp.f_existe_parametro(p_tabla,'historico') THEN
 
@@ -305,52 +305,47 @@ BEGIN
 
             END IF;
 
-            if (v_parametros.id_funcionario_usu is null) then
-            	v_parametros.id_funcionario_usu = -1;
-            end if;
-
             IF p_administrador !=1  and lower(v_parametros.tipo_interfaz) = 'solicitudreq' THEN
 
-              v_filtro = '(ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||'  or sol.id_usuario_reg='||p_id_usuario||' ) and ';
+              v_filtro = '(ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||'  or sol.id_usuario_reg='||p_id_usuario||' or sol.id_funcionario = '||v_parametros.id_funcionario_usu::varchar||') and ';
 
 
             END IF;
 
-            IF  lower(v_parametros.tipo_interfaz) in ('solicitudvb','solicitudvbwzd','solicitudvbpoa','solicitudvbpresupuestos') THEN
+          IF  lower(v_parametros.tipo_interfaz) in ('solicitudvb','solicitudvbwzd','solicitudvbpoa','solicitudvbpresupuestos') THEN
 
-              IF v_historico =  'no' THEN
-
-                IF p_administrador !=1 THEN
-                  	v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and (lower(sol.estado)!=''proceso'' ) and ';
+                IF v_historico =  'no' THEN
+                    IF p_administrador !=1 THEN
+                      v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and (lower(sol.estado)!=''proceso'' ) and ';
+                    ELSE
+                        v_filtro = ' (lower(sol.estado)!=''borrador''  and lower(sol.estado)!=''proceso'' and lower(sol.estado)!=''finalizado'') and ';
+                    END IF;
                 ELSE
-                    v_filtro = ' (lower(sol.estado)!=''borrador''  and lower(sol.estado)!=''proceso'' and lower(sol.estado)!=''finalizado'') and ';
-                END IF;
-              ELSE
-                IF p_administrador !=1 THEN
-                	if lower(v_parametros.tipo_interfaz) = 'solicitudvbpoa' then
-                    	v_auxiliar_id = 75;
-                    	v_filtro = ' (ew.id_funcionario='||v_auxiliar_id||') and  (lower(sol.estado)!=''borrador'') and ';
-                    else
-                    	v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||') and  (lower(sol.estado)!=''borrador'') and ';
-                    end if;
-                  	--v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and ';
-                ELSE
-                    v_filtro = ' (lower(sol.estado)!=''borrador'') and ';
-                END IF;
-              END IF;
+                    IF p_administrador !=1 THEN
+                      if lower(v_parametros.tipo_interfaz) = 'solicitudvbpoa' then
+                          v_auxiliar_id = 75;
+                          v_filtro = ' (ew.id_funcionario='||v_auxiliar_id||') and  (lower(sol.estado)!=''borrador'') and ';
+                      else
+                          v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||') and  (lower(sol.estado)!=''borrador'') and ';
+                      end if;
+                      --v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and ';
+                    ELSE
+                        v_filtro = ' (lower(sol.estado) != ''borrador'') and ';
+                    END IF;
+               END IF;
 
 
-            END IF;
+         END IF;
 
-            --la interface de vbpresupuestos mustra todas las solcitudes no importa el funcionario asignado
-            IF  lower(v_parametros.tipo_interfaz) = 'solicitudvbpresupuestos' and v_historico =  'no' THEN
-                 v_filtro = v_filtro||' (lower(sol.estado)=''vbpresupuestos'' ) and ';
-            END IF;
+         --la interface de vbpresupuestos mustra todas las solcitudes no importa el funcionario asignado
+         IF  lower(v_parametros.tipo_interfaz) = 'solicitudvbpresupuestos' and v_historico =  'no' THEN
+             v_filtro = v_filtro||' (lower(sol.estado)=''vbpresupuestos'' ) and ';
+         END IF;
 
-            --la interface de vbpresupuestos mustra todas las solcitudes no importa el funcionario asignado
-            IF  lower(v_parametros.tipo_interfaz) = 'solicitudvbpoa' and v_historico =  'no'  THEN
-                 v_filtro = ' (lower(sol.estado)=''vbpoa'' ) and ';
-            END IF;
+         --la interface de vbpresupuestos mustra todas las solcitudes no importa el funcionario asignado
+         IF  lower(v_parametros.tipo_interfaz) = 'solicitudvbpoa' and v_historico =  'no'  THEN
+             v_filtro = ' (lower(sol.estado)=''vbpoa'' ) and ';
+         END IF;
 
 
 
@@ -364,17 +359,17 @@ BEGIN
             END IF;
 
 
+
+
             IF v_historico =  'si' THEN
 
                v_inner =  'inner join wf.testado_wf ew on ew.id_proceso_wf = sol.id_proceso_wf';
                v_strg_sol = 'DISTINCT(sol.id_solicitud)';
-               v_strg_obs = '---';
+               v_strg_obs = '''---''::text';
 
-               IF p_administrador =1 THEN
-
-                  v_filtro = ' (lower(sol.estado)!=''borrador'' ) and ';
-
-               END IF;
+               IF p_administrador = 1 THEN
+					v_filtro = ' (lower(sol.estado)!=''borrador'' ) and ';
+			   END IF;
 
             ELSE
 
@@ -382,14 +377,16 @@ BEGIN
                v_strg_sol = 'sol.id_solicitud';
                v_strg_obs = 'ew.obs';
 
-            END IF;
+             END IF;
+
+
 
 
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='select count('||v_strg_sol||')
 			            from adq.tsolicitud sol
 						inner join segu.tusuario usu1 on usu1.id_usuario = sol.id_usuario_reg
-
+                        inner join wf.tproceso_wf pwf on pwf.id_proceso_wf = sol.id_proceso_wf
                         inner join orga.vfuncionario fun on fun.id_funcionario = sol.id_funcionario
                         inner join orga.tuo uo on uo.id_uo = sol.id_uo
                         inner join param.tmoneda mon on mon.id_moneda = sol.id_moneda
@@ -405,16 +402,15 @@ BEGIN
 						left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
                         left join param.vproveedor pro on pro.id_proveedor = sol.id_proveedor
 
-						left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud
+                        left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud
 
                         left join param.tcatalogo tcat on tcat.id_catalogo = sol.prioridad
-				       '||v_inner||'
+                        '||v_inner||'
+                        where  sol.estado_reg = ''activo'' and '||v_filtro;
 
-				        where  tsd.estado_reg = ''activo'' and '||v_filtro;
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
-
 
 
 			--Devuelve la respuesta

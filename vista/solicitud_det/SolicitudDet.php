@@ -19,6 +19,7 @@ Phx.vista.SolicitudDet=Ext.extend(Phx.gridInterfaz,{
 		this.init();
 		this.bloquearMenus();
 		this.iniciarEventos();
+        this.iniciarEventosDet();
 	},
 			
 	Atributos:[
@@ -350,6 +351,107 @@ Phx.vista.SolicitudDet=Ext.extend(Phx.gridInterfaz,{
             grid:true,
             form:false
         },
+        {
+            config: {
+                name: 'id_activo_fijo',
+                fieldLabel: 'Activo fijo',
+                allowBlank: false,
+                emptyText: 'Activo fijo...',
+                store: new Ext.data.JsonStore({
+                    url: '../../sis_kactivos_fijos/control/ActivoFijo/listarAF',
+                    id: 'id_activo_fijo',
+                    root: 'datos',
+                    sortInfo: {
+                        field: 'codigo',
+                        direction: 'ASC'
+                    },
+                    totalProperty: 'total',
+                    fields: ['id_activo_fijo', 'denominacion', 'codigo','desc_denominacion'],
+                    remoteSort: true,
+                    baseParams: {par_filtro: 'afij.denominacion#afij.codigo'}
+
+                }),
+                valueField: 'id_activo_fijo',
+                displayField: 'desc_denominacion',
+                gdisplayField: 'desc_denominacion',
+                forceSelection: true,
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'remote',
+                pageSize: 20,
+                queryDelay: 1000,
+                gwidth: 150,
+                width: 300,
+                //listWidth: 300,
+                minChars: 2,
+                // tpl: '<tpl for="."><div class="x-combo-list-item"><p><b>Código:</b> {codigo}</p><p>{denominacion}</p> </div></tpl>',
+                enableMultiSelect: true,
+                renderer: function (value, p, record) {
+                    return String.format('{0}', record.data['lista']);
+                }
+
+            },
+            type: 'AwesomeCombo',
+            //type: 'ComboBox',
+            filters: {pfiltro: 'sold.denominacion', type: 'string'},
+            id_grupo: 1,
+            grid: true,
+            form: true
+        },
+        // {
+        //     config: {
+        //         name: 'codigo_act',
+        //         fieldLabel: 'Código',
+        //         anchor: '80%',
+        //         gwidth: 100,
+        //         maxLength: 100,
+        //         renderer: function (value, p, record) {
+        //                 return String.format('{0}', record.data['codigo_act']);
+        //             }
+        //     },
+        //     type: 'Field',
+        //     filters: {pfiltro: 'sold.codigo_act', type: 'string'},
+        //     id_grupo: 1,
+        //     grid: true,
+        //     form: true
+        // },
+        {
+            config: {
+                name: 'fecha_ini_act',
+                fieldLabel: 'Fecha Inicio',
+                allowBlank: false,
+                anchor: '50%',
+                gwidth: 100,
+                format: 'd/m/Y',
+                renderer: function (value, p, record) {
+                    return value ? value.dateFormat('d/m/Y') : ''
+                }
+            },
+            type: 'DateField',
+            filters: {pfiltro: 'sold.fecha_ini_act', type: 'date'},
+            id_grupo: 1,
+            grid: true,
+            form: true
+        },
+        {
+            config: {
+                name: 'fecha_fin_act',
+                fieldLabel: 'Fecha Fin',
+                allowBlank: false,
+                anchor: '50%',
+                gwidth: 100,
+                format: 'd/m/Y',
+                renderer: function (value, p, record) {
+                    return value ? value.dateFormat('d/m/Y') : ''
+                }
+            },
+            type: 'DateField',
+            filters: {pfiltro: 'sold.fecha_fin_act', type: 'date'},
+            id_grupo: 1,
+            grid: true,
+            form: true
+        },
 		 
 		{
 			config:{
@@ -467,7 +569,13 @@ Phx.vista.SolicitudDet=Ext.extend(Phx.gridInterfaz,{
 		'nombre_auxiliar',
 		'desc_concepto_ingas',
         'desc_orden_trabajo',
-        'revertido_mb','revertido_mo'
+        'revertido_mb','revertido_mo',
+
+        'id_activo_fijo',
+        //{name: 'codigo_act', type: 'string'},
+        {name: 'fecha_ini_act', type: 'date', dateFormat: 'Y-m-d'},
+        {name: 'fecha_fin_act', type: 'date', dateFormat: 'Y-m-d'},
+        {name:'lista', type: 'string'}
 		
 	],
 	sortInfo:{
@@ -485,7 +593,49 @@ Phx.vista.SolicitudDet=Ext.extend(Phx.gridInterfaz,{
         this.Cmp.id_orden_trabajo.store.baseParams.fecha_solicitud = this.maestro.fecha_soli.dateFormat('d/m/Y');
         this.Cmp.id_orden_trabajo.modificado = true;
     },
-    
+        iniciarEventosDet: function(){
+            this.ocultarComponente(this.Cmp.id_activo_fijo);
+            //this.ocultarComponente(this.Cmp.codigo_act);
+            this.ocultarComponente(this.Cmp.fecha_ini_act);
+            this.ocultarComponente(this.Cmp.fecha_fin_act);
+
+            // this.Cmp.id_concepto_ingas.on('select', function (combo, record, index) {
+            //      if (combo.lastSelectionText == 'ABRIGO MUJER') {
+            //if(this.Cmp.id_concepto_ingas.getValue()=='1797' ){
+            this.Cmp.id_concepto_ingas.on('select', function (combo, record, index) {
+//console.log((record.data.desc_partida).indexOf("49100"));
+                if ( (record.data.desc_partida).indexOf("49100") >= 0) {
+                    console.log('a');
+                    this.mostrarComponente(this.Cmp.id_activo_fijo);
+                    //this.mostrarComponente(this.Cmp.codigo_act);
+                    this.mostrarComponente(this.Cmp.fecha_ini_act);
+                    this.mostrarComponente(this.Cmp.fecha_fin_act);
+                }else {
+                    console.log('b');
+                    this.ocultarComponente(this.Cmp.id_activo_fijo);
+                    //this.ocultarComponente(this.Cmp.codigo_act);
+                    this.ocultarComponente(this.Cmp.fecha_ini_act);
+                    this.ocultarComponente(this.Cmp.fecha_fin_act);
+
+                }
+            }, this);
+            this.Cmp.id_concepto_ingas.on('select', function (cmp, rec, ind) {
+                this.Cmp.id_activo_fijo.reset();
+                this.Cmp.id_activo_fijo.store.baseParams.id_concepto_ingas = rec.data.id_concepto_ingas;
+                this.Cmp.id_activo_fijo.modificado = true;
+            }, this);
+            this.Cmp.id_concepto_ingas.on('select', function (cmp, rec, ind) {
+                this.Cmp.fecha_ini_act.reset();
+                //this.Cmp.fecha_ini_act.store.baseParams.id_concepto_ingas = cmp.data.id_concepto_ingas;
+                this.Cmp.fecha_ini_act.modificado = true;
+            }, this);
+            this.Cmp.id_concepto_ingas.on('select', function (cmp, rec, ind) {
+                this.Cmp.fecha_fin_act.reset();
+                //this.Cmp.fecha_fin_act.store.baseParams.id_concepto_ingas = cmp.data.id_concepto_ingas;
+                this.Cmp.fecha_fin_act.modificado = true;
+            }, this);
+        },
+
     bdel: true,
 	bsave: false
 	}

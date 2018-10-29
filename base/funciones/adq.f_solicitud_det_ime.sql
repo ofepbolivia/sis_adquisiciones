@@ -43,6 +43,13 @@ DECLARE
     v_registros_cig record;
     v_id_orden_trabajo		integer;
 
+    v_orden_trabajo			integer;
+    v_desc_orden_trabajo		varchar;
+    v_desc_centro_costo		varchar;
+    v_des_concepto_ingas		varchar;
+    v_id_centro_costo			integer;
+    v_id_concepto_ingas		integer;
+
 
 BEGIN
 
@@ -137,6 +144,12 @@ BEGIN
                             'O',-- tipo oficial, venta, compra
                              NULL);
 
+            --para que sea obligatorio el orden de trabajo
+            IF (v_parametros.id_orden_trabajo is Null ) THEN
+            	RAISE EXCEPTION 'Completar el campo de Orden de Trabajo';
+            end if;
+
+
 
         	--Sentencia de la insercion
         	insert into adq.tsolicitud_det(
@@ -161,7 +174,11 @@ BEGIN
 			id_usuario_mod,
             precio_ga_mb,
             precio_sg_mb,
-            precio_unitario_mb
+            precio_unitario_mb,
+
+            id_activo_fijo,
+            fecha_ini_act,
+            fecha_fin_act
 
 
           	) values(
@@ -186,7 +203,11 @@ BEGIN
 			null,
             v_monto_ga_mb,
             v_monto_sg_mb,
-            v_precio_unitario_mb
+            v_precio_unitario_mb,
+
+            v_parametros.id_activo_fijo,
+            v_parametros.fecha_ini_act,
+            v_parametros.fecha_fin_act
 
 			)RETURNING id_solicitud_det into v_id_solicitud_det;
 
@@ -240,6 +261,7 @@ BEGIN
              --obtener partida, cuenta auxiliar del concepto de gasto
 
              v_id_partida = NULL;
+
 
             --recueprar la partida de la parametrizacion
 
@@ -299,6 +321,39 @@ BEGIN
                              NULL);
 
 
+           ---------------------------------
+          select otrab.id_orden_trabajo,tcc.id_tipo_cc,cin.id_concepto_ingas
+           into v_orden_trabajo,v_id_centro_costo,v_id_concepto_ingas
+           from conta.torden_trabajo otrab
+           join conta.ttipo_cc_ot tccot on tccot.id_orden_trabajo = otrab.id_orden_trabajo
+           join param.ttipo_cc tcc on tcc.id_tipo_cc = tccot.id_tipo_cc
+           join param.tcentro_costo ccos on ccos.id_tipo_cc = tcc.id_tipo_cc
+           join adq.tsolicitud_det sd on sd.id_centro_costo = ccos.id_centro_costo
+           join param.tconcepto_ingas cin on cin.id_concepto_ingas = sd.id_concepto_ingas
+           where ccos.id_centro_costo = v_parametros.id_centro_costo;
+
+           select otrab.desc_orden
+           into v_desc_orden_trabajo
+           from conta.torden_trabajo otrab
+           where otrab.id_orden_trabajo = v_id_orden_trabajo;
+
+           select (tcc.codigo||'-'||tcc.descripcion)
+           into  v_desc_centro_costo
+           from param.ttipo_cc tcc
+           join param.tcentro_costo ccos on ccos.id_tipo_cc = tcc.id_tipo_cc
+           where ccos.id_centro_costo = v_parametros.id_centro_costo;
+
+           select cin.desc_ingas
+           into v_des_concepto_ingas
+           from param.tconcepto_ingas cin
+           where cin.id_concepto_ingas = v_registros_cig.id_concepto_ingas;
+
+
+           if ( v_orden_trabajo <> v_id_orden_trabajo)THEN
+            	raise exception '-El Orden Trabajo % no pertece al Concepto % del Centro de Costo %',v_desc_orden_trabajo,v_des_concepto_ingas,v_desc_centro_costo  ;
+           end if;
+        -----------------------------
+
         	--Sentencia de la insercion
         	insert into adq.tsolicitud_det(
 			id_centro_costo,
@@ -322,7 +377,6 @@ BEGIN
             precio_ga_mb,
             precio_sg_mb,
             precio_unitario_mb
-
 
           	) values(
 			v_parametros.id_centro_costo,
@@ -474,7 +528,11 @@ BEGIN
 			id_auxiliar = v_id_auxiliar,
             precio_unitario_mb=v_precio_unitario_mb,
 			fecha_mod = now(),
-			id_usuario_mod = p_id_usuario
+			id_usuario_mod = p_id_usuario,
+            id_activo_fijo = v_parametros.id_activo_fijo,
+            fecha_ini_act = v_parametros.fecha_ini_act,
+            fecha_fin_act = v_parametros.fecha_fin_act
+
 			where id_solicitud_det=v_parametros.id_solicitud_det;
 
 			--Definicion de la respuesta

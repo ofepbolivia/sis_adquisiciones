@@ -805,4 +805,22 @@ ALTER TABLE adq.tsolicitud_det
 
 /***********************************F-SCP-RAC-ADQ-0-28/07/2017****************************************/  
 
-  
+/***********************************I-SCP-MAY-ADQ-0-16/10/2018****************************************/
+
+ALTER TABLE adq.tsolicitud_det
+  ADD COLUMN id_activo_fijo VARCHAR(250);
+
+ALTER TABLE adq.tsolicitud_det
+  ADD COLUMN codigo_act VARCHAR(300);
+
+ALTER TABLE adq.tsolicitud_det
+  ADD COLUMN fecha_ini_act DATE;
+
+ALTER TABLE adq.tsolicitud_det
+  ADD COLUMN fecha_fin_act DATE;
+
+/***********************************F-SCP-MAY-ADQ-0-16/10/2018****************************************/
+/***********************************I-SCP-MAY-ADQ-0-25/10/2018****************************************/
+ALTER TABLE adq.tsolicitud_det
+  ALTER COLUMN id_orden_trabajo SET NOT NULL;
+/***********************************F-SCP-MAY-ADQ-0-25/10/2018****************************************/
