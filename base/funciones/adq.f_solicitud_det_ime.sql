@@ -211,6 +211,31 @@ BEGIN
 
 			)RETURNING id_solicitud_det into v_id_solicitud_det;
 
+             --para que sea obligatorio el orden de trabajo
+            IF (v_parametros.id_orden_trabajo is Null ) THEN
+            	RAISE EXCEPTION 'Completar el campo de Orden de Trabajo';
+            end if;
+
+            --control del campo cantidad
+            IF (v_parametros.cantidad_sol is Null )THEN
+            	raise exception 'Completar el campo de Cantidad';
+            end if;
+
+            --control para el campo de activo fijo
+              select cin.desc_ingas
+             into v_des_concepto_ingas
+             from param.tconcepto_ingas cin
+             where cin.id_concepto_ingas = v_parametros.id_concepto_ingas;
+
+            if (v_parametros.id_activo_fijo is NULL) THEN
+            	raise exception 'Completar el campo de Activo Fijo para el Concepto %', v_des_concepto_ingas;
+            end if;
+
+            --control de fechas
+            IF (v_parametros.fecha_fin_act < v_parametros.fecha_ini_act) THEN
+            	raise exception 'La Fecha Inicio es menor a la Fecha Fin';
+             end if;
+
 			--Definicion de la respuesta
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle almacenado(a) con exito (id_solicitud_det'||v_id_solicitud_det||')');
             v_resp = pxp.f_agrega_clave(v_resp,'id_solicitud_det',v_id_solicitud_det::varchar);

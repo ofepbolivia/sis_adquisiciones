@@ -652,6 +652,11 @@ class MODSolicitud extends MODbase{
                 $this->arreglo['precio_ga'] = $f['precio_ga'];
                 $this->arreglo['precio_sg'] = $f['precio_sg'];
 
+                $this->arreglo['id_activo_fijo'] = $f['id_activo_fijo'];
+                $this->arreglo['codigo_act'] = $f['codigo_act'];
+                $this->arreglo['fecha_ini_act'] = $f['fecha_ini_act'];
+                $this->arreglo['fecha_fin_act'] = $f['fecha_fin_act'];
+
                 //Define los parametros para la funcion
                 $this->setParametro('id_centro_costo', 'id_centro_costo', 'int4');
                 $this->setParametro('descripcion', 'descripcion', 'text');
@@ -663,6 +668,11 @@ class MODSolicitud extends MODbase{
                 $this->setParametro('cantidad_sol', 'cantidad_sol', 'int4');
                 $this->setParametro('precio_ga', 'precio_ga', 'numeric');
                 $this->setParametro('precio_sg', 'precio_sg', 'numeric');
+
+                $this->setParametro('id_activo_fijo', 'id_activo_fijo', 'varchar');
+                $this->setParametro('codigo_act', 'codigo_act', 'varchar');
+                $this->setParametro('fecha_ini_act', 'fecha_ini_act', 'date');
+                $this->setParametro('fecha_fin_act', 'fecha_fin_act', 'date');
 
                 //Ejecuta la instruccion
                 $this->armarConsulta();
