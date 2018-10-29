@@ -358,7 +358,8 @@ Phx.vista.SolicitudDet=Ext.extend(Phx.gridInterfaz,{
                 allowBlank: false,
                 emptyText: 'Activo fijo...',
                 store: new Ext.data.JsonStore({
-                    url: '../../sis_kactivos_fijos/control/ActivoFijo/listarAF',
+                    //url: '../../sis_kactivos_fijos/control/ActivoFijo/listarAF',
+                    url: '../../sis_kactivos_fijos/control/ActivoFijo/listarActivoFijo',
                     id: 'id_activo_fijo',
                     root: 'datos',
                     sortInfo: {
@@ -366,7 +367,7 @@ Phx.vista.SolicitudDet=Ext.extend(Phx.gridInterfaz,{
                         direction: 'ASC'
                     },
                     totalProperty: 'total',
-                    fields: ['id_activo_fijo', 'denominacion', 'codigo','desc_denominacion'],
+                    fields: ['id_activo_fijo', 'denominacion', 'codigo', 'desc_denominacion'],
                     remoteSort: true,
                     baseParams: {par_filtro: 'afij.denominacion#afij.codigo'}
 
