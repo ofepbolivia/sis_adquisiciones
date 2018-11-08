@@ -824,3 +824,12 @@ ALTER TABLE adq.tsolicitud_det
 ALTER TABLE adq.tsolicitud_det
   ALTER COLUMN id_orden_trabajo SET NOT NULL;
 /***********************************F-SCP-MAY-ADQ-0-25/10/2018****************************************/
+
+
+
+/***********************************I-SCP-FEA-ADQ-0-7/11/2018****************************************/
+ALTER TABLE adq.tsolicitud
+  ADD COLUMN prioridad INTEGER,
+  ADD COLUMN list_proceso INTEGER[] [];
+
+/***********************************F-SCP-FEA-ADQ-0-7/11/2018****************************************/
