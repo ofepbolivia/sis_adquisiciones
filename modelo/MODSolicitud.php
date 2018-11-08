@@ -657,6 +657,7 @@ class MODSolicitud extends MODbase{
                 $this->arreglo['fecha_ini_act'] = $f['fecha_ini_act'];
                 $this->arreglo['fecha_fin_act'] = $f['fecha_fin_act'];
 
+
                 //Define los parametros para la funcion
                 $this->setParametro('id_centro_costo', 'id_centro_costo', 'int4');
                 $this->setParametro('descripcion', 'descripcion', 'text');
@@ -673,6 +674,7 @@ class MODSolicitud extends MODbase{
                 $this->setParametro('codigo_act', 'codigo_act', 'varchar');
                 $this->setParametro('fecha_ini_act', 'fecha_ini_act', 'date');
                 $this->setParametro('fecha_fin_act', 'fecha_fin_act', 'date');
+
 
                 //Ejecuta la instruccion
                 $this->armarConsulta();
