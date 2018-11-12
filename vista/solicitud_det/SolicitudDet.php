@@ -603,17 +603,36 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.id_concepto_ingas.on('select', function (combo, record, index) {
                     //console.log((record.data.desc_partida).indexOf("49100"));
                     //if ((record.data.desc_partida).indexOf("49100") >= 0) {
-                    if (combo.lastSelectionText == 'RENOVACION LICENCIAS DE SOFTWARE') {
+                    if (combo.lastSelectionText == 'COMPRA LICENCIAS DE SOFTWARE') {
                         console.log('a');
                         this.mostrarComponente(this.Cmp.id_activo_fijo);
                         this.mostrarComponente(this.Cmp.fecha_ini_act);
                         this.mostrarComponente(this.Cmp.fecha_fin_act);
-                    } else {
-                        console.log('b');
+
+                    }else {
                         this.ocultarComponente(this.Cmp.id_activo_fijo);
                         this.ocultarComponente(this.Cmp.fecha_ini_act);
                         this.ocultarComponente(this.Cmp.fecha_fin_act);
+                        if (combo.lastSelectionText == 'ACTUALIZACION LICENCIAS DE SOFTWARE') {
+                            this.mostrarComponente(this.Cmp.id_activo_fijo);
+                            // this.ocultarComponente(this.detCmp.fecha_ini_act);
+                            // this.ocultarComponente(this.detCmp.fecha_fin_act);
 
+                        }else{
+                            this.ocultarComponente(this.Cmp.id_activo_fijo);
+                            // this.ocultarComponente(this.detCmp.fecha_ini_act);
+                            // this.ocultarComponente(this.detCmp.fecha_fin_act);
+                            if (combo.lastSelectionText == 'RENOVACION LICENCIAS DE SOFTWARE') {
+                                this.mostrarComponente(this.Cmp.id_activo_fijo);
+                                this.mostrarComponente(this.Cmp.fecha_ini_act);
+                                this.mostrarComponente(this.Cmp.fecha_fin_act);
+
+                            }else {
+                                this.ocultarComponente(this.Cmp.id_activo_fijo);
+                                this.ocultarComponente(this.Cmp.fecha_ini_act);
+                                this.ocultarComponente(this.Cmp.fecha_fin_act);
+                            }
+                        }
                     }
                 }, this);
                 this.Cmp.id_concepto_ingas.on('select', function (cmp, rec, ind) {

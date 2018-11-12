@@ -206,7 +206,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 //console.log((record.data.desc_partida).indexOf("49100"));
                 //if ((record.data.desc_partida).indexOf("49100") >= 0) {
                 //para renovacion de activos intangibles
-                if (combo.lastSelectionText == 'COMPRA DE LICENCIAS DE SOFTWARE') {
+                if (combo.lastSelectionText == 'COMPRA LICENCIAS DE SOFTWARE') {
                     console.log('a');
                     this.mostrarComponente(this.detCmp.id_activo_fijo);
                     this.mostrarComponente(this.detCmp.fecha_ini_act);
@@ -220,16 +220,12 @@ header("content-type: text/javascript; charset=UTF-8");
                         this.mostrarComponente(this.detCmp.id_activo_fijo);
                         // this.ocultarComponente(this.detCmp.fecha_ini_act);
                         // this.ocultarComponente(this.detCmp.fecha_fin_act);
-                        // console.log('b');
-                        // this.ocultarComponente(this.detCmp.id_activo_fijo);
-                        // this.ocultarComponente(this.detCmp.fecha_ini_act);
-                        // this.ocultarComponente(this.detCmp.fecha_fin_act);
+
                     }else{
                         this.ocultarComponente(this.detCmp.id_activo_fijo);
                         // this.ocultarComponente(this.detCmp.fecha_ini_act);
                         // this.ocultarComponente(this.detCmp.fecha_fin_act);
                         if (combo.lastSelectionText == 'RENOVACION LICENCIAS DE SOFTWARE') {
-                        // if (combo.lastSelectionText == 'COMPRA DE LICENCIAS DE SOFTWARE') {
                             this.mostrarComponente(this.detCmp.id_activo_fijo);
                             this.mostrarComponente(this.detCmp.fecha_ini_act);
                             this.mostrarComponente(this.detCmp.fecha_fin_act);
