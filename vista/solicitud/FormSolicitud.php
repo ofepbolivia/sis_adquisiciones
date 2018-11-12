@@ -205,19 +205,46 @@ header("content-type: text/javascript; charset=UTF-8");
             this.detCmp.id_concepto_ingas.on('select', function (combo, record, index) {
                 //console.log((record.data.desc_partida).indexOf("49100"));
                 //if ((record.data.desc_partida).indexOf("49100") >= 0) {
-                if (combo.lastSelectionText == 'RENOVACION LICENCIAS DE SOFTWARE') {
+                //para renovacion de activos intangibles
+                if (combo.lastSelectionText == 'COMPRA DE LICENCIAS DE SOFTWARE') {
                     console.log('a');
                     this.mostrarComponente(this.detCmp.id_activo_fijo);
                     this.mostrarComponente(this.detCmp.fecha_ini_act);
                     this.mostrarComponente(this.detCmp.fecha_fin_act);
-                } else {
-                    console.log('b');
+
+                }else {
                     this.ocultarComponente(this.detCmp.id_activo_fijo);
                     this.ocultarComponente(this.detCmp.fecha_ini_act);
                     this.ocultarComponente(this.detCmp.fecha_fin_act);
+                    if (combo.lastSelectionText == 'ACTUALIZACION LICENCIAS DE SOFTWARE') {
+                        this.mostrarComponente(this.detCmp.id_activo_fijo);
+                        // this.ocultarComponente(this.detCmp.fecha_ini_act);
+                        // this.ocultarComponente(this.detCmp.fecha_fin_act);
+                        // console.log('b');
+                        // this.ocultarComponente(this.detCmp.id_activo_fijo);
+                        // this.ocultarComponente(this.detCmp.fecha_ini_act);
+                        // this.ocultarComponente(this.detCmp.fecha_fin_act);
+                    }else{
+                        this.ocultarComponente(this.detCmp.id_activo_fijo);
+                        // this.ocultarComponente(this.detCmp.fecha_ini_act);
+                        // this.ocultarComponente(this.detCmp.fecha_fin_act);
+                        if (combo.lastSelectionText == 'RENOVACION LICENCIAS DE SOFTWARE') {
+                        // if (combo.lastSelectionText == 'COMPRA DE LICENCIAS DE SOFTWARE') {
+                            this.mostrarComponente(this.detCmp.id_activo_fijo);
+                            this.mostrarComponente(this.detCmp.fecha_ini_act);
+                            this.mostrarComponente(this.detCmp.fecha_fin_act);
 
+                        }else {
+                            this.ocultarComponente(this.detCmp.id_activo_fijo);
+                            this.ocultarComponente(this.detCmp.fecha_ini_act);
+                            this.ocultarComponente(this.detCmp.fecha_fin_act);
+                        }
+                    }
                 }
+
+
             }, this);
+
 
             this.detCmp.precio_unitario.on('valid', function (field) {
                 var pTot = this.detCmp.cantidad_sol.getValue() * this.detCmp.precio_unitario.getValue();
