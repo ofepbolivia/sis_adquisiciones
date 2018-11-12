@@ -208,7 +208,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 //para renovacion de activos intangibles
                 if (combo.lastSelectionText == 'COMPRA LICENCIAS DE SOFTWARE') {
                     console.log('a');
-                    this.mostrarComponente(this.detCmp.id_activo_fijo);
+                    this.ocultarComponente(this.detCmp.id_activo_fijo);
                     this.mostrarComponente(this.detCmp.fecha_ini_act);
                     this.mostrarComponente(this.detCmp.fecha_fin_act);
 

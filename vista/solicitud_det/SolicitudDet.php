@@ -605,7 +605,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     //if ((record.data.desc_partida).indexOf("49100") >= 0) {
                     if (combo.lastSelectionText == 'COMPRA LICENCIAS DE SOFTWARE') {
                         console.log('a');
-                        this.mostrarComponente(this.Cmp.id_activo_fijo);
+                        this.ocultarComponente(this.Cmp.id_activo_fijo);
                         this.mostrarComponente(this.Cmp.fecha_ini_act);
                         this.mostrarComponente(this.Cmp.fecha_fin_act);
 
