@@ -795,7 +795,7 @@ select pxp.f_insert_tprocedimiento ('ADQ_RUO_CONT', 'Conteo de registros', 'si',
 /***********************************I-DAT-RAC-ADQ-0-29/08/2014*****************************************/
 
 
-select pxp.f_insert_tgui ('ADQUISICIONES', '', 'ADQ', 'si', 1, '', 1, '../../../lib/imagenes/adquisiciones.png', '', 'ADQ');
+select pxp.f_insert_tgui ('<i class="fa fa-cart-arrow-down fa-2x"></i> ADQUISICIONES', '', 'ADQ', 'si', 1, '', 1, '', '', 'ADQ');
 select pxp.f_insert_tgui ('Documento de Solicitud', 'Documento de Solicitud', 'ADQ.2', 'no', 20, 'sis_adquisiciones/vista/documento_sol/DocumentoSol.php', 2, '', 'DocumentoSol', 'ADQ');
 select pxp.f_insert_tgui ('Solicitud de Compra', 'Solicitud de Compra', 'ADQ.3', 'si', 6, 'sis_adquisiciones/vista/solicitud/SolicitudReq.php', 2, '', 'SolicitudReq', 'ADQ');
 select pxp.f_insert_tgui ('Visto Bueno Solicitud', 'Solicitud de Compra', 'VBSOL', 'si', 7, 'sis_adquisiciones/vista/solicitud/SolicitudVb.php', 2, '', 'SolicitudVb', 'ADQ');
@@ -963,3 +963,15 @@ select pxp.f_insert_tgui ('Reporte Gerencial de Procesos de Contratación', 'Rep
 /***********************************I-DAT-MAY-ADQ-0-24/09/2018****************************************/
 select pxp.f_insert_tgui ('Reportes Gerenciales', 'Reportes Gerenciales', 'REGEIAC', 'si', 6, 'sis_adquisiciones/vista/reporte_procesos_contratacion/ReporteProcesosContraDet.php', 2, '', 'ReporteProcesosContraDet', 'ADQ');
 /***********************************F-DAT-MAY-ADQ-0-24/09/2018****************************************/
+
+
+/***********************************I-DAT-FEA-ADQ-0-07/11/2018****************************************/
+select pxp.f_insert_tgui ('Revision VoBo Solicitud', 'Revision de VoBo solitudes para asistentes', 'REVBSO', 'si', 7, 'sis_adquisiciones/vista/solicitud/SolicitudVbAsistente.php', 2, '', 'SolicitudVbAsistente', 'ADQ');
+select pxp.f_insert_tgui ('Solicitudes Pendientes', 'Solicitudes de compra aprobadas, pendientes de iniciio de proceso', 'SOLPEN', 'si', 8, 'sis_adquisiciones/vista/solicitud/SolicitudApro.php', 2, '', 'SolicitudApro', 'ADQ');
+select pxp.f_insert_tgui ('Obligaciones de Pago ADQ', 'Obligaciones de Pago', 'OBPAGOA', 'si', 11, 'sis_tesoreria/vista/obligacion_pago/ObligacionPagoAdq.php', 2, '', 'ObligacionPagoAdq', 'ADQ');
+select pxp.f_insert_tgui ('Consulta de Solicitudes', 'Consulta de solicitudes', 'CONSOL', 'si', 15, 'sis_adquisiciones/vista/solicitud/SolicitudHistorico.php', 2, '', 'SolicitudHistorico', 'ADQ');
+
+select pxp.f_insert_tgui ('<i class="fa fa-file-text-o fa-2x"></i> Consulta Form. 400', 'Consulta Formulario 400', 'CONFORM400', 'si', 21, 'sis_adquisiciones/vista/reporte/ConsultaForm400.php', 2, '', 'ConsultaForm400', 'ADQ');
+select pxp.f_insert_tgui ('<i class="fa fa-file-text-o fa-2x"></i> Consulta Form. 500', 'Consulta Formulario 500', 'CONFORM500', 'si', 22, 'sis_adquisiciones/vista/reporte/ConsultaForm500.php', 2, '', 'ConsultaForm500', 'ADQ');
+select pxp.f_insert_tgui ('Conformidad Final de Pagos(Firma Conformidad)', 'Conformidad Final de Pagos(Firma Conformidad)', 'CONFINPAG', 'si', 23, 'sis_tesoreria/vista/plan_pago/PlanPagoConformidadFinal.php', 2, '', 'PlanPagoConformidadFinal', 'ADQ');
+/***********************************F-DAT-FEA-ADQ-0-07/11/2018****************************************/

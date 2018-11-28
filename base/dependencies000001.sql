@@ -5740,3 +5740,13 @@ select pxp.f_insert_testructura_gui ('PROCONRES', 'REPADQ');
 /***********************************I-DEP-MAY-ADQ-0-24/09/2018****************************************/
 select pxp.f_insert_testructura_gui ('REGEIAC', 'REPADQ');
 /***********************************F-DEP-MAY-ADQ-0-24/09/2018****************************************/
+
+/***********************************I-DEP-FEA-ADQ-0-07/11/2018****************************************/
+select pxp.f_insert_testructura_gui ('REVBSO', 'ADQ');
+select pxp.f_insert_testructura_gui ('SOLPEN', 'ADQ');
+select pxp.f_insert_testructura_gui ('OBPAGOA', 'ADQ');
+select pxp.f_insert_testructura_gui ('CONSOL', 'ADQ');
+select pxp.f_insert_testructura_gui ('CONFORM400', 'ADQ');
+select pxp.f_insert_testructura_gui ('CONFORM500', 'ADQ');
+select pxp.f_insert_testructura_gui ('CONFINPAG', 'ADQ');
+/***********************************F-DEP-FEA-ADQ-0-07/11/2018****************************************/
