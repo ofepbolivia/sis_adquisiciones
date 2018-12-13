@@ -727,6 +727,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                     scope: this
                                 });
                             });
+                            Phx.CP.loadingHide();
                         }else {
                             if (that.formProceso.getForm().isValid()) {
                                 Phx.CP.loadingShow();
@@ -741,6 +742,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                     scope: this
                                 });
                             }
+                            Phx.CP.loadingHide();
                         }
                     }
                 },
