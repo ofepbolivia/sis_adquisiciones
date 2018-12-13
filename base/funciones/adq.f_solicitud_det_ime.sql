@@ -50,6 +50,9 @@ DECLARE
     v_id_centro_costo			integer;
     v_id_concepto_ingas		integer;
 
+    v_des_con_ingas			varchar;
+    v_num_tramite			varchar;
+
 
 BEGIN
 
@@ -112,8 +115,6 @@ BEGIN
         	raise exception 'No se encontro partida para el concepto de gasto y el centro de costos solicitados';
 
         END IF;
-
-
 
 
             --obetener el precio en la moneda base del sistema
@@ -236,7 +237,28 @@ BEGIN
             	raise exception 'La Fecha Inicio es menor a la Fecha Fin';
              end if;
 
-			--Definicion de la respuesta
+           -----------------------------------------------
+          --para agrupar los conceptos de renovacion actualizacion y compra
+         IF (v_des_concepto_ingas = 'RENOVACION LICENCIAS DE SOFTWARE' or
+             v_des_concepto_ingas = 'ACTUALIZACION LICENCIAS DE SOFTWARE' or
+             v_des_concepto_ingas = 'COMPRA LICENCIAS DE SOFTWARE')THEN
+
+             select coin.desc_ingas, sol.num_tramite
+             into v_des_con_ingas, v_num_tramite
+             from adq.tsolicitud_det sold
+             join adq.tsolicitud sol on sol.id_solicitud = sold.id_solicitud
+             join param.tconcepto_ingas coin on coin.id_concepto_ingas = sold.id_concepto_ingas
+             where sol.id_solicitud = v_parametros.id_solicitud;
+      		 -- raise exception '%, %',v_des_concepto_ingas, v_des_con_ingas;
+
+           	IF (v_des_con_ingas <> v_des_concepto_ingas)THEN
+            	raise exception 'El Concepto % es distinto a los anteriores del Detalle de Solicitud del número de trámite %, agrupar los Conceptos de forma independiente',v_des_concepto_ingas,v_num_tramite;
+            end if;
+
+          END IF;
+          ---------------------------------------------------
+
+     	--Definicion de la respuesta
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle almacenado(a) con exito (id_solicitud_det'||v_id_solicitud_det||')');
             v_resp = pxp.f_agrega_clave(v_resp,'id_solicitud_det',v_id_solicitud_det::varchar);
 
@@ -488,6 +510,8 @@ BEGIN
             from param.tconcepto_ingas cig
             where cig.id_concepto_ingas =  v_parametros.id_concepto_ingas;
 
+
+
             --obtener partida, cuenta auxiliar del concepto de gasto
             SELECT
               ps_id_partida ,
@@ -534,6 +558,7 @@ BEGIN
                             'O',-- tipo oficial, venta, compra
                              NULL);
 
+
 			--Sentencia de la modificacion
 			update adq.tsolicitud_det set
 			id_centro_costo = v_parametros.id_centro_costo,
@@ -559,6 +584,35 @@ BEGIN
             fecha_fin_act = v_parametros.fecha_fin_act
 
 			where id_solicitud_det=v_parametros.id_solicitud_det;
+
+          -----------------------------------------------
+
+             select cin.desc_ingas
+             into v_des_concepto_ingas
+             from param.tconcepto_ingas cin
+             where cin.id_concepto_ingas = v_parametros.id_concepto_ingas;
+
+          --para agrupar los conceptos de renovacion actualizacion y compra
+         IF (v_des_concepto_ingas = 'RENOVACION LICENCIAS DE SOFTWARE' or
+             v_des_concepto_ingas = 'ACTUALIZACION LICENCIAS DE SOFTWARE' or
+             v_des_concepto_ingas = 'COMPRA LICENCIAS DE SOFTWARE')THEN
+
+             select coin.desc_ingas, sol.num_tramite
+             into v_des_con_ingas, v_num_tramite
+             from adq.tsolicitud_det sold
+             join adq.tsolicitud sol on sol.id_solicitud = sold.id_solicitud
+             join param.tconcepto_ingas coin on coin.id_concepto_ingas = sold.id_concepto_ingas
+             where sol.id_solicitud = v_parametros.id_solicitud;
+      		 -- raise exception '%, %',v_des_concepto_ingas, v_des_con_ingas;
+
+           	IF (v_des_con_ingas <> v_des_concepto_ingas)THEN
+            	raise exception 'El Concepto % es distinto a los anteriores del Detalle de Solicitud del número de trámite %, agrupar los Conceptos de forma independiente',v_des_concepto_ingas,v_num_tramite;
+            end if;
+
+          END IF;
+          ---------------------------------------------------
+
+
 
 			--Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle modificado(a)');
