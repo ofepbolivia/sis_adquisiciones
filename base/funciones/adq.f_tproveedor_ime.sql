@@ -271,8 +271,21 @@ BEGIN
 
             update param.tinstitucion set
             email2=v_parametros.email2_institucion,
-            email1=v_parametros.email1_institucion
+            email1=v_parametros.email1_institucion,
+            pag_web=v_parametros.pag_web,
+            telefono1=v_parametros.telefono1_institucion,
+            telefono2=v_parametros.telefono2_institucion,
+            celular1=v_parametros.celular1_institucion,
+            celular2=v_parametros.celular2_institucion
             where id_institucion=v_parametros.id_institucion;
+
+            update segu.tpersona SET
+            correo=v_parametros.correo,
+            celular1=v_parametros.celular1,
+            telefono1=v_parametros.telefono1,
+            telefono2=v_parametros.telefono2,
+            celular2=v_parametros.celular2
+            where id_persona=v_parametros.id_persona;
 
 			--Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Proveedor modificado(a)');

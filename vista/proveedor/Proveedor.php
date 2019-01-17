@@ -407,6 +407,76 @@ Phx.vista.Proveedor=Ext.extend(Phx.gridInterfaz,{
 			grid:true,
 			form:true
 		},
+        {
+            config:{
+                name: 'cel_persona',
+                fieldLabel: 'Celular Persona',
+                allowBlank: true,
+                anchor: '100%',
+                gwidth: 100,
+                maxLength:100
+            },
+            type:'TextField',
+            id_grupo:0,
+            grid:true,
+            form:false
+        },
+        {
+            config:{
+                name: 'telf_persona',
+                fieldLabel: 'Telf. Persona',
+                allowBlank: true,
+                anchor: '100%',
+                gwidth: 100,
+                maxLength:100
+            },
+            type:'TextField',
+            id_grupo:0,
+            grid:true,
+            form:false
+        },
+        {
+            config:{
+                name: 'cel_instit',
+                fieldLabel: 'Celular Institución',
+                allowBlank: true,
+                anchor: '100%',
+                gwidth: 100,
+                maxLength:100
+            },
+            type:'TextField',
+            id_grupo:0,
+            grid:true,
+            form:false
+        },
+        {
+            config:{
+                name: 'telf_instit',
+                fieldLabel: 'Telf. Institución',
+                allowBlank: true,
+                anchor: '100%',
+                gwidth: 100,
+                maxLength:100
+            },
+            type:'TextField',
+            id_grupo:0,
+            grid:true,
+            form:false
+        },
+        {
+            config:{
+                name: 'email_instit',
+                fieldLabel: 'Email Institución',
+                allowBlank: true,
+                anchor: '100%',
+                gwidth: 100,
+                maxLength:300
+            },
+            type:'TextField',
+            id_grupo:0,
+            grid:true,
+            form:false
+        },
 		{
 			config:{
 				name: 'desc_dir_proveedor',
@@ -495,7 +565,7 @@ Phx.vista.Proveedor=Ext.extend(Phx.gridInterfaz,{
 			type:'TextField',
 			filters:{pfiltro:'provee.codigo',type:'string'},
 			id_grupo:1,
-			grid:false,
+			grid:true,
 			form:true
 		},
 		{
@@ -513,6 +583,7 @@ Phx.vista.Proveedor=Ext.extend(Phx.gridInterfaz,{
 			grid:false,
 			form:true
 		},
+
 		{
 			config:{
 				name: 'celular2',
@@ -775,7 +846,7 @@ Phx.vista.Proveedor=Ext.extend(Phx.gridInterfaz,{
 			},
 			type:'TextField',
 			id_grupo:2,
-			grid:false,
+			grid:true,
 			form:true
 		},
 		{
@@ -870,9 +941,11 @@ Phx.vista.Proveedor=Ext.extend(Phx.gridInterfaz,{
 		{name:'pais', type: 'string'},
 		{name:'rotulo_comercial', type: 'string'},
 		{name:'nombre_proveedor', type: 'string'},'ci', 'desc_dir_proveedor','contacto',
-        'tipo_prov'
+        'tipo_prov', 'correo', 'email_instit', 'pag_web', 'cel_persona', 'telf_persona',
+        'cel_instit','telf_instit'
 	],
-	
+    arrayDefaultColumHidden: ['correo', 'email_instit', 'pag_web', 'cel_persona', 'telf_persona',
+        'cel_instit','telf_instit'],
 	cmbProveedor:new Ext.form.ComboBox({
 	       			name:'proveedor',
 	       			fieldLabel:'Proveedor',
