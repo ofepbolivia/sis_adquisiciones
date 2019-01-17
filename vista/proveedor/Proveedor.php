@@ -944,8 +944,8 @@ Phx.vista.Proveedor=Ext.extend(Phx.gridInterfaz,{
         'tipo_prov', 'correo', 'email_instit', 'pag_web', 'cel_persona', 'telf_persona',
         'cel_instit','telf_instit'
 	],
-    arrayDefaultColumHidden: ['correo', 'email_instit', 'pag_web', 'cel_persona', 'telf_persona',
-        'cel_instit','telf_instit'],
+    // arrayDefaultColumHidden: ['correo', 'email_instit', 'pag_web', 'cel_persona', 'telf_persona',
+    //     'cel_instit','telf_instit'],
 	cmbProveedor:new Ext.form.ComboBox({
 	       			name:'proveedor',
 	       			fieldLabel:'Proveedor',
