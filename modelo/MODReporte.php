@@ -20,6 +20,7 @@ class MODReporte extends MODbase{
         $this->tipo_procedimiento='SEL';
 
         $this->setParametro('id_usuario','id_usuario','int4');
+        $this->setParametro('id_gestion','id_gestion','int4');
         $this->setParametro('chequeado','chequeado','varchar');
 
         //Define los parametros para la funcion
@@ -55,6 +56,7 @@ class MODReporte extends MODbase{
         $this->tipo_procedimiento='SEL';
 
         $this->setParametro('id_usuario','id_usuario','int4');
+        $this->setParametro('id_gestion','id_gestion','int4');
         $this->setParametro('chequeado','chequeado','varchar');
 
         //Define los parametros para la funcion

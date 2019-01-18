@@ -30,9 +30,8 @@ header("content-type: text/javascript; charset=UTF-8");
         },
 
         constructor:function(config){
-            this.tbarItems = ['-',
-                this.cmbAux,'-'
-
+            this.tbarItems = [
+                '-',this.cmbGestion,'-', this.cmbAux,'-'
             ];
             this.maestro=config;
 
@@ -51,10 +50,26 @@ header("content-type: text/javascript; charset=UTF-8");
                 timeout: this.timeout,
                 scope: this
             });
+            Ext.Ajax.request({
+                url:'../../sis_parametros/control/Gestion/obtenerGestionByFecha',
+                params:{fecha:new Date()},
+                success:function(resp){
+                    var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+                    this.cmbGestion.setValue(reg.ROOT.datos.id_gestion);
+                    this.cmbGestion.setRawValue(reg.ROOT.datos.anho);
+                    this.store.baseParams.id_gestion=reg.ROOT.datos.id_gestion;
+                    this.load({params:{start:0, limit:this.tam_pag}});
+                },
+                failure: this.conexionFailure,
+                timeout:this.timeout,
+                scope:this
+            });
+
 
             //llama al constructor de la clase padre
             Phx.vista.ConsultaForm500.superclass.constructor.call(this,config);
             this.init();
+            this.cmbGestion.on('select',this.capturarEventos, this);
             //this.load({params:{start:0, limit: 50}});
 
             this.addButton('btnChequeoDocumentosWf',{
@@ -88,9 +103,46 @@ header("content-type: text/javascript; charset=UTF-8");
 
         capturarFiltros: function () {
             this.store.baseParams.id_usuario=this.cmbAux.getValue();
+            this.store.baseParams.id_gestion=this.cmbGestion.getValue();
             this.store.baseParams.chequeado = this.formulario;
             this.load({params:{start:0, limit:this.tam_pag}});
         },
+
+        cmbGestion : new Ext.form.ComboBox({
+            name: 'gestion',
+            //id: 'gestion_reg',
+            fieldLabel: 'Gestion',
+            allowBlank: true,
+            emptyText:'Gestion...',
+            blankText: 'Año',
+            editable:false,
+            store:new Ext.data.JsonStore(
+                {
+                    url: '../../sis_parametros/control/Gestion/listarGestion',
+                    id: 'id_gestion',
+                    root: 'datos',
+                    sortInfo:{
+                        field: 'gestion',
+                        direction: 'DESC'
+                    },
+                    totalProperty: 'total',
+                    fields: ['id_gestion','gestion'],
+                    // turn on remote sorting
+                    remoteSort: true,
+                    baseParams:{par_filtro:'gestion'}
+                }),
+            valueField: 'id_gestion',
+            triggerAction: 'all',
+            displayField: 'gestion',
+            hiddenName: 'id_gestion',
+            mode:'remote',
+            pageSize:50,
+            queryDelay:500,
+            listWidth:'280',
+            hidden:false,
+            width:80
+        }),
+
 
         cmbAux :new Ext.form.ComboBox({
             name: 'id_usuario',
@@ -189,6 +241,7 @@ header("content-type: text/javascript; charset=UTF-8");
         capturarEventos: function () {
             this.store.baseParams.id_usuario=this.cmbAux.getValue();
             this.store.baseParams.tipo=this.cmbTipo.getValue();
+            this.store.baseParams.id_gestion=this.cmbGestion.getValue();
             this.load({params:{start:0, limit:50}});
         },
 

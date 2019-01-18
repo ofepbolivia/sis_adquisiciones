@@ -675,81 +675,94 @@ header("content-type: text/javascript; charset=UTF-8");
         guardarProceso :function() {
             var d= this.sm.getSelected().data;
 
-            var that = this;
+            /*var that = this;
+            if (d.id_depto == 2){
+                Ext.Ajax.request({
+                    url:'../../sis_adquisiciones/control/Solicitud/getListaProcesoClonado',
+                    params:{id_solicitud:d.id_solicitud},
+                    success:function(resp){
+                        var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
 
-            Ext.Ajax.request({
-                url:'../../sis_adquisiciones/control/Solicitud/getListaProcesoClonado',
-                params:{id_solicitud:d.id_solicitud},
-                success:function(resp){
-                    var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-
-                    if(JSON.parse(reg.ROOT.datos.p_tiene_clon) && JSON.parse(reg.ROOT.datos.p_estado_clon)){
-                        Ext.Msg.show({
-                            title: 'Información',
-                            msg: reg.ROOT.datos.p_mensaje,
-                            buttons: Ext.Msg.OK,
-                            width: 512,
-                            icon: Ext.Msg.INFO
-                        });
-                    }else {
-
-                        var items = this.formProceso.getForm().getValues();
-                        if(JSON.parse(reg.ROOT.datos.p_tiene_clon)){
-
-                            list_proceso = reg.ROOT.datos.p_list_proceso.split(',');
-                            list_proceso.forEach( function(valor, indice, array) {
-                                console.log('valor', valor);
-                                Ext.Ajax.request({
-                                    url: '../../sis_adquisiciones/control/Solicitud/getDatosSolicitud',
-                                    params: {id_solicitud: valor},
-                                    success: function(resp){
-                                        var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
-
-                                        param = reg.datos[0];
-                                        param.id_depto_usuario = items.id_depto_usuario;
-                                        param.fecha_ini_proc = items.fecha_ini_proc;
-                                        param.codigo_proceso = items.codigo_proceso;
-                                        param.objeto = items.objeto;
-                                        param.obs_proceso = items.obs_proceso;
-
-                                        Phx.CP.loadingShow();
-                                        Ext.Ajax.request({
-                                            url: '../../sis_adquisiciones/control/ProcesoCompra/insertarProcesoCompra',
-                                            params: param,
-                                            success: this.successSinc,
-                                            failure: this.conexionFailure,
-                                            timeout: this.timeout,
-                                            scope: this
-                                        });
-                                    },
-                                    failure: this.conexionFailure,
-                                    timeout: this.timeout,
-                                    scope: this
-                                });
+                        if(JSON.parse(reg.ROOT.datos.p_tiene_clon) && JSON.parse(reg.ROOT.datos.p_estado_clon)){
+                            Ext.Msg.show({
+                                title: 'Información',
+                                msg: reg.ROOT.datos.p_mensaje,
+                                buttons: Ext.Msg.OK,
+                                width: 512,
+                                icon: Ext.Msg.INFO
                             });
-                            Phx.CP.loadingHide();
                         }else {
-                            if (that.formProceso.getForm().isValid()) {
-                                Phx.CP.loadingShow();
 
-                                Ext.Ajax.request({
-                                    // form:this.form.getForm().getEl(),
-                                    url: '../../sis_adquisiciones/control/ProcesoCompra/insertarProcesoCompra',
-                                    params: this.formProceso.getForm().getValues(),
-                                    success: this.successSinc,
-                                    failure: this.conexionFailure,
-                                    timeout: this.timeout,
-                                    scope: this
+                            var items = this.formProceso.getForm().getValues();
+                            if(JSON.parse(reg.ROOT.datos.p_tiene_clon)){
+
+                                list_proceso = reg.ROOT.datos.p_list_proceso.split(',');
+                                list_proceso.forEach( function(valor, indice, array) {
+                                    console.log('valor', valor);
+                                    Ext.Ajax.request({
+                                        url: '../../sis_adquisiciones/control/Solicitud/getDatosSolicitud',
+                                        params: {id_solicitud: valor},
+                                        success: function(resp){
+                                            var reg =  Ext.decode(Ext.util.Format.trim(resp.responseText));
+
+                                            param = reg.datos[0];
+                                            param.id_depto_usuario = items.id_depto_usuario;
+                                            param.fecha_ini_proc = items.fecha_ini_proc;
+                                            param.codigo_proceso = items.codigo_proceso;
+                                            param.objeto = items.objeto;
+                                            param.obs_proceso = items.obs_proceso;
+
+                                            Phx.CP.loadingShow();
+                                            Ext.Ajax.request({
+                                                url: '../../sis_adquisiciones/control/ProcesoCompra/insertarProcesoCompra',
+                                                params: param,
+                                                success:this.successSinc,
+                                                failure: this.conexionFailure,
+                                                timeout: this.timeout,
+                                                scope: this
+                                            });
+                                        },
+                                        failure: this.conexionFailure,
+                                        timeout: this.timeout,
+                                        scope: this
+                                    });
                                 });
+                            }else {
+                                if (that.formProceso.getForm().isValid()) {
+                                    Phx.CP.loadingShow();
+
+                                    Ext.Ajax.request({
+                                        // form:this.form.getForm().getEl(),
+                                        url: '../../sis_adquisiciones/control/ProcesoCompra/insertarProcesoCompra',
+                                        params: this.formProceso.getForm().getValues(),
+                                        success:this.successSinc,
+                                        failure: this.conexionFailure,
+                                        timeout: this.timeout,
+                                        scope: this
+                                    });
+                                }
                             }
-                            Phx.CP.loadingHide();
                         }
-                    }
-                },
-                failure: this.conexionFailure,
-                timeout:this.timeout,
-                scope:this
-            });
+                    },
+                    failure: this.conexionFailure,
+                    timeout:this.timeout,
+                    scope:this
+                });
+            }else {*/
+                if (that.formProceso.getForm().isValid()) {
+                    Phx.CP.loadingShow();
+                    Ext.Ajax.request({
+                        // form:this.form.getForm().getEl(),
+                        url: '../../sis_adquisiciones/control/ProcesoCompra/insertarProcesoCompra',
+                        params: this.formProceso.getForm().getValues(),
+                        success:this.successSinc,
+                        failure: this.conexionFailure,
+                        timeout: this.timeout,
+                        scope: this
+                    });
+                }
+            //}
+
 
         },
 
