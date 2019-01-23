@@ -1269,6 +1269,24 @@ header("content-type: text/javascript; charset=UTF-8");
                         scope: this
                     });
 
+                }else if (combo.lastSelectionText == 'Compra Internacional BOA REP') {
+                    this.mostrarComponente(this.Cmp.nro_po);
+                    this.mostrarComponente(this.Cmp.fecha_po);
+
+                    Ext.Ajax.request({
+                        url: '../../sis_adquisiciones/control/Solicitud/listarMoneda',
+                        params: {nombre_moneda: '$us'},
+                        success: function (resp) {
+                            var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+                            console.log(reg.ROOT.datos);
+                            this.Cmp.id_moneda.setValue(reg.ROOT.datos.id_moneda);
+                            this.Cmp.id_moneda.setRawValue(reg.ROOT.datos.moneda);
+                        },
+                        failure: this.conexionFailure,
+                        timeout: this.timeout,
+                        scope: this
+                    });
+
                 }
 
 
