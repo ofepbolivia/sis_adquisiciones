@@ -909,7 +909,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength:255
                     },
                     type:'TextField',
-                    id_grupo:1,
+                    id_grupo:2,
                     filters:{pfiltro:'sol.nro_po',type:'string'},
                     grid: true,
                     form: true
@@ -926,7 +926,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
                     },
                     type:'DateField',
-                    id_grupo:1,
+                    id_grupo:2,
                     grid: true,
                     form: true
                 },

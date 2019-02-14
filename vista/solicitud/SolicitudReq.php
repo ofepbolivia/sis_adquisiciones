@@ -256,7 +256,7 @@ header("content-type: text/javascript; charset=UTF-8");
             //this.Cmp.fecha_soli.fireEvent('change');
 
             //nos permite habilitar para la categoria de compra internacional el campo nro_po, fecha_po
-            if(this.Cmp.id_categoria_compra.getValue()==4){
+            if(this.Cmp.id_categoria_compra.getValue()==6 || this.Cmp.id_categoria_compra.getValue()==4){
                 this.mostrarComponente(this.Cmp.nro_po);
                 this.mostrarComponente(this.Cmp.fecha_po);
             }else{
