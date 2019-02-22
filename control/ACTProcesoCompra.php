@@ -60,6 +60,10 @@ class ACTProcesoCompra extends ACTbase
             //$this->objParam->addFiltro("(''finalizada''=ANY(array_estados_cot) or (estado in (''finalizado'',''anulado'')))");
         }
 
+        if ($this->objParam->getParametro('id_gestion') != '') {
+            $this->objParam->addFiltro("tso.id_gestion = ". $this->objParam->getParametro('id_gestion'));
+        }
+
         if ($this->objParam->getParametro('tipoReporte') == 'excel_grid' || $this->objParam->getParametro('tipoReporte') == 'pdf_grid') {
             $this->objReporte = new Reporte($this->objParam, $this);
             $this->res = $this->objReporte->generarReporteListado('MODProcesoCompra', 'listarProcesoCompra');

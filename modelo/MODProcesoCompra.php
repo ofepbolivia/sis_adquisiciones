@@ -60,6 +60,8 @@ class MODProcesoCompra extends MODbase
         $this->captura('proveedores_cot', 'text');
         $this->captura('prioridad', 'varchar');
 
+        $this->captura('id_gestion', 'int4');
+
 
         //Ejecuta la instruccion
         $this->armarConsulta();

@@ -27,6 +27,10 @@ class ACTCotizacion extends ACTbase{
 		if($this->objParam->getParametro('filtro_campo')!=''){
             $this->objParam->addFiltro($this->objParam->getParametro('filtro_campo')." = ".$this->objParam->getParametro('filtro_valor'));  
         }
+
+        if ($this->objParam->getParametro('id_gestion') != '') {
+            $this->objParam->addFiltro("sol.id_gestion = ". $this->objParam->getParametro('id_gestion'));
+        }
 		
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
 			$this->objReporte = new Reporte($this->objParam,$this);
@@ -51,7 +55,9 @@ class ACTCotizacion extends ACTbase{
         if($this->objParam->getParametro('filtro_campo')!=''){
             $this->objParam->addFiltro($this->objParam->getParametro('filtro_campo')." = ".$this->objParam->getParametro('filtro_valor'));  
         }
-        
+        if ($this->objParam->getParametro('id_gestion') != '') {
+            $this->objParam->addFiltro("sol.id_gestion = ". $this->objParam->getParametro('id_gestion'));
+        }
         
         if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
             $this->objReporte = new Reporte($this->objParam,$this);

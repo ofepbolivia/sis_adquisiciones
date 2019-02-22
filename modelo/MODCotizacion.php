@@ -71,14 +71,9 @@ class MODCotizacion extends MODbase{
 		$this->captura('total_adjudicado_mb','numeric');
 		$this->captura('tiene_form500','varchar');
 		$this->captura('correo_oc','varchar');
-		
-		
-		
-		 
-		
-		
-				
-		
+
+		$this->captura('id_gestion','int4');
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -173,7 +168,9 @@ class MODCotizacion extends MODbase{
 		$this->captura('total_adjudicado','numeric');
 		$this->captura('total_cotizado','numeric');
 		$this->captura('total_adjudicado_mb','numeric');
-        
+
+		$this->captura('id_gestion','int4');
+
         
         //Ejecuta la instruccion
         $this->armarConsulta();

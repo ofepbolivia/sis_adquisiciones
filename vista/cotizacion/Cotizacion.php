@@ -765,7 +765,7 @@ Phx.vista.Cotizacion=Ext.extend(Phx.gridInterfaz,{
 		'funcionario_contacto',
         'telefono_contacto',
         'correo_contacto', 'correo_oc',
-        'prellenar_oferta', 'forma_pago', 'requiere_contrato','total_adjudicado','total_cotizado','total_adjudicado_mb','tiene_form500'
+        'prellenar_oferta', 'forma_pago', 'requiere_contrato','total_adjudicado','total_cotizado','total_adjudicado_mb','tiene_form500', 'id_gestion'
 		
 	],
     rowExpander: new Ext.ux.grid.RowExpander({

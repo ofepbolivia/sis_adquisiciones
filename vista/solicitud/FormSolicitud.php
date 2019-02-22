@@ -886,7 +886,8 @@ header("content-type: text/javascript; charset=UTF-8");
                         id: 'id_categoria_compra',
                         root: 'datos',
                         sortInfo: {
-                            field: 'catcomp.nombre',
+                            // field: 'catcomp.nombre',
+                            field: 'catcomp.fecha_reg',
                             direction: 'ASC'
                         },
                         totalProperty: 'total',

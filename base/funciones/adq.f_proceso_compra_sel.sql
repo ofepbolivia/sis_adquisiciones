@@ -110,7 +110,8 @@ BEGIN
                               estados_cotizacion,
                               numeros_oc,
                               proveedores_cot,
-                              tca.codigo
+                              tca.codigo,
+                              tso.id_gestion
                    from adq.vproceso_compra pc
                    left join adq.tsolicitud tso on tso.id_solicitud = pc.id_solicitud
                    left join param.tcatalogo tca on tca.id_catalogo = tso.prioridad
