@@ -527,14 +527,50 @@ header("content-type: text/javascript; charset=UTF-8");
 
                     scope:this
                 });
+
             /*Ext.getCmp(this.objWizard).autoLoad.params.configExtra[1].value = 'Bolivia';
             console.log('sexo',(Ext.getCmp(this.objWizard).autoLoad.params.configExtra[1]))*/
             //Ext.getCmp(this.objWizard).autoload.params.configExtra[1].config.name.setValue('sexo');
         },
+        imprimir_reporte: function(){
+             var rec = this.sm.getSelected(),
+             data = rec.data,
+             me = this;
+             console.log("llega aqui",data);
+           if (data.estado == 'vbpresupuestos') {
+             Phx.CP.loadingShow();
+             Ext.Ajax.request({
+                 url : '../../sis_presupuestos/control/Presupuesto/reporteCertificacionP',
+                 params : {
+                   'id_proceso_wf' : data.id_proceso_wf,
+                 },
+                 success : me.generarReporte,
+                 failure : me.failureCheck,
+                 timeout : me.timeout,
+                 scope : me
+               });
+           }
+       },
+
+       generarReporte: function (resp) {
+         Phx.CP.loadingHide();
+         console.log("llega aqui para mostrar",resp);
+         var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+          console.log("llega aqui para mostrar",objRes);
+         var objetoDatos = (objRes.ROOT == undefined)?objRes.datos:objRes.ROOT.detalle.archivo_generado;
+         console.log("llega aqui para imprimir",objetoDatos);
+
+         //  var objetoDatos = (objRes.ROOT == undefined)?objRes.datos:objRes.ROOT.datos;
+         // console.log("llega aqui para imprimir",objetoDatos);
+
+         window.open('../../../lib/lib_control/Intermediario.php?r=' + objetoDatos);
+         //wnd.document.write(objetoDatos.html);
+          //wnd.document.write(resp.ROOT.detalle.archivo_generado);
+       },
+
         onSaveWizard:function(wizard,resp){
             console.log('wizard',wizard,'resp',resp);
             Phx.CP.loadingShow();
-
             Ext.Ajax.request({
                 url:'../../sis_adquisiciones/control/Solicitud/siguienteEstadoSolicitudWzd',
                 params:{
@@ -560,6 +596,7 @@ header("content-type: text/javascript; charset=UTF-8");
             Phx.CP.loadingHide();
             resp.argument.wizard.panel.destroy()
             this.reload();
+            this.imprimir_reporte();
         },
 
         failureCheck:function(resp1,resp2,resp3){
