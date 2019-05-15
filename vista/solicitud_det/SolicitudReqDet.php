@@ -152,6 +152,10 @@ Phx.vista.SolicitudReqDet = {
          this.Cmp.id_concepto_ingas.on('change',function( cmb, rec, ind){
 	        	    this.Cmp.id_orden_trabajo.reset();
 	           },this);
+
+        this.Cmp.id_centro_costo.on('change',function( cmb, rec, ind){
+            this.Cmp.id_concepto_ingas.reset();
+        },this);
 	        
 	     this.Cmp.id_concepto_ingas.on('select',function( cmb, rec, ind){
 	        	
