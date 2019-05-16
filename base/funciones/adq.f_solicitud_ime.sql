@@ -149,6 +149,8 @@ DECLARE
        v_list_proceso				integer[];
        v_numero_tramite				varchar='';
 
+	   --Reglas
+       v_codigo_cat					varchar;
 BEGIN
 
     v_nombre_funcion = 'adq.f_solicitud_ime';
@@ -168,9 +170,22 @@ BEGIN
         begin
         v_fecha_aux = EXTRACT(YEAR FROM v_parametros.fecha_soli::date);
 
+        --(f.e.a)reglas
         if(v_fecha_aux = 2017)then
         	raise exception 'ESTIMADO USUARIO, NO ES POSIBLE HACER REGISTROS PARA LA GESTION 2017';
         end if;
+
+        select tc.codigo
+        into v_codigo_cat
+        from adq.tcategoria_compra tc
+        where tc.id_categoria_compra = v_parametros.id_categoria_compra;
+
+        /*if v_codigo_cat = 'CNPD' and p_id_usuario <> 78 and p_id_usuario <> 544 then
+        	raise exception 'En cumplimiento a circular instructiva emitida por el Departamento Administrativo,
+            ya no es posible registrar solicitudes de compra nacional.';
+        end if;*/
+        --reglas
+
         -- determina la fecha del periodo
          select id_periodo into v_id_periodo from
                         param.tperiodo per
@@ -299,7 +314,8 @@ BEGIN
             precontrato,
             nro_po,
             fecha_po,
-            prioridad
+            prioridad,
+            cuce
           	) values(
 			'activo',
 			--v_parametros.id_solicitud_ext,
@@ -339,7 +355,8 @@ BEGIN
             COALESCE(v_parametros.precontrato,'no'),
             trim(both ' ' from v_parametros.nro_po),
             v_parametros.fecha_po,
-			v_parametros.prioridad
+			v_parametros.prioridad,
+            v_parametros.cuce
 
 			)RETURNING id_solicitud into v_id_solicitud;
 
@@ -474,7 +491,8 @@ BEGIN
             precontrato = COALESCE(v_parametros.precontrato,'no'),
             nro_po = trim(both ' ' from v_parametros.nro_po),
             fecha_po = v_parametros.fecha_po,
-            prioridad = v_parametros.id_prioridad
+            prioridad = v_parametros.id_prioridad,
+            cuce = v_parametros.cuce
 			where id_solicitud = v_parametros.id_solicitud;
 
 			--Definicion de la respuesta
@@ -2092,22 +2110,28 @@ BEGIN
               into v_mensaje, v_estado_actual, v_id_solicitud, v_numero_tramite
               from mat.tsolicitud tsm
               left join adq.tsolicitud tsa on tsa.num_tramite = tsm.nro_tramite
-              where tsm.id_solicitud = v_id_proceso;
+              where tsm.id_solicitud = v_id_proceso /*and tsa.estado != 'anulado'*/;
+		      if v_estado_actual != 'proceso' then
+                if v_mensaje is null or v_mensaje = '' then
+                  v_mensaje_clon = v_mensaje_clon || '<li>' || v_cont||'. El proceso <b>'|| v_numero_tramite||'</b> actualmente se encuentra en el Sistema Materiales que es Clon, para poder continuar el proceso debe estar en estado <b style="color:green;">Aprobado</b>.</li>';
+                else
+                  v_mensaje_clon = v_mensaje_clon || '<li>' || v_mensaje||'</li>';
+                end if;
 
-              if v_mensaje is null or v_mensaje = '' then
-              	v_mensaje_clon = v_mensaje_clon || '<li>' || v_cont||'. El proceso <b>'|| v_numero_tramite||'</b> actualmente se encuentra en el Sistema Materiales que es Clon, para poder continuar el proceso debe estar en estado <b style="color:green;">Aprobado</b>.</li>';
-              else
-              	v_mensaje_clon = v_mensaje_clon || '<li>' || v_mensaje||'</li>';
-              end if;
+                if(v_estado_actual = 'aprobado')then
+                  v_contador = v_contador + 1;
+                  v_list_proceso = array_append(v_list_proceso, v_id_solicitud);
+                end if;
 
-              if(v_estado_actual = 'aprobado')then
-              	v_contador = v_contador + 1;
+                /*if v_estado_actual != 'proceso' or v_mensaje is null then
+
+                end if;*/
+
+                v_cont = v_cont + 1;
               end if;
-              v_list_proceso = array_append(v_list_proceso, v_id_solicitud);
-              v_cont = v_cont + 1;
             end loop;
             v_mensaje_clon = v_mensaje_clon || '</ol>';
-            if(array_length(v_record.list_proceso,1) = v_contador)then
+            if(array_length(v_list_proceso,1) = v_contador)then
             	v_estado_clon = false;
             else
             	v_estado_clon = true;
@@ -2151,3 +2175,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION adq.f_solicitud_ime (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;

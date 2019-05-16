@@ -258,7 +258,7 @@ BEGIN
 						left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
                         left join param.vproveedor pro on pro.id_proveedor = sol.id_proveedor
 
-                        left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud
+                        left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud and tsd.estado_reg = ''activo''
 
                         left join param.tcatalogo tcat on tcat.id_catalogo = sol.prioridad
                         '||v_inner||'
@@ -402,7 +402,7 @@ BEGIN
 						left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
                         left join param.vproveedor pro on pro.id_proveedor = sol.id_proveedor
 
-                        left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud
+                        left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud and tsd.estado_reg = ''activo''
 
                         left join param.tcatalogo tcat on tcat.id_catalogo = sol.prioridad
                         '||v_inner||'
@@ -888,3 +888,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION adq.f_solicitud_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;

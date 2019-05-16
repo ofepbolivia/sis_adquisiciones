@@ -14,7 +14,7 @@ header("content-type: text/javascript; charset=UTF-8");
 Phx.vista.SolicitudHistorico = {
     bedit:false,
     bnew:false,
-    bsave:false,
+    bsave:true,
     bdel:false,
 	require:'../../../sis_adquisiciones/vista/solicitud/Solicitud.php',
 	requireclase:'Phx.vista.Solicitud',
@@ -33,7 +33,10 @@ Phx.vista.SolicitudHistorico = {
         this.Atributos[this.getIndAtributo('id_categoria_compra')].form=false;
         this.Atributos[this.getIndAtributo('id_uo')].form=false;
         this.Atributos[this.getIndAtributo('id_depto')].form=false;
-        this.Atributos[this.getIndAtributo('revisado_asistente')].grid=true; 
+        this.Atributos[this.getIndAtributo('revisado_asistente')].grid=true;
+        //temporal 16/05/2019 campo CUCE para aumentar datos a la tabla solicitud
+        this.Atributos[this.getIndAtributo('cuce')].grid = true;
+        this.Atributos[this.getIndAtributo('cuce')].form = true;
         
         //funcionalidad para listado de historicos
         this.historico = 'no';
