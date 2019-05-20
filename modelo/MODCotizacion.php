@@ -74,6 +74,8 @@ class MODCotizacion extends MODbase{
 
 		$this->captura('id_gestion','int4');
 
+		$this->captura('cuce','varchar');
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -667,6 +669,25 @@ class MODCotizacion extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+
+    function insertarCuce()
+    {
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento = 'adq.f_cotizacion_ime';
+        $this->transaccion = 'ADQ_RSOLCUCE_IME';
+        $this->tipo_procedimiento = 'IME';
+
+        //Define los parametros para la funcion
+        $this->setParametro('id_cotizacion', 'id_cotizacion', 'int4');
+        $this->setParametro('cuce', 'cuce', 'varchar');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
     
 	
 

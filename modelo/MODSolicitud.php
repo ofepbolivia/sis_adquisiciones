@@ -158,7 +158,6 @@ class MODSolicitud extends MODbase
         $this->setParametro('fecha_po', 'fecha_po', 'varchar');
 
         $this->setParametro('id_prioridad', 'id_prioridad', 'integer');
-        $this->setParametro('cuce', 'cuce', 'varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
@@ -213,7 +212,6 @@ class MODSolicitud extends MODbase
 
         $this->setParametro('id_prioridad', 'id_prioridad', 'integer');
 
-        $this->setParametro('cuce', 'cuce', 'varchar');
 
 
         //Ejecuta la instruccion
@@ -924,6 +922,25 @@ class MODSolicitud extends MODbase
         $this->armarConsulta();//echo $this->consulta; exit;
         $this->ejecutarConsulta();
 
+        return $this->respuesta;
+    }
+
+    function insertarCuce()
+    {
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento = 'adq.f_solicitud_ime';
+        $this->transaccion = 'ADQ_RCUCE_IME';
+        $this->tipo_procedimiento = 'IME';
+
+        //Define los parametros para la funcion
+        $this->setParametro('id_solicitud', 'id_solicitud', 'int4');
+        $this->setParametro('cuce', 'cuce', 'varchar');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
         return $this->respuesta;
     }
 

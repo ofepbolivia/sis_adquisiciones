@@ -115,7 +115,8 @@ BEGIN
                         d.total_adjudicado_mb,
                         cot.tiene_form500,
                         cot.correo_oc,
-                        sol.id_gestion
+                        sol.id_gestion,
+                        sol.cuce
 						from adq.tcotizacion cot
                         inner join adq.tproceso_compra proc on proc.id_proceso_compra = cot.id_proceso_compra
                         inner join adq.tsolicitud sol on sol.id_solicitud = proc.id_solicitud
@@ -734,4 +735,8 @@ LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
+PARALLEL UNSAFE
 COST 100;
+
+ALTER FUNCTION adq.f_cotizacion_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;

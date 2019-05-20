@@ -239,7 +239,9 @@ BEGIN
                         sum(tsd.precio_total) as importe_total,
                         tcat.codigo as prioridad,
                         tcat.id_catalogo as id_prioridad,
-                        sol.list_proceso
+                        sol.list_proceso,
+                        sol.cuce
+
 						from adq.tsolicitud sol
 						inner join segu.tusuario usu1 on usu1.id_usuario = sol.id_usuario_reg
                         inner join wf.tproceso_wf pwf on pwf.id_proceso_wf = sol.id_proceso_wf

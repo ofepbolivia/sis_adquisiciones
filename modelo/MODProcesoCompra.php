@@ -535,6 +535,39 @@ class MODProcesoCompra extends MODbase
         return $this->respuesta;
     }
 
+    function reporteProcesosContraAdj()
+    {
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento = 'adq.f_proceso_compra_sel';
+        $this->transaccion = 'ADQ_REPROADJU_SEL';
+        $this->tipo_procedimiento = 'SEL';//tipo de transaccion
+        //$this->setCount(false);
+
+        $this->setParametro('fecha_ini', 'fecha_ini', 'date');
+        $this->setParametro('fecha_fin', 'fecha_fin', 'date');
+        $this->setParametro('monto_mayor', 'monto_mayor', 'varchar');
+
+        //Definicion de la lista del resultado del query
+        $this->captura('cuce', 'varchar');
+        $this->captura('num_tramite', 'varchar');
+        $this->captura('tipo_concepto', 'varchar');
+        $this->captura('modalidad', 'varchar');
+        $this->captura('requiere_contrato', 'varchar');
+        $this->captura('numero_oc', 'varchar');
+        $this->captura('numero', 'varchar');
+        $this->captura('fecha_elaboracion', 'date');
+        $this->captura('objeto', 'varchar');
+        $this->captura('desc_proveedor', 'varchar');
+        $this->captura('monto_total_adjudicado_mb', 'varchar');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        //echo $this->consulta;exit;
+        $this->ejecutarConsulta();
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
 }
 
 ?>

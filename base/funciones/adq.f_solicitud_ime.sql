@@ -314,8 +314,7 @@ BEGIN
             precontrato,
             nro_po,
             fecha_po,
-            prioridad,
-            cuce
+            prioridad
           	) values(
 			'activo',
 			--v_parametros.id_solicitud_ext,
@@ -355,8 +354,7 @@ BEGIN
             COALESCE(v_parametros.precontrato,'no'),
             trim(both ' ' from v_parametros.nro_po),
             v_parametros.fecha_po,
-			v_parametros.prioridad,
-            v_parametros.cuce
+			v_parametros.prioridad
 
 			)RETURNING id_solicitud into v_id_solicitud;
 
@@ -491,8 +489,7 @@ BEGIN
             precontrato = COALESCE(v_parametros.precontrato,'no'),
             nro_po = trim(both ' ' from v_parametros.nro_po),
             fecha_po = v_parametros.fecha_po,
-            prioridad = v_parametros.id_prioridad,
-            cuce = v_parametros.cuce
+            prioridad = v_parametros.id_prioridad
 			where id_solicitud = v_parametros.id_solicitud;
 
 			--Definicion de la respuesta
@@ -2153,7 +2150,32 @@ BEGIN
         return v_resp;
       end;
 
-  else
+    /*********************************
+ 	#TRANSACCION:  'ADQ_RCUCE_IME'
+ 	#DESCRIPCION:	Inserta en el campo cuce
+ 	#AUTOR:	    Maylee Perez Pastor
+ 	#FECHA:		16-05-2019 16:01:32
+	***********************************/
+
+	elsif(p_transaccion='ADQ_RCUCE_IME')then
+
+		begin
+
+           		update adq.tsolicitud  set
+                cuce = v_parametros.cuce
+                where id_solicitud = v_parametros.id_solicitud;
+
+
+                --Definicion de la respuesta
+                v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Se insertaron ajustes ');
+                v_resp = pxp.f_agrega_clave(v_resp,'id_solicitud',v_parametros.id_solicitud::varchar);
+
+          --Devuelve la respuesta
+          return v_resp;
+
+		end;
+
+    else
 
     	raise exception 'Transaccion inexistente: %',p_transaccion;
 

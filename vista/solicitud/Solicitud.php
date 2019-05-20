@@ -1070,7 +1070,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     grid: true,
                     form: false
                 },
-                //temporal 16/05/2019 campo CUCE para aumentar datos a la tabla solicitud
+                //16/05/2019 campo CUCE para aumentar datos a la tabla solicitud
                 {
                     config: {
                         name: 'cuce',
@@ -1078,18 +1078,20 @@ header("content-type: text/javascript; charset=UTF-8");
                         allowBlank: true,
                         anchor: '80%',
                         gwidth: 200,
+                        //hidden:true,
                         tinit: false,
                         sortable: false,
                         gdisplayField: 'cuce',
-                        renderer: function (value, p, record) {
-                            return String.format('{0}', record.data['cuce']);
-                        },
+                        // renderer: function (value, p, record) {
+                        //     return String.format('{0}', record.data['cuce']);
+                        // },
 
                         maxLength: 250
                     },
                     type: 'Field',
                     filters: {pfiltro: 'sol.cuce', type: 'string'},
-                    egrid: true,
+                    valor: 0,
+                    // egrid: true,
                     id_grupo: 1,
                     grid: false,
                     form: false

@@ -586,6 +586,12 @@ class ACTCotizacion extends ACTbase{
         $this->res=$this->objFunc->cambioFomrulario500($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
+
+    function insertarCuce(){
+        $this->objFunc=$this->create('MODCotizacion');
+        $this->res=$this->objFunc->insertarCuce($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
     
 
 }
