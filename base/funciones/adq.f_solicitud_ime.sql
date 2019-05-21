@@ -151,6 +151,7 @@ DECLARE
 
 	   --Reglas
        v_codigo_cat					varchar;
+
 BEGIN
 
     v_nombre_funcion = 'adq.f_solicitud_ime';
@@ -2162,7 +2163,8 @@ BEGIN
 		begin
 
            		update adq.tsolicitud  set
-                cuce = v_parametros.cuce
+                cuce = v_parametros.cuce,
+                fecha_conclusion = v_parametros.fecha_conclusion
                 where id_solicitud = v_parametros.id_solicitud;
 
 
@@ -2181,6 +2183,8 @@ BEGIN
 
 	end if;
 
+
+
 EXCEPTION
 
 	WHEN OTHERS THEN
@@ -2196,6 +2200,7 @@ LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
+PARALLEL UNSAFE
 COST 100;
 
 ALTER FUNCTION adq.f_solicitud_ime (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)

@@ -36,6 +36,7 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Atributos[this.getIndAtributo('revisado_asistente')].grid = true;
             // 16/05/2019 campo CUCE para aumentar datos a la tabla solicitud
             this.Atributos[this.getIndAtributo('cuce')].grid = true;
+            this.Atributos[this.getIndAtributo('fecha_conclusion')].grid = true;
 
             this.crearFormCuce();
             //funcionalidad para listado de historicos
@@ -143,14 +144,16 @@ header("content-type: text/javascript; charset=UTF-8");
                     {
                         name: 'cuce',
                         xtype: 'field',
+                        width: 150,
                         fieldLabel: 'CUCE'
-                        //allowDecimals: true,
-                        //value: 0,
-                        // allowNegative: false,
-                        // qtip: 'La ampliacion te permite sobrepasar el montar a pagar previsto inicialmente'
+                    },
+                    {
+                        name: 'fecha_conclusion',
+                        xtype: 'datefield',
+                        width: 150,
+                        fieldLabel: 'Fecha conclusión'
 
-                    }
-                    ,
+                    },
                     {
                         xtype: 'field',
                         name: 'id_solicitud',
@@ -211,7 +214,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 params: {
                     'id_solicitud': d.id_solicitud,
                     'cuce': me.formAjustes.getForm().findField('cuce').getValue(),
-
+                    'fecha_conclusion': me.formAjustes.getForm().findField('fecha_conclusion').getValue()
 
                 },
                 timeout: me.timeout,
@@ -242,6 +245,9 @@ header("content-type: text/javascript; charset=UTF-8");
             var d = this.sm.getSelected().data;
             this.formAjustes.getForm().findField('cuce').show();
             this.formAjustes.getForm().findField('cuce').setValue(d.cuce);
+            this.formAjustes.getForm().findField('fecha_conclusion').show();
+            this.formAjustes.getForm().findField('fecha_conclusion').setValue(d.fecha_conclusion);
+
 
         },
 //

@@ -135,6 +135,10 @@ DECLARE
       v_adq_comprometer_presupuesto		varchar;
 
       v_id_solicitud_cot				integer;
+      v_total_adjudicado				numeric;
+      v_total_adjudicado_mb				numeric;
+      v_cuce							varchar;
+      v_moneda							varchar;
 
 
 BEGIN
@@ -1307,6 +1311,39 @@ BEGIN
              from adq.tcotizacion c
              WHERE c.id_proceso_wf = v_parametros.id_proceso_wf_act;
 
+               --para obligar llenar cuce a los que tienen importe mayores a 20000
+                Select cot.monto_total_adjudicado,
+                	   cot.monto_total_adjudicado_mb,
+                       cot.id_moneda,
+                       mon.codigo
+                INTO v_total_adjudicado,
+                	 v_total_adjudicado_mb,
+                     v_id_moneda,
+                     v_moneda
+                FROM  adq.vcotizacion cot
+                inner join param.tmoneda mon on mon.id_moneda = cot.id_moneda
+                WHERE cot.estado != 'anulado'
+                and cot.id_cotizacion = v_registros_cotizacion.id_cotizacion;
+
+
+                select so.cuce, c.estado
+                into v_cuce, v_estado_cot
+                from adq.tcotizacion c
+                inner join adq.tproceso_compra pc on pc.id_proceso_compra = c.id_proceso_compra
+                inner join adq.tsolicitud so on so.id_solicitud = pc.id_solicitud
+                where c.id_cotizacion = v_registros_cotizacion.id_cotizacion;
+
+
+                IF  v_estado_cot = 'adjudicado' THEN
+
+                    IF (v_cuce is null or v_cuce = '') and v_total_adjudicado_mb >=20000 THEN
+
+                        raise exception 'El importe adjudicado es de % %. y es mayor a 20,000.00 Bs., es obligatorio registrar el número de CUCE y la Fecha de Conclusión.',(to_char(v_total_adjudicado,'999,999,999,999.99')),v_moneda;
+                    END IF;
+
+                END IF;
+               ---
+
              --registra el estado de la cotizacion
              v_id_estado_actual =  wf.f_registra_estado_wf(v_parametros.id_tipo_estado,   --p_id_tipo_estado_siguiente
                                                          v_parametros.id_funcionario_wf,
@@ -1319,13 +1356,16 @@ BEGIN
                                                          v_parametros.obs);
 
 
-             -- actualiza estado en la solicitud
-             update adq.tcotizacion  c set
-               id_estado_wf =  v_id_estado_actual,
-               estado =   wf.f_get_codigo_estado(v_parametros.id_tipo_estado::integer),
-               id_usuario_mod=p_id_usuario,
-               fecha_mod=now()
-             where c.id_cotizacion  = v_registros_cotizacion.id_cotizacion;
+               -- actualiza estado en la solicitud
+                 update adq.tcotizacion  c set
+                   id_estado_wf =  v_id_estado_actual,
+                   estado =   wf.f_get_codigo_estado(v_parametros.id_tipo_estado::integer),
+                   id_usuario_mod=p_id_usuario,
+                   fecha_mod=now()
+                 where c.id_cotizacion  = v_registros_cotizacion.id_cotizacion;
+
+
+
 
             --------------------------------------------------------------
             --registra procesos disparados , preingreso AF, alamecnes, OP
@@ -1601,7 +1641,7 @@ BEGIN
             return v_resp;
         end;
 
-         /*********************************
+    /*********************************
  	#TRANSACCION:  'ADQ_RSOLCUCE_IME'
  	#DESCRIPCION:	Inserta en el campo cuce
  	#AUTOR:	    Maylee Perez Pastor
@@ -1612,17 +1652,29 @@ BEGIN
 
 		begin
 
-                select sol.id_solicitud
-                into v_id_solicitud_cot
+                select sol.id_solicitud, cot.estado
+                into v_id_solicitud_cot, v_estado_cot
                 from adq.tsolicitud sol
                 inner join adq.tproceso_compra proc on proc.id_solicitud = sol.id_solicitud
                 inner join adq.tcotizacion cot on cot.id_proceso_compra = proc.id_proceso_compra
                 where cot.id_cotizacion = v_parametros.id_cotizacion;
 
+                 Select cot.monto_total_adjudicado_mb
+                 INTO v_total_adjudicado_mb
+                 FROM  adq.vcotizacion cot
+                 WHERE cot.estado != 'anulado'
+                 and cot.id_cotizacion = v_parametros.id_cotizacion;
 
-                update adq.tsolicitud  set
-                cuce = v_parametros.cuce
-                where id_solicitud = v_id_solicitud_cot;
+                   update adq.tsolicitud  set
+                   cuce = v_parametros.cuce,
+                   fecha_conclusion = v_parametros.fecha_conclusion
+                   where id_solicitud = v_id_solicitud_cot;
+
+
+              IF (v_parametros.cuce is null or v_parametros.cuce = '') and v_total_adjudicado_mb >20000 THEN
+
+                	raise exception 'El importe adjudicado es mayor a 20,000.00 Bs., es obligatorio registrar el número de CUCE y la Fecha de Conclusión.';
+              END IF;
 
 
                 --Definicion de la respuesta

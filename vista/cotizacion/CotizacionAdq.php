@@ -593,7 +593,10 @@ Phx.vista.CotizacionAdq = {
             this.getBoton('btnChequeoDocumentosWf').enable(); 
             this.getBoton('diagrama_gantt').enable();
             this.getBoton('btnCorreoWf').enable();
-            this.getBoton('bmodCuce').enable();
+
+            if (data['total_adjudicado_mb'] >=  '20000' ){
+                this.getBoton('bmodCuce').enable();
+            }
 
             return tb 
      }, 
@@ -780,7 +783,15 @@ Phx.vista.CotizacionAdq = {
                 {
                     name: 'cuce',
                     xtype: 'field',
+                    width: 150,
                     fieldLabel: 'CUCE'
+
+                },
+                {
+                    name: 'fecha_conclusion',
+                    xtype: 'datefield',
+                    width: 150,
+                    fieldLabel: 'Fecha conclusión'
 
                 },
                 {
@@ -844,7 +855,7 @@ Phx.vista.CotizacionAdq = {
             params: {
                 'id_cotizacion': d.id_cotizacion,
                 'cuce': me.formAjustes.getForm().findField('cuce').getValue(),
-
+                'fecha_conclusion': me.formAjustes.getForm().findField('fecha_conclusion').getValue()
 
             },
             timeout: me.timeout,
@@ -875,6 +886,8 @@ Phx.vista.CotizacionAdq = {
         var d = this.sm.getSelected().data;
         this.formAjustes.getForm().findField('cuce').show();
         this.formAjustes.getForm().findField('cuce').setValue(d.cuce);
+        this.formAjustes.getForm().findField('fecha_conclusion').show();
+        this.formAjustes.getForm().findField('fecha_conclusion').setValue(d.fecha_conclusion);
 
     },
     

@@ -1075,23 +1075,37 @@ header("content-type: text/javascript; charset=UTF-8");
                     config: {
                         name: 'cuce',
                         fieldLabel: 'CUCE',
-                        allowBlank: true,
+                        allowBlank: false,
                         anchor: '80%',
-                        gwidth: 200,
+                        gwidth: 100,
                         //hidden:true,
                         tinit: false,
                         sortable: false,
                         gdisplayField: 'cuce',
-                        // renderer: function (value, p, record) {
-                        //     return String.format('{0}', record.data['cuce']);
-                        // },
-
                         maxLength: 250
                     },
                     type: 'Field',
                     filters: {pfiltro: 'sol.cuce', type: 'string'},
                     valor: 0,
-                    // egrid: true,
+                    id_grupo: 1,
+                    grid: false,
+                    form: false
+                },
+                {
+                    config: {
+                        name: 'fecha_conclusion',
+                        fieldLabel: 'Fecha conclusión',
+                        allowBlank: false,
+                        anchor: '80%',
+                        gwidth: 100,
+                        format: 'd/m/Y',
+                        gdisplayField: 'fecha_conclusion',
+                        renderer: function (value, p, record) {
+                            return value ? value.dateFormat('d/m/Y') : ''
+                        }
+                    },
+                    type: 'DateField',
+                    filters: {pfiltro: 'sol.fecha_conclusion', type: 'date'},
                     id_grupo: 1,
                     grid: false,
                     form: false
@@ -1246,7 +1260,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 'prioridad',
                 {name: 'id_prioridad', type: 'numeric'},
                 'list_proceso',
-                'cuce'
+                'cuce',
+                {name: 'fecha_conclusion', type: 'date', dateFormat: 'Y-m-d'}
             ],
 
             arrayDefaultColumHidden: ['id_fecha_reg', 'id_fecha_mod',

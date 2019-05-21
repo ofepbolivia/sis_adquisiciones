@@ -549,6 +549,7 @@ class MODProcesoCompra extends MODbase
 
         //Definicion de la lista del resultado del query
         $this->captura('cuce', 'varchar');
+        $this->captura('fecha_conclusion', 'date');
         $this->captura('num_tramite', 'varchar');
         $this->captura('tipo_concepto', 'varchar');
         $this->captura('modalidad', 'varchar');

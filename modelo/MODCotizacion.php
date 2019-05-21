@@ -75,6 +75,7 @@ class MODCotizacion extends MODbase{
 		$this->captura('id_gestion','int4');
 
 		$this->captura('cuce','varchar');
+		$this->captura('fecha_conclusion','date');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -680,6 +681,7 @@ class MODCotizacion extends MODbase{
         //Define los parametros para la funcion
         $this->setParametro('id_cotizacion', 'id_cotizacion', 'int4');
         $this->setParametro('cuce', 'cuce', 'varchar');
+        $this->setParametro('fecha_conclusion', 'fecha_conclusion', 'date');
 
         //Ejecuta la instruccion
         $this->armarConsulta();

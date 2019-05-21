@@ -240,7 +240,8 @@ BEGIN
                         tcat.codigo as prioridad,
                         tcat.id_catalogo as id_prioridad,
                         sol.list_proceso,
-                        sol.cuce
+                        sol.cuce,
+                        sol.fecha_conclusion
 
 						from adq.tsolicitud sol
 						inner join segu.tusuario usu1 on usu1.id_usuario = sol.id_usuario_reg
@@ -889,6 +890,7 @@ LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
+PARALLEL UNSAFE
 COST 100;
 
 ALTER FUNCTION adq.f_solicitud_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)

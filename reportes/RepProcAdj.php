@@ -87,11 +87,11 @@ class RepProcAdj
         //titulos
 
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, 2, 'PROCESOS ADJUDICADOS ');
-        $this->docexcel->getActiveSheet()->getStyle('A2:K2')->applyFromArray($styleTitulos1);
-        $this->docexcel->getActiveSheet()->mergeCells('A2:K2');
+        $this->docexcel->getActiveSheet()->getStyle('A2:L2')->applyFromArray($styleTitulos1);
+        $this->docexcel->getActiveSheet()->mergeCells('A2:L2');
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, 3, 'Del: ' . $this->objParam->getParametro('fecha_ini') . '   Al: ' . $this->objParam->getParametro('fecha_fin'));
-        $this->docexcel->getActiveSheet()->getStyle('A3:K3')->applyFromArray($styleTitulos3);
-        $this->docexcel->getActiveSheet()->mergeCells('A3:K3');
+        $this->docexcel->getActiveSheet()->getStyle('A3:L3')->applyFromArray($styleTitulos3);
+        $this->docexcel->getActiveSheet()->mergeCells('A3:L3');
 
         //*************************************FIN TITULO*****************************************
 
@@ -104,9 +104,10 @@ class RepProcAdj
         $this->docexcel->getActiveSheet()->getColumnDimension('F')->setWidth(20);
         $this->docexcel->getActiveSheet()->getColumnDimension('G')->setWidth(20);
         $this->docexcel->getActiveSheet()->getColumnDimension('H')->setWidth(20);
-        $this->docexcel->getActiveSheet()->getColumnDimension('I')->setWidth(40);
-        $this->docexcel->getActiveSheet()->getColumnDimension('J')->setWidth(30);
-        $this->docexcel->getActiveSheet()->getColumnDimension('K')->setWidth(15);
+        $this->docexcel->getActiveSheet()->getColumnDimension('I')->setWidth(20);
+        $this->docexcel->getActiveSheet()->getColumnDimension('J')->setWidth(40);
+        $this->docexcel->getActiveSheet()->getColumnDimension('K')->setWidth(30);
+        $this->docexcel->getActiveSheet()->getColumnDimension('L')->setWidth(15);
 
 
         $styleTitulos = array(
@@ -130,22 +131,23 @@ class RepProcAdj
                     'style' => PHPExcel_Style_Border::BORDER_THIN
                 )
             ));
-        $this->docexcel->getActiveSheet()->getStyle('A4:K4')->getAlignment()->setWrapText(true);
+        $this->docexcel->getActiveSheet()->getStyle('A4:L4')->getAlignment()->setWrapText(true);
 
-        $this->docexcel->getActiveSheet()->getStyle('A4:K4')->applyFromArray($styleTitulos);
+        $this->docexcel->getActiveSheet()->getStyle('A4:L4')->applyFromArray($styleTitulos);
 
         //*************************************Cabecera*****************************************
         $this->docexcel->getActiveSheet()->setCellValue('A4','CUCE');
-        $this->docexcel->getActiveSheet()->setCellValue('B4','NRO TRAMITE');
-        $this->docexcel->getActiveSheet()->setCellValue('C4','TIPO DE CONTRATACION');
-        $this->docexcel->getActiveSheet()->setCellValue('D4','MODALIDAD');
-        $this->docexcel->getActiveSheet()->setCellValue('E4','REQUIERE CONTRATO');
-        $this->docexcel->getActiveSheet()->setCellValue('F4','NRO ORDEN DE COMPRA');
-        $this->docexcel->getActiveSheet()->setCellValue('G4','NRO CONTRATO');
-        $this->docexcel->getActiveSheet()->setCellValue('H4','FECHA CONTRATO');
-        $this->docexcel->getActiveSheet()->setCellValue('I4','OBJETO CONTRATO');
-        $this->docexcel->getActiveSheet()->setCellValue('J4','PROVEEDOR');
-        $this->docexcel->getActiveSheet()->setCellValue('K4','MONTO BS.');
+        $this->docexcel->getActiveSheet()->setCellValue('B4','FECHA CONCLUSION');
+        $this->docexcel->getActiveSheet()->setCellValue('C4','NRO TRAMITE');
+        $this->docexcel->getActiveSheet()->setCellValue('D4','TIPO DE CONTRATACION');
+        $this->docexcel->getActiveSheet()->setCellValue('E4','MODALIDAD');
+        $this->docexcel->getActiveSheet()->setCellValue('F4','REQUIERE CONTRATO');
+        $this->docexcel->getActiveSheet()->setCellValue('G4','NRO ORDEN DE COMPRA');
+        $this->docexcel->getActiveSheet()->setCellValue('H4','NRO CONTRATO');
+        $this->docexcel->getActiveSheet()->setCellValue('I4','FECHA CONTRATO');
+        $this->docexcel->getActiveSheet()->setCellValue('J4','OBJETO CONTRATO');
+        $this->docexcel->getActiveSheet()->setCellValue('K4','PROVEEDOR');
+        $this->docexcel->getActiveSheet()->setCellValue('L4','MONTO BS.');
 
 
     }
@@ -163,7 +165,6 @@ class RepProcAdj
 
         foreach($datos as $value) {
 
-            //foreach ($value as $key => $val) {
             foreach ($value as $key => $val) {
 
                 $this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow($columna,$fila,$val);

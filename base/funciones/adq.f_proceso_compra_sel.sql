@@ -905,6 +905,94 @@ v_consulta = '                      select  sol.num_tramite,
 
         end;
 
+    /*********************************
+ 	#TRANSACCION:  'ADQ_REPROADJU_SEL'
+ 	#DESCRIPCION:	Obtener procesos adjudicados
+ 	#AUTOR:		Maylee Perez Pastor
+ 	#FECHA:		18-05-2019
+	***********************************/
+
+	elsif(p_transaccion='ADQ_REPROADJU_SEL')then
+
+    	begin
+
+			v_consulta = ' 	select  sol.cuce::varchar,
+            						sol.fecha_conclusion,
+                            		sol.num_tramite::varchar,
+                            		sol.tipo_concepto::varchar,
+                                    ''Contratación Directa''::varchar as modalidad,
+                                    cot.requiere_contrato::varchar,
+                                    cot.numero_oc::varchar,
+                                    con.numero::varchar as numero_contrato,
+                                    COALESCE(con.fecha_elaboracion,cot.fecha_adju)::date as fecha_elaboracion,
+                                    con.objeto::varchar as objeto_contrato,
+                                    p.desc_proveedor::varchar as proveedor_adjudicado,
+                                    (COALESCE(sum(cd.cantidad_adju * cd.precio_unitario_mb), 0::numeric))::varchar AS monto_total_adjudicado_mb
+
+
+               from adq.tsolicitud sol
+            left join adq.tproceso_compra pc on pc.id_solicitud = sol.id_solicitud
+            left join adq.tcotizacion cot on cot.id_proceso_compra = pc.id_proceso_compra and cot.estado != ''anulado''
+            LEFT JOIN adq.tcotizacion_det cd ON cd.id_cotizacion = cot.id_cotizacion
+            LEFT JOIN adq.tsolicitud_det sd ON sd.id_solicitud_det = cd.id_solicitud_det
+            left join tes.tobligacion_pago op on op.id_obligacion_pago = cot.id_obligacion_pago
+            JOIN param.tmoneda mon ON mon.id_moneda = sol.id_moneda
+            join orga.tfuncionario func on func.id_funcionario = sol.id_funcionario and func.estado_reg::text = ''activo''::text
+            join segu.tpersona per on per.id_persona =func.id_persona
+            LEFT JOIN param.vproveedor p ON p.id_proveedor = cot.id_proveedor
+            JOIN param.tdepto dep ON dep.id_depto = pc.id_depto
+            JOIN orga.tuo uo ON uo.id_uo = sol.id_uo
+            join adq.vcotizacion vcot on vcot.id_solicitud = sol.id_solicitud and vcot.monto_total_adjudicado_mb != ''0''
+            left join leg.tcontrato con on con.id_cotizacion = cot.id_cotizacion and con.estado != ''anulado''
+
+            where sol.fecha_soli BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin ||'''
+            and vcot.precio_total_mb > ' || v_parametros.monto_mayor ||'
+            and (cot.estado like ''%adjudicado%'' or
+                				  cot.estado like ''%contrato_pendiente%'' or
+                			      cot.estado like ''%contrato_elaborado%'' or
+                                  cot.estado like ''%pago_habilitado%''    or
+                                  cot.estado like ''%finalizada%'')
+            and sol.estado != ''anulado''
+
+            group by               sol.cuce,
+            					   sol.fecha_conclusion,
+            					   sol.num_tramite,
+                                   per.nombre,
+                                   per.apellido_paterno,
+                                   per.apellido_materno,
+                                   p.desc_proveedor,
+                                   pc.fecha_ini_proc,
+                                   sol.fecha_soli,
+                                   cot.fecha_adju,
+                                   cot.requiere_contrato,
+                                   sol.tipo_concepto,
+                                   cot.nro_contrato,
+                                   pc.objeto,
+                                   cot.fecha_entrega,
+                                   cot.tiempo_entrega,
+                                   cot.numero_oc,
+                                   cot.fecha_entrega,
+                                   dep.codigo,
+                                   cot.estado,
+                                   uo.codigo,
+                                   uo.nombre_unidad,
+                                   con.numero,
+                                   con.objeto,
+                                   con.numero,
+                                   con.fecha_elaboracion,
+                                   con.fecha_inicio,
+                                   con.fecha_fin,
+                                   mon.codigo,
+                                   op.nro_cuota_vigente
+
+
+        	order by sol.num_tramite';
+
+   			raise notice '%',v_consulta;
+        	return v_consulta;
+
+        end;
+
 
 
 	else
@@ -927,4 +1015,8 @@ LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
+PARALLEL UNSAFE
 COST 100;
+
+ALTER FUNCTION adq.f_proceso_compra_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;

@@ -116,7 +116,9 @@ BEGIN
                         cot.tiene_form500,
                         cot.correo_oc,
                         sol.id_gestion,
-                        sol.cuce
+                        sol.cuce,
+                        sol.fecha_conclusion
+
 						from adq.tcotizacion cot
                         inner join adq.tproceso_compra proc on proc.id_proceso_compra = cot.id_proceso_compra
                         inner join adq.tsolicitud sol on sol.id_solicitud = proc.id_solicitud

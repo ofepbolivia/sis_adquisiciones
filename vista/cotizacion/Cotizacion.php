@@ -670,14 +670,14 @@ header("content-type: text/javascript; charset=UTF-8");
                     grid: true,
                     form: true
                 },
-                //16/05/2019 campo CUCE para aumentar datos a la tabla solicitud
+                //16/05/2019 campo CUCE, y fecha_recepcion para aumentar datos a la tabla solicitud
                 {
                     config: {
                         name: 'cuce',
                         fieldLabel: 'CUCE',
-                        allowBlank: true,
+                        allowBlank: false,
                         anchor: '80%',
-                        gwidth: 200,
+                        gwidth: 80,
                         //hidden:true,
                         tinit: false,
                         sortable: false,
@@ -687,7 +687,24 @@ header("content-type: text/javascript; charset=UTF-8");
                     type: 'Field',
                     filters: {pfiltro: 'sol.cuce', type: 'string'},
                     valor: 0,
-                    // egrid: true,
+                    id_grupo: 1,
+                    grid: true,
+                    form: false
+                },
+                {
+                    config: {
+                        name: 'fecha_conclusion',
+                        fieldLabel: 'Fecha conclusión',
+                        allowBlank: false,
+                        anchor: '80%',
+                        gwidth: 100,
+                        format: 'd/m/Y',
+                        renderer: function (value, p, record) {
+                            return value ? value.dateFormat('d/m/Y') : ''
+                        }
+                    },
+                    type: 'DateField',
+                    filters: {pfiltro: 'sol.fecha_conclusion', type: 'date'},
                     id_grupo: 1,
                     grid: true,
                     form: false
@@ -819,7 +836,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 'telefono_contacto',
                 'correo_contacto', 'correo_oc',
                 'prellenar_oferta', 'forma_pago', 'requiere_contrato', 'total_adjudicado', 'total_cotizado', 'total_adjudicado_mb', 'tiene_form500', 'id_gestion',
-                'cuce'
+                'cuce',
+                {name: 'fecha_conclusion', type: 'date', dateFormat: 'Y-m-d'}
 
             ],
             rowExpander: new Ext.ux.grid.RowExpander({

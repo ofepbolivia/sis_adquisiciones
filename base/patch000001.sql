@@ -838,3 +838,8 @@ ALTER TABLE adq.tsolicitud
 ALTER TABLE adq.tsolicitud
   ADD COLUMN cuce VARCHAR(250);
 /***********************************F-SCP-MAY-ADQ-0-16/05/2019****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-21/05/2019****************************************/
+ALTER TABLE adq.tsolicitud
+  ADD COLUMN fecha_conclusion DATE;
+/***********************************F-SCP-MAY-ADQ-0-21/05/2019****************************************/

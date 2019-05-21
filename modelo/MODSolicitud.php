@@ -101,6 +101,7 @@ class MODSolicitud extends MODbase
         $this->captura('list_proceso', 'integer[]');
 
         $this->captura('cuce', 'varchar');
+        $this->captura('fecha_conclusion', 'date');
 
 
         //Ejecuta la instruccion
@@ -935,6 +936,8 @@ class MODSolicitud extends MODbase
         //Define los parametros para la funcion
         $this->setParametro('id_solicitud', 'id_solicitud', 'int4');
         $this->setParametro('cuce', 'cuce', 'varchar');
+        $this->setParametro('fecha_conclusion', 'fecha_conclusion', 'date');
+
 
         //Ejecuta la instruccion
         $this->armarConsulta();
