@@ -58,10 +58,12 @@ BEGIN
     	BEGIN
 
             --raise exception  'id_usuario: %', v_parametros.id_usuario;
-            SELECT g.id_gestion
+            /*SELECT g.id_gestion
             INTO v_id_gestion
             FROM param.tgestion g
-            WHERE g.gestion = EXTRACT(YEAR FROM current_date);
+            WHERE g.gestion = EXTRACT(YEAR FROM current_date);*/
+
+            v_id_gestion = v_parametros.id_gestion;
 
 
             SELECT vfcl.desc_funcionario1--, tur.id_rol
@@ -167,10 +169,12 @@ BEGIN
 	elsif(p_transaccion='ADQ_FORM_400_CONT')then
 
 		BEGIN
-        	SELECT g.id_gestion
+        	/*SELECT g.id_gestion
             INTO v_id_gestion
             FROM param.tgestion g
-            WHERE g.gestion = EXTRACT(YEAR FROM current_date);
+            WHERE g.gestion = EXTRACT(YEAR FROM current_date);*/
+
+            v_id_gestion = v_parametros.id_gestion;
 
 
             SELECT vfcl.desc_funcionario1
@@ -261,10 +265,12 @@ BEGIN
     ELSIF (p_transaccion='ADQ_FORM_500_SEL')THEN
     	BEGIN
             --raise exception 'yusuario: %',v_parametros.id_usuario;
-        	SELECT g.id_gestion
+        	/*SELECT g.id_gestion
             INTO v_id_gestion
             FROM param.tgestion g
-            WHERE g.gestion = EXTRACT(YEAR FROM current_date);
+            WHERE g.gestion = EXTRACT(YEAR FROM current_date);*/
+
+            v_id_gestion = v_parametros.id_gestion;
 
             SELECT vfcl.desc_funcionario1
             INTO v_nom_fun_resp
@@ -384,10 +390,12 @@ BEGIN
 	elsif(p_transaccion='ADQ_FORM_500_CONT')then
 
 		BEGIN
-        	SELECT g.id_gestion
+        	/*SELECT g.id_gestion
             INTO v_id_gestion
             FROM param.tgestion g
-            WHERE g.gestion = EXTRACT(YEAR FROM current_date);
+            WHERE g.gestion = EXTRACT(YEAR FROM current_date);*/
+
+            v_id_gestion = v_parametros.id_gestion;
 
             SELECT vfcl.desc_funcionario1
             INTO v_nom_fun_resp
@@ -770,6 +778,275 @@ BEGIN
         return v_resp;
 
       end;
+       /*********************************
+ 	#TRANSACCION:  'ADQ_FORM_500V2_SEL'
+ 	#DESCRIPCION:	Obtiene detalle del formulario 500 de todos los proceso y se aplican diferentes filtros, depende del dato fecha conclusion
+ 	#AUTOR:		Maylee Perez Pastor
+ 	#FECHA:		21-05-2019
+	***********************************/
+    ELSIF (p_transaccion='ADQ_FORM_500V2_SEL')THEN
+    	BEGIN
+
+            v_id_gestion = v_parametros.id_gestion;
+
+            SELECT vfcl.desc_funcionario1
+            INTO v_nom_fun_resp
+            FROM segu.tusuario tu
+            INNER JOIN orga.tfuncionario tf on tf.id_persona = tu.id_persona
+            INNER JOIN orga.vfuncionario vfcl on vfcl.id_funcionario = tf.id_funcionario
+            WHERE tu.id_usuario = p_id_usuario;
+
+            select count(tur.id_rol)
+            into v_contador
+            from segu.tusuario_rol tur
+            where tur.id_usuario = v_parametros.id_usuario and tur.id_rol = 1;
+
+            if (p_administrador = 1 and v_contador > 0) then
+            	v_condicion = '';
+            else
+            	v_condicion = ' and tpc.id_usuario_auxiliar = '||v_parametros.id_usuario;
+            end if;
+
+            v_consulta = '
+            			with formularios as
+                        (
+            			  SELECT
+            			  	tc.id_cotizacion,
+                            tc.id_proceso_wf,
+                            tc.id_estado_wf,
+                            tc.estado,
+                            tc.num_tramite,
+                            vf.desc_funcionario1::varchar AS fun_solicitante,
+                            '''||v_nom_fun_resp||'''::varchar AS fun_resp,
+                            CASE WHEN tdw.chequeado = ''si'' THEN ''TIENE FORM 500''::varchar ELSE ''NO TIENE EL FORM 500''::varchar END AS tieneform500,
+                            case when tc.fecha_adju is null then -1
+                            when  adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(ts.fecha_conclusion,15),tc.id_cotizacion, '||p_id_usuario||',500, tdw.chequeado) between 0 and 15 then adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(ts.fecha_conclusion,15), tc.id_cotizacion, '||p_id_usuario||',500, tdw.chequeado)
+                            else -2 end as dias_form_500,
+                            ts.fecha_inicio,
+                            ''ORDEN''::varchar as tipo_doc,
+                            CASE WHEN tpp.conformidad != '''' THEN ''TIENE CONFORMIDAD''::varchar ELSE ''NO TIENE CONFORMIDAD''::varchar END AS conformidad,
+                            tpp.fecha_conformidad,
+                            tpp.nro_cuota,
+                            tleg.fecha_inicio as fecha_contrato,
+                            ts.fecha_conclusion::date,
+                            ts.cuce::varchar,
+                            CASE WHEN ts.fecha_conclusion is not null THEN
+                              param.f_sumar_dias_habiles(ts.fecha_conclusion,15)::varchar
+                            ELSE
+                              ''''::varchar
+                            END as fecha_venc
+                          FROM adq.tcotizacion tc
+                          INNER JOIN adq.tproceso_compra tpc ON tpc.id_proceso_compra = tc.id_proceso_compra
+                          INNER JOIN wf.tdocumento_wf tdw ON tdw.id_proceso_wf = tc.id_proceso_wf
+                          INNER JOIN wf.ttipo_documento ttd ON ttd.id_tipo_documento = tdw.id_tipo_documento
+                          INNER JOIN tes.tobligacion_pago top ON top.id_obligacion_pago = tc.id_obligacion_pago
+                          INNER JOIN tes.tplan_pago tpp ON tpp.id_obligacion_pago = top.id_obligacion_pago and tpp.es_ultima_cuota = true
+                          INNER JOIN adq.tsolicitud ts ON ts.id_solicitud = tpc.id_solicitud
+                          INNER JOIN orga.vfuncionario vf ON vf.id_funcionario = ts.id_funcionario
+                          left JOIN leg.tcontrato tleg on tleg.id_cotizacion = tc.id_cotizacion
+                          WHERE ttd.codigo = ''FORM500'' and tc.estado!=''anulado''  and tpp.estado_reg = ''activo'' AND tc.requiere_contrato = ''no'' and
+                          tpp.es_ultima_cuota and ts.id_gestion = '||v_id_gestion||' and tdw.chequeado = '''||v_parametros.chequeado||''''||v_condicion||'
+
+
+                          UNION ALL
+
+                          SELECT
+            				tc.id_cotizacion,
+                            tc.id_proceso_wf,
+                            tc.id_estado_wf,
+                            tc.estado,
+                            tc.num_tramite,
+                            vf.desc_funcionario1::varchar AS fun_solicitante,
+                            '''||v_nom_fun_resp||'''::varchar AS fun_resp,
+                            CASE WHEN tdw.chequeado = ''si'' THEN ''TIENE FORM 500''::varchar ELSE ''NO TIENE EL FORM 500''::varchar END AS tieneform500,
+                            (case when tc.fecha_adju is null then -1
+                            when  adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(ts.fecha_conclusion,15),tc.id_cotizacion, '||p_id_usuario||',500, tdw.chequeado) between 0 and 15 then adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(ts.fecha_conclusion,15), tc.id_cotizacion, '||p_id_usuario||',500, tdw.chequeado)
+                            else -2 end)::integer as dias_form_500,
+                            ts.fecha_inicio,
+                            ''CONTRATO''::varchar as tipo_doc,
+                            CASE WHEN tpp.conformidad != '''' THEN ''TIENE CONFORMIDAD''::varchar ELSE ''NO TIENE CONFORMIDAD''::varchar END AS conformidad,
+                            tpp.fecha_conformidad,
+                            tpp.nro_cuota,
+                            tleg.fecha_inicio as fecha_contrato,
+                            ts.fecha_conclusion::date,
+                            ts.cuce::varchar,
+                            CASE WHEN ts.fecha_conclusion is not null THEN
+                              param.f_sumar_dias_habiles(ts.fecha_conclusion,15)::varchar
+                            ELSE
+                              ''''::varchar
+                            END as fecha_venc
+            			  FROM adq.tcotizacion tc
+                          INNER JOIN adq.tproceso_compra tpc ON tpc.id_proceso_compra = tc.id_proceso_compra
+                          INNER JOIN wf.tdocumento_wf tdw ON tdw.id_proceso_wf = tc.id_proceso_wf
+                          INNER JOIN wf.ttipo_documento ttd ON ttd.id_tipo_documento = tdw.id_tipo_documento
+                          INNER JOIN tes.tobligacion_pago top ON top.id_obligacion_pago = tc.id_obligacion_pago
+                          INNER JOIN tes.tplan_pago tpp ON tpp.id_obligacion_pago = top.id_obligacion_pago and tpp.es_ultima_cuota = true
+                          INNER JOIN adq.tsolicitud ts ON ts.id_solicitud = tpc.id_solicitud
+                          INNER JOIN orga.vfuncionario vf ON vf.id_funcionario = ts.id_funcionario
+                          INNER JOIN leg.tcontrato tleg on tleg.id_cotizacion = tc.id_cotizacion
+                          WHERE ttd.codigo = ''FORM500'' AND tc.requiere_contrato = ''si'' and tleg.fecha_elaboracion is not null and
+                          tpc.estado = ''proceso'' AND tc.estado <> ''anulado'' AND
+                          tpp.es_ultima_cuota and ts.id_gestion = '||v_id_gestion||' and tdw.chequeado = '''||v_parametros.chequeado||''''||v_condicion||'
+                        )
+
+
+
+                        select
+                          id_cotizacion,
+                          id_proceso_wf,
+                          id_estado_wf,
+                          estado,
+                          num_tramite,
+                          fun_solicitante,
+                          fun_resp,
+                          tieneform500,
+                          conformidad,
+                          nro_cuota,
+                          dias_form_500,
+                          fecha_inicio,
+                          fecha_conformidad,
+                          tipo_doc,
+                          fecha_contrato,
+                          fecha_conclusion,
+                          cuce,
+                          fecha_venc
+
+                        from formularios
+                        where ';
+            v_consulta=v_consulta||v_parametros.filtro||' order by dias_form_500 asc';
+            raise notice 'consulta: %',v_consulta;
+
+			--Devuelve la respuesta
+			return v_consulta;
+      END;
+
+      /*********************************
+ 	#TRANSACCION:  'ADQ_FORM_500V2_CONT'
+ 	#DESCRIPCION:	Conteo de registros
+ 	#AUTOR:		Maylee Perez Pastor
+ 	#FECHA:		21-05-2019
+	***********************************/
+
+	elsif(p_transaccion='ADQ_FORM_500V2_CONT')then
+
+		BEGIN
+        	/*SELECT g.id_gestion
+            INTO v_id_gestion
+            FROM param.tgestion g
+            WHERE g.gestion = EXTRACT(YEAR FROM current_date);*/
+
+            v_id_gestion = v_parametros.id_gestion;
+
+            SELECT vfcl.desc_funcionario1
+            INTO v_nom_fun_resp
+            FROM segu.tusuario tu
+            INNER JOIN orga.tfuncionario tf on tf.id_persona = tu.id_persona
+            INNER JOIN orga.vfuncionario vfcl on vfcl.id_funcionario = tf.id_funcionario
+            WHERE tu.id_usuario = p_id_usuario;
+
+            select count(tur.id_rol)
+            into v_contador
+            from segu.tusuario_rol tur
+            where tur.id_usuario = v_parametros.id_usuario and tur.id_rol = 1;
+
+            if (p_administrador = 1 and v_contador > 0) then
+            	v_condicion = '';
+            else
+            	v_condicion = ' and tpc.id_usuario_auxiliar = '||v_parametros.id_usuario;
+            end if;
+
+           --Sentencia de la consulta de conteo de registros
+			v_consulta = '
+            			with formularios as
+                        (
+            			  SELECT
+            			  	tc.id_cotizacion,
+                            tc.id_proceso_wf,
+                            tc.id_estado_wf,
+                            tc.estado,
+                            tc.num_tramite,
+                            vf.desc_funcionario1::varchar AS fun_solicitante,
+                            '''||v_nom_fun_resp||'''::varchar AS fun_resp,
+                            CASE WHEN tdw.chequeado = ''si'' THEN ''TIENE FORM 500''::varchar ELSE ''NO TIENE EL FORM 500''::varchar END AS tieneform500,
+                            case when tc.fecha_adju is null then -1
+                            when  adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(ts.fecha_conclusion,15),tc.id_cotizacion, '||p_id_usuario||',500, tdw.chequeado) between 0 and 15 then adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(ts.fecha_conclusion,15), tc.id_cotizacion, '||p_id_usuario||',500, tdw.chequeado)
+                            else -2 end as dias_form_500,
+                            ts.fecha_inicio,
+                            ''ORDEN''::varchar as tipo_doc,
+                            CASE WHEN tpp.conformidad != '''' THEN ''TIENE CONFORMIDAD''::varchar ELSE ''NO TIENE CONFORMIDAD''::varchar END AS conformidad,
+                            tpp.fecha_conformidad,
+                            tpp.nro_cuota,
+                            tleg.fecha_inicio as fecha_contrato,
+                            ts.fecha_conclusion::date,
+                            ts.cuce::varchar,
+                            CASE WHEN ts.fecha_conclusion is not null THEN
+                              param.f_sumar_dias_habiles(ts.fecha_conclusion,15)::varchar
+                            ELSE
+                              ''''::varchar
+                            END as fecha_venc
+                          FROM adq.tcotizacion tc
+                          INNER JOIN adq.tproceso_compra tpc ON tpc.id_proceso_compra = tc.id_proceso_compra
+                          INNER JOIN wf.tdocumento_wf tdw ON tdw.id_proceso_wf = tc.id_proceso_wf
+                          INNER JOIN wf.ttipo_documento ttd ON ttd.id_tipo_documento = tdw.id_tipo_documento
+                          INNER JOIN tes.tobligacion_pago top ON top.id_obligacion_pago = tc.id_obligacion_pago
+                          INNER JOIN tes.tplan_pago tpp ON tpp.id_obligacion_pago = top.id_obligacion_pago
+                          INNER JOIN adq.tsolicitud ts ON ts.id_solicitud = tpc.id_solicitud
+                          INNER JOIN orga.vfuncionario vf ON vf.id_funcionario = ts.id_funcionario
+                          left JOIN leg.tcontrato tleg on tleg.id_cotizacion = tc.id_cotizacion
+                          WHERE ttd.codigo = ''FORM500'' and tc.estado!=''anulado''  and tpp.estado_reg = ''activo'' AND tc.requiere_contrato = ''no'' AND
+                          tpp.es_ultima_cuota and ts.id_gestion = '||v_id_gestion||' and tdw.chequeado = '''||v_parametros.chequeado||''''||v_condicion||'
+
+
+                          UNION ALL
+
+                          SELECT
+            				tc.id_cotizacion,
+                            tc.id_proceso_wf,
+                            tc.id_estado_wf,
+                            tc.estado,
+                            tc.num_tramite,
+                            vf.desc_funcionario1::varchar AS fun_solicitante,
+                            '''||v_nom_fun_resp||'''::varchar AS fun_resp,
+                            CASE WHEN tdw.chequeado = ''si'' THEN ''TIENE FORM 500''::varchar ELSE ''NO TIENE EL FORM 500''::varchar END AS tieneform500,
+                            (case when tc.fecha_adju is null then -1
+                            when  adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(ts.fecha_conclusion,15),tc.id_cotizacion, '||p_id_usuario||',500, tdw.chequeado) between 0 and 15 then adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(ts.fecha_conclusion,15), tc.id_cotizacion, '||p_id_usuario||',500, tdw.chequeado)
+                            else -2 end)::integer as dias_form_500,
+                            ts.fecha_inicio,
+                            ''CONTRATO''::varchar as tipo_doc,
+                            CASE WHEN tpp.conformidad != '''' THEN ''TIENE CONFORMIDAD''::varchar ELSE ''NO TIENE CONFORMIDAD''::varchar END AS conformidad,
+                            tpp.fecha_conformidad,
+                            tpp.nro_cuota,
+                            tleg.fecha_inicio as fecha_contrato,
+                            ts.fecha_conclusion::date,
+                            ts.cuce::varchar,
+                            CASE WHEN ts.fecha_conclusion is not null THEN
+                              param.f_sumar_dias_habiles(ts.fecha_conclusion,15)::varchar
+                            ELSE
+                              ''''::varchar
+                            END as fecha_venc
+            			  FROM adq.tcotizacion tc
+                          INNER JOIN adq.tproceso_compra tpc ON tpc.id_proceso_compra = tc.id_proceso_compra
+                          INNER JOIN wf.tdocumento_wf tdw ON tdw.id_proceso_wf = tc.id_proceso_wf
+                          INNER JOIN wf.ttipo_documento ttd ON ttd.id_tipo_documento = tdw.id_tipo_documento
+                          INNER JOIN tes.tobligacion_pago top ON top.id_obligacion_pago = tc.id_obligacion_pago
+                          INNER JOIN tes.tplan_pago tpp ON tpp.id_obligacion_pago = top.id_obligacion_pago
+                          INNER JOIN adq.tsolicitud ts ON ts.id_solicitud = tpc.id_solicitud
+                          INNER JOIN orga.vfuncionario vf ON vf.id_funcionario = ts.id_funcionario
+                          INNER JOIN leg.tcontrato tleg on tleg.id_cotizacion = tc.id_cotizacion
+                          WHERE ttd.codigo = ''FORM500'' AND tc.requiere_contrato = ''si'' and tleg.fecha_elaboracion is not null and
+                          tpc.estado = ''proceso'' AND tc.estado <> ''anulado'' AND
+                          tpp.es_ultima_cuota and ts.id_gestion = '||v_id_gestion||' and tdw.chequeado = '''||v_parametros.chequeado||''''||v_condicion||'
+                        )
+
+                        select count(id_cotizacion)
+                        from formularios
+            			where ';
+            v_consulta=v_consulta||v_parametros.filtro;
+
+			--Devuelve la respuesta
+			return v_consulta;
+		END;
+
 
 	else
 
@@ -791,4 +1068,8 @@ LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
+PARALLEL UNSAFE
 COST 100;
+
+ALTER FUNCTION adq.f_reporte_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;

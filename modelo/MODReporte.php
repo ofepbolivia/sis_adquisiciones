@@ -256,6 +256,51 @@ class MODReporte extends MODbase{
 
     }
 
+    /*(may) La segunda version del fomulario 500 con fecha conclusion*/
+    function listarForm500v2(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='adq.f_reporte_sel';
+        $this->transaccion='ADQ_FORM_500V2_SEL';
+        $this->tipo_procedimiento='SEL';
+
+        $this->setParametro('id_usuario','id_usuario','int4');
+        $this->setParametro('id_gestion','id_gestion','int4');
+        $this->setParametro('chequeado','chequeado','varchar');
+
+        //Define los parametros para la funcion
+        $this->captura('id_cotizacion', 'int4');
+        $this->captura('id_proceso_wf', 'int4');
+        $this->captura('id_estado_wf', 'int4');
+        $this->captura('estado', 'varchar');
+
+        $this->captura('num_tramite', 'varchar');
+        $this->captura('fun_solicitante', 'varchar');
+        $this->captura('fun_resp', 'varchar');
+        $this->captura('tieneform500', 'varchar');
+        $this->captura('conformidad', 'varchar');
+        $this->captura('nro_cuota', 'numeric');
+        $this->captura('dias_form_500', 'integer');
+        $this->captura('fecha_inicio', 'date');
+        //$this->captura('fecha_fin', 'date');
+        $this->captura('fecha_conformidad', 'date');
+        $this->captura('tipo_doc', 'varchar');
+
+        $this->captura('fecha_contrato', 'date');
+        $this->captura('fecha_conclusion', 'date');
+        $this->captura('cuce', 'varchar');
+        $this->captura('fecha_venc', 'varchar');
+//        var_dump('llega', $this->respuesta);
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        //echo($this->consulta);exit;
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
+
 
 }
 ?>

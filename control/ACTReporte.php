@@ -191,6 +191,22 @@ class ACTReporte extends ACTbase{
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
+    /*(may) La segunda version del fomulario 500 con fecha conclusion*/
+    function listarForm500v2(){
+
+
+        if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+            $this->objReporte = new Reporte($this->objParam,$this);
+            $this->res = $this->objReporte->generarReporteListado('MODReporte','listarForm500v2');
+        }else {
+
+            $this->objFunc = $this->create('MODReporte');
+            $this->res = $this->objFunc->listarForm500v2($this->objParam);
+        }
+//        var_dump('llegaaa',$this->res);exit;
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
 }
 
 ?>
