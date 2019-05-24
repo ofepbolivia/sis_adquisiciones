@@ -391,7 +391,10 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Total Adj (BS)',
                         allowBlank: false,
                         anchor: '80%',
-                        gwidth: 100
+                        gwidth: 100,
+                        renderer: function (value, p, record) {
+                            return String.format('{0}', Ext.util.Format.number(value, '0,000.00'));
+                        }
                     },
                     type: 'NumberField',
                     filters: {pfiltro: 'total_adjudicado_mb', type: 'numeric'},
