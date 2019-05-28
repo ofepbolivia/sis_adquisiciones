@@ -801,11 +801,15 @@ BEGIN
             from segu.tusuario_rol tur
             where tur.id_usuario = v_parametros.id_usuario and tur.id_rol = 1;
 
-            if (p_administrador = 1 and v_contador > 0) then
-            	v_condicion = '';
-            else
-            	v_condicion = ' and tpc.id_usuario_auxiliar = '||v_parametros.id_usuario;
-            end if;
+
+         if (p_administrador = 1 and v_contador > 0) then
+               v_condicion = '';
+         ELSIF (v_parametros.id_usuario = 0)THEN
+         	   v_condicion = '';
+            ELSE
+         	   v_condicion = ' and tpc.id_usuario_auxiliar = '||v_parametros.id_usuario;
+
+         end if;
 
             v_consulta = '
             			with formularios as
@@ -820,7 +824,7 @@ BEGIN
                             '''||v_nom_fun_resp||'''::varchar AS fun_resp,
                             CASE WHEN tdw.chequeado = ''si'' THEN ''TIENE FORM 500''::varchar ELSE ''NO TIENE EL FORM 500''::varchar END AS tieneform500,
                             case when tc.fecha_adju is null then -1
-                            when  adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(ts.fecha_conclusion,15),tc.id_cotizacion, '||p_id_usuario||',500, tdw.chequeado) between 0 and 15 then adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(ts.fecha_conclusion,15), tc.id_cotizacion, '||p_id_usuario||',500, tdw.chequeado)
+                            when tc.fecha_adju is not null then adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(ts.fecha_conclusion,15), tc.id_cotizacion, '||p_id_usuario||',500, tdw.chequeado)
                             else -2 end as dias_form_500,
                             ts.fecha_inicio,
                             ''ORDEN''::varchar as tipo_doc,
@@ -834,7 +838,11 @@ BEGIN
                               param.f_sumar_dias_habiles(ts.fecha_conclusion,15)::varchar
                             ELSE
                               ''''::varchar
-                            END as fecha_venc
+                            END as fecha_venc,
+                            (select vf.desc_funcionario1
+                             from wf.testado_wf ew
+                             INNER JOIN orga.vfuncionario vf ON vf.id_funcionario = ew.id_funcionario
+                             where  ew.id_estado_wf = tpc.id_estado_wf)::varchar as fundepto
                           FROM adq.tcotizacion tc
                           INNER JOIN adq.tproceso_compra tpc ON tpc.id_proceso_compra = tc.id_proceso_compra
                           INNER JOIN wf.tdocumento_wf tdw ON tdw.id_proceso_wf = tc.id_proceso_wf
@@ -844,6 +852,7 @@ BEGIN
                           INNER JOIN adq.tsolicitud ts ON ts.id_solicitud = tpc.id_solicitud
                           INNER JOIN orga.vfuncionario vf ON vf.id_funcionario = ts.id_funcionario
                           left JOIN leg.tcontrato tleg on tleg.id_cotizacion = tc.id_cotizacion
+
                           WHERE ttd.codigo = ''FORM500'' and tc.estado!=''anulado''  and tpp.estado_reg = ''activo'' AND tc.requiere_contrato = ''no'' and
                           tpp.es_ultima_cuota and ts.id_gestion = '||v_id_gestion||' and tdw.chequeado = '''||v_parametros.chequeado||''''||v_condicion||'
 
@@ -860,7 +869,7 @@ BEGIN
                             '''||v_nom_fun_resp||'''::varchar AS fun_resp,
                             CASE WHEN tdw.chequeado = ''si'' THEN ''TIENE FORM 500''::varchar ELSE ''NO TIENE EL FORM 500''::varchar END AS tieneform500,
                             (case when tc.fecha_adju is null then -1
-                            when  adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(ts.fecha_conclusion,15),tc.id_cotizacion, '||p_id_usuario||',500, tdw.chequeado) between 0 and 15 then adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(ts.fecha_conclusion,15), tc.id_cotizacion, '||p_id_usuario||',500, tdw.chequeado)
+                            when tc.fecha_adju is not null then adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(ts.fecha_conclusion,15), tc.id_cotizacion, '||p_id_usuario||',500, tdw.chequeado)
                             else -2 end)::integer as dias_form_500,
                             ts.fecha_inicio,
                             ''CONTRATO''::varchar as tipo_doc,
@@ -874,7 +883,11 @@ BEGIN
                               param.f_sumar_dias_habiles(ts.fecha_conclusion,15)::varchar
                             ELSE
                               ''''::varchar
-                            END as fecha_venc
+                            END as fecha_venc ,
+                            (select vf.desc_funcionario1
+                                from wf.testado_wf ew
+                                INNER JOIN orga.vfuncionario vf ON vf.id_funcionario = ew.id_funcionario
+                                where  ew.id_estado_wf = tpc.id_estado_wf)::varchar as fundepto
             			  FROM adq.tcotizacion tc
                           INNER JOIN adq.tproceso_compra tpc ON tpc.id_proceso_compra = tc.id_proceso_compra
                           INNER JOIN wf.tdocumento_wf tdw ON tdw.id_proceso_wf = tc.id_proceso_wf
@@ -884,6 +897,7 @@ BEGIN
                           INNER JOIN adq.tsolicitud ts ON ts.id_solicitud = tpc.id_solicitud
                           INNER JOIN orga.vfuncionario vf ON vf.id_funcionario = ts.id_funcionario
                           INNER JOIN leg.tcontrato tleg on tleg.id_cotizacion = tc.id_cotizacion
+
                           WHERE ttd.codigo = ''FORM500'' AND tc.requiere_contrato = ''si'' and tleg.fecha_elaboracion is not null and
                           tpc.estado = ''proceso'' AND tc.estado <> ''anulado'' AND
                           tpp.es_ultima_cuota and ts.id_gestion = '||v_id_gestion||' and tdw.chequeado = '''||v_parametros.chequeado||''''||v_condicion||'
@@ -909,7 +923,8 @@ BEGIN
                           fecha_contrato,
                           fecha_conclusion,
                           cuce,
-                          fecha_venc
+                          fecha_venc,
+                          fundepto
 
                         from formularios
                         where ';
@@ -949,11 +964,15 @@ BEGIN
             from segu.tusuario_rol tur
             where tur.id_usuario = v_parametros.id_usuario and tur.id_rol = 1;
 
-            if (p_administrador = 1 and v_contador > 0) then
-            	v_condicion = '';
-            else
-            	v_condicion = ' and tpc.id_usuario_auxiliar = '||v_parametros.id_usuario;
-            end if;
+         if (p_administrador = 1 and v_contador > 0) then
+                v_condicion = '';
+         ELSIF (v_parametros.id_usuario = 0)THEN
+         		v_condicion = '';
+            ELSE
+         		 v_condicion = ' and tpc.id_usuario_auxiliar = '||v_parametros.id_usuario;
+          end if;
+
+
 
            --Sentencia de la consulta de conteo de registros
 			v_consulta = '
@@ -969,7 +988,7 @@ BEGIN
                             '''||v_nom_fun_resp||'''::varchar AS fun_resp,
                             CASE WHEN tdw.chequeado = ''si'' THEN ''TIENE FORM 500''::varchar ELSE ''NO TIENE EL FORM 500''::varchar END AS tieneform500,
                             case when tc.fecha_adju is null then -1
-                            when  adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(ts.fecha_conclusion,15),tc.id_cotizacion, '||p_id_usuario||',500, tdw.chequeado) between 0 and 15 then adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(ts.fecha_conclusion,15), tc.id_cotizacion, '||p_id_usuario||',500, tdw.chequeado)
+                            when tc.fecha_adju is not null then adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(ts.fecha_conclusion,15), tc.id_cotizacion, '||p_id_usuario||',500, tdw.chequeado)
                             else -2 end as dias_form_500,
                             ts.fecha_inicio,
                             ''ORDEN''::varchar as tipo_doc,
@@ -983,7 +1002,11 @@ BEGIN
                               param.f_sumar_dias_habiles(ts.fecha_conclusion,15)::varchar
                             ELSE
                               ''''::varchar
-                            END as fecha_venc
+                            END as fecha_venc ,
+                           (select vf.desc_funcionario1
+                                from wf.testado_wf ew
+                                INNER JOIN orga.vfuncionario vf ON vf.id_funcionario = ew.id_funcionario
+                                where  ew.id_estado_wf = tpc.id_estado_wf)::varchar as fundepto
                           FROM adq.tcotizacion tc
                           INNER JOIN adq.tproceso_compra tpc ON tpc.id_proceso_compra = tc.id_proceso_compra
                           INNER JOIN wf.tdocumento_wf tdw ON tdw.id_proceso_wf = tc.id_proceso_wf
@@ -993,6 +1016,7 @@ BEGIN
                           INNER JOIN adq.tsolicitud ts ON ts.id_solicitud = tpc.id_solicitud
                           INNER JOIN orga.vfuncionario vf ON vf.id_funcionario = ts.id_funcionario
                           left JOIN leg.tcontrato tleg on tleg.id_cotizacion = tc.id_cotizacion
+
                           WHERE ttd.codigo = ''FORM500'' and tc.estado!=''anulado''  and tpp.estado_reg = ''activo'' AND tc.requiere_contrato = ''no'' AND
                           tpp.es_ultima_cuota and ts.id_gestion = '||v_id_gestion||' and tdw.chequeado = '''||v_parametros.chequeado||''''||v_condicion||'
 
@@ -1009,7 +1033,7 @@ BEGIN
                             '''||v_nom_fun_resp||'''::varchar AS fun_resp,
                             CASE WHEN tdw.chequeado = ''si'' THEN ''TIENE FORM 500''::varchar ELSE ''NO TIENE EL FORM 500''::varchar END AS tieneform500,
                             (case when tc.fecha_adju is null then -1
-                            when  adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(ts.fecha_conclusion,15),tc.id_cotizacion, '||p_id_usuario||',500, tdw.chequeado) between 0 and 15 then adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(ts.fecha_conclusion,15), tc.id_cotizacion, '||p_id_usuario||',500, tdw.chequeado)
+                            when tc.fecha_adju is not null then adq.f_verificar_dias_form45(CURRENT_DATE, param.f_sumar_dias_habiles(ts.fecha_conclusion,15), tc.id_cotizacion, '||p_id_usuario||',500, tdw.chequeado)
                             else -2 end)::integer as dias_form_500,
                             ts.fecha_inicio,
                             ''CONTRATO''::varchar as tipo_doc,
@@ -1023,7 +1047,11 @@ BEGIN
                               param.f_sumar_dias_habiles(ts.fecha_conclusion,15)::varchar
                             ELSE
                               ''''::varchar
-                            END as fecha_venc
+                            END as fecha_venc,
+                            (select vf.desc_funcionario1
+                                from wf.testado_wf ew
+                                INNER JOIN orga.vfuncionario vf ON vf.id_funcionario = ew.id_funcionario
+                                where  ew.id_estado_wf = tpc.id_estado_wf)::varchar as fundepto
             			  FROM adq.tcotizacion tc
                           INNER JOIN adq.tproceso_compra tpc ON tpc.id_proceso_compra = tc.id_proceso_compra
                           INNER JOIN wf.tdocumento_wf tdw ON tdw.id_proceso_wf = tc.id_proceso_wf
@@ -1033,6 +1061,7 @@ BEGIN
                           INNER JOIN adq.tsolicitud ts ON ts.id_solicitud = tpc.id_solicitud
                           INNER JOIN orga.vfuncionario vf ON vf.id_funcionario = ts.id_funcionario
                           INNER JOIN leg.tcontrato tleg on tleg.id_cotizacion = tc.id_cotizacion
+
                           WHERE ttd.codigo = ''FORM500'' AND tc.requiere_contrato = ''si'' and tleg.fecha_elaboracion is not null and
                           tpc.estado = ''proceso'' AND tc.estado <> ''anulado'' AND
                           tpp.es_ultima_cuota and ts.id_gestion = '||v_id_gestion||' and tdw.chequeado = '''||v_parametros.chequeado||''''||v_condicion||'

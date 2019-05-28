@@ -289,6 +289,9 @@ class MODReporte extends MODbase{
         $this->captura('fecha_conclusion', 'date');
         $this->captura('cuce', 'varchar');
         $this->captura('fecha_venc', 'varchar');
+
+        $this->captura('fundepto', 'varchar');
+
 //        var_dump('llega', $this->respuesta);
 
         //Ejecuta la instruccion

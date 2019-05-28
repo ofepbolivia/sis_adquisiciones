@@ -175,7 +175,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     fields: ['id_depto_usuario', 'id_usuario', 'desc_usuario', 'cargo'],
                     // turn on remote sorting
                     remoteSort: true,
-                    baseParams: {par_filtro: 'person.nombre_completo1', id_depto: 2}
+                    baseParams: {par_filtro: 'person.nombre_completo1', id_depto: 2, _adicionar:'Todos'}
                 }),
             valueField: 'id_usuario',
             displayField: 'desc_usuario',
@@ -537,22 +537,40 @@ header("content-type: text/javascript; charset=UTF-8");
                 grid: true,
                 form: false
             },
+            {
+                config: {
+                    name: 'fundepto',
+                    fieldLabel: 'Funcionario Responsable',
+                    allowBlank: false,
+                    anchor: '50%',
+                    gwidth: 250,
+                     //renderer:function (value, p, record){return String.format('{0}', record.data['desc_funcionario']);}*/
+                },
+                type: 'TextField',
+                bottom_filter: true,
+                filters: {pfiltro: 'fundepto', type: 'string'},
+                id_grupo: 0,
+                grid: true,
+                form: false
+            },
 
-            /*{
-             config:{
-             name: 'fun_resp',
-             fieldLabel: 'asignado a Funcionario',
-             allowBlank: false,
-             anchor: '50%',
-             gwidth: 150/!*,
-             renderer:function (value, p, record){return String.format('{0}', record.data['desc_funcionario']);}*!/
-             },
-             type:'TextField',
-             /!*filters:{pfiltro:'trec.id_funcionario',type:'string'},*!/
-             id_grupo:0,
-             grid:true,
-             form:false
-             },*/
+
+
+    /*{
+     config:{
+     name: 'fun_resp',
+     fieldLabel: 'asignado a Funcionario',
+     allowBlank: false,
+     anchor: '50%',
+     gwidth: 150/!*,
+     renderer:function (value, p, record){return String.format('{0}', record.data['desc_funcionario']);}*!/
+     },
+     type:'TextField',
+     /!*filters:{pfiltro:'trec.id_funcionario',type:'string'},*!/
+     id_grupo:0,
+     grid:true,
+     form:false
+     },*/
 
 
             /*,
@@ -600,7 +618,10 @@ header("content-type: text/javascript; charset=UTF-8");
             {name: 'fecha_contrato', type: 'date', dateFormat: 'Y-m-d'},
             {name: 'fecha_conclusion', type: 'date', dateFormat: 'Y-m-d'},
             {name: 'cuce', type: 'string'},
-            {name: 'fecha_venc', type: 'string'}
+            {name: 'fecha_venc', type: 'string'},
+
+            {name: 'fundepto', type: 'string'},
+
 
         ],
         arrayDefaultColumHidden: ['tieneform500'],
