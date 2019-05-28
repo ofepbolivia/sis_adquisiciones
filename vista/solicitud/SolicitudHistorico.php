@@ -63,14 +63,15 @@ header("content-type: text/javascript; charset=UTF-8");
 
             Phx.vista.SolicitudHistorico.superclass.constructor.call(this, config);
 
-            this.addButton('verificar_presupuesto', {
-                text: 'Revertir Presup.',
-                grupo: [0, 1, 2],
-                iconCls: 'bassign',
-                disabled: false,
-                handler: this.onVerificarPresu,
-                tooltip: '<b>Revertir  presupuestos</b><br>Permite ver la evolución presupuestaria y revertir parcialmente.</b>'
-            });
+            //28-05-2019 se comenta porque se hizo de otra forma el registro.
+            // this.addButton('verificar_presupuesto', {
+            //     text: 'Revertir Presup.',
+            //     grupo: [0, 1, 2],
+            //     iconCls: 'bassign',
+            //     disabled: false,
+            //     handler: this.onVerificarPresu,
+            //     tooltip: '<b>Revertir  presupuestos</b><br>Permite ver la evolución presupuestaria y revertir parcialmente.</b>'
+            // });
             // 16/05/2019 campo CUCE para aumentar datos a la tabla solicitud
             this.addButton('bmodCuce', {
                 text: 'CUCE',
