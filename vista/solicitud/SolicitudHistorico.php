@@ -103,7 +103,7 @@ header("content-type: text/javascript; charset=UTF-8");
             this.getBoton('diagrama_gantt').enable();
             this.getBoton('btnObs').enable();
             this.getBoton('btnDetalleGasto').enable();
-            this.getBoton('verificar_presupuesto').enable();
+            // this.getBoton('verificar_presupuesto').enable();
             this.getBoton('bmodCuce').enable();
 
 
@@ -117,7 +117,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.getBoton('diagrama_gantt').disable();
                 this.getBoton('btnObs').disable();
                 this.getBoton('btnDetalleGasto').disable();
-                this.getBoton('verificar_presupuesto').disable();
+                // this.getBoton('verificar_presupuesto').disable();
                 this.getBoton('bmodCuce').disable();
 
             }
