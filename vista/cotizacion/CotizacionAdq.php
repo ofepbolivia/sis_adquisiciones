@@ -900,7 +900,8 @@ header("content-type: text/javascript; charset=UTF-8");
 
         failureAjustes: function (resp) {
             Phx.CP.loadingHide();
-            Phx.vista.SolicitudHistorico.superclass.conexionFailure.call(this, resp);
+            //Phx.vista.SolicitudHistorico.superclass.conexionFailure.call(this, resp);
+            Phx.vista.CotizacionAdq.superclass.conexionFailure.call(this, resp);
 
         },
         onDeclinarAjustes: function () {

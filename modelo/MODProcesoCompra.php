@@ -554,7 +554,7 @@ class MODProcesoCompra extends MODbase
         $this->captura('tipo_concepto', 'varchar');
         $this->captura('modalidad', 'varchar');
         $this->captura('requiere_contrato', 'varchar');
-        $this->captura('numero_oc', 'varchar');
+        $this->captura('nro_po', 'varchar');
         $this->captura('numero', 'varchar');
         $this->captura('fecha_elaboracion', 'date');
         $this->captura('objeto', 'varchar');

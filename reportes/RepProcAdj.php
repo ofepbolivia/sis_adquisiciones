@@ -96,13 +96,13 @@ class RepProcAdj
         //*************************************FIN TITULO*****************************************
 
 
-        $this->docexcel->getActiveSheet()->getColumnDimension('A')->setWidth(15);
+        $this->docexcel->getActiveSheet()->getColumnDimension('A')->setWidth(21);
         $this->docexcel->getActiveSheet()->getColumnDimension('B')->setWidth(20);
         $this->docexcel->getActiveSheet()->getColumnDimension('C')->setWidth(20);
         $this->docexcel->getActiveSheet()->getColumnDimension('D')->setWidth(20);
         $this->docexcel->getActiveSheet()->getColumnDimension('E')->setWidth(20);
         $this->docexcel->getActiveSheet()->getColumnDimension('F')->setWidth(20);
-        $this->docexcel->getActiveSheet()->getColumnDimension('G')->setWidth(20);
+        $this->docexcel->getActiveSheet()->getColumnDimension('G')->setWidth(25);
         $this->docexcel->getActiveSheet()->getColumnDimension('H')->setWidth(20);
         $this->docexcel->getActiveSheet()->getColumnDimension('I')->setWidth(20);
         $this->docexcel->getActiveSheet()->getColumnDimension('J')->setWidth(40);
@@ -142,7 +142,7 @@ class RepProcAdj
         $this->docexcel->getActiveSheet()->setCellValue('D4','TIPO DE CONTRATACION');
         $this->docexcel->getActiveSheet()->setCellValue('E4','MODALIDAD');
         $this->docexcel->getActiveSheet()->setCellValue('F4','REQUIERE CONTRATO');
-        $this->docexcel->getActiveSheet()->setCellValue('G4','NRO ORDEN DE COMPRA');
+        $this->docexcel->getActiveSheet()->setCellValue('G4','NRO DE P.O.');
         $this->docexcel->getActiveSheet()->setCellValue('H4','NRO CONTRATO');
         $this->docexcel->getActiveSheet()->setCellValue('I4','FECHA CONTRATO');
         $this->docexcel->getActiveSheet()->setCellValue('J4','OBJETO CONTRATO');

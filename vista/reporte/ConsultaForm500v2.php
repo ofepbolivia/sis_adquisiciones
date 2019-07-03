@@ -365,7 +365,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     }
                 },
                 type: 'DateField',
-                filters: {pfiltro: 'ts.fecha_conclusion', type: 'date'},
+                filters: {pfiltro: 'fecha_conclusion', type: 'date'},
                 id_grupo: 0,
                 grid: true,
                 form: true
@@ -426,7 +426,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 type: 'TextField',
                 bottom_filter: true,
-                filters: {pfiltro: 'ts.fecha_venc', type: 'string'},
+                filters: {pfiltro: 'fecha_venc', type: 'string'},
                 id_grupo: 0,
                 grid: true,
                 form: false
@@ -532,7 +532,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 type: 'TextField',
                 bottom_filter: true,
-                filters: {pfiltro: 'ts.cuce', type: 'string'},
+                filters: {pfiltro: 'cuce', type: 'string'},
                 id_grupo: 0,
                 grid: true,
                 form: false
