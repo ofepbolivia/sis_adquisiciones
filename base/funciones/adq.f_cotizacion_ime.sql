@@ -1326,18 +1326,25 @@ BEGIN
                 and cot.id_cotizacion = v_registros_cotizacion.id_cotizacion;
 
 
-                select so.cuce, c.estado
-                into v_cuce, v_estado_cot
+                select so.cuce, c.estado, c.requiere_contrato
+                into v_cuce, v_estado_cot, v_requiere_contrato
                 from adq.tcotizacion c
                 inner join adq.tproceso_compra pc on pc.id_proceso_compra = c.id_proceso_compra
                 inner join adq.tsolicitud so on so.id_solicitud = pc.id_solicitud
                 where c.id_cotizacion = v_registros_cotizacion.id_cotizacion;
 
+ 				--para tramites sin contrato
+                IF  v_estado_cot = 'adjudicado' and v_requiere_contrato= 'no' THEN
 
-                IF  v_estado_cot = 'adjudicado' THEN
+                    IF (v_cuce is null or v_cuce = '') and v_total_adjudicado_mb >20000 THEN
+                        raise exception 'El importe adjudicado es de % %. y es mayor a 20,000.00 Bs., es obligatorio registrar el número de CUCE y la Fecha de Conclusión.',(to_char(v_total_adjudicado,'999,999,999,999.99')),v_moneda;
+                    END IF;
 
-                    IF (v_cuce is null or v_cuce = '') and v_total_adjudicado_mb >=20000 THEN
+                END IF;
+                --para tramites con contrato
+                 IF  v_estado_cot = 'contrato_elaborado' and v_requiere_contrato= 'si'  THEN
 
+                    IF (v_cuce is null or v_cuce = '') and v_total_adjudicado_mb >20000 THEN
                         raise exception 'El importe adjudicado es de % %. y es mayor a 20,000.00 Bs., es obligatorio registrar el número de CUCE y la Fecha de Conclusión.',(to_char(v_total_adjudicado,'999,999,999,999.99')),v_moneda;
                     END IF;
 
@@ -1705,9 +1712,4 @@ $body$
 LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
-SECURITY INVOKER
-PARALLEL UNSAFE
 COST 100;
-
-ALTER FUNCTION adq.f_cotizacion_ime (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
-  OWNER TO postgres;
