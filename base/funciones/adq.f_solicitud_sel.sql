@@ -168,7 +168,27 @@ BEGIN
 
              END IF;
 
-
+IF  lower(v_parametros.tipo_interfaz) in ('solicitudhistorico') THEN
+ 			    IF v_historico =  'no' THEN
+                    IF p_administrador !=1 THEN
+                      v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and ';
+                    ELSE
+                        v_filtro = ' ';
+                    END IF;
+                ELSE
+                    IF p_administrador !=1 THEN
+                      if lower(v_parametros.tipo_interfaz) = 'solicitudvbpoa' then
+                          v_auxiliar_id = 75;
+                          v_filtro = ' (ew.id_funcionario='||v_auxiliar_id||') and ';
+                      else
+                          v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||') and ';
+                      end if;
+                      --v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and ';
+                    ELSE
+                        v_filtro = ' ';
+                    END IF;
+               END IF;
+END IF;
 
 
     		--Sentencia de la consulta
@@ -382,7 +402,27 @@ BEGIN
 
              END IF;
 
-
+IF  lower(v_parametros.tipo_interfaz) in ('solicitudhistorico') THEN
+ 			    IF v_historico =  'no' THEN
+                    IF p_administrador !=1 THEN
+                      v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and ';
+                    ELSE
+                        v_filtro = ' ';
+                    END IF;
+                ELSE
+                    IF p_administrador !=1 THEN
+                      if lower(v_parametros.tipo_interfaz) = 'solicitudvbpoa' then
+                          v_auxiliar_id = 75;
+                          v_filtro = ' (ew.id_funcionario='||v_auxiliar_id||') and ';
+                      else
+                          v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||') and ';
+                      end if;
+                      --v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and ';
+                    ELSE
+                        v_filtro = ' ';
+                    END IF;
+               END IF;
+END IF;
 
 
 			--Sentencia de la consulta de conteo de registros
@@ -890,8 +930,4 @@ LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
-PARALLEL UNSAFE
 COST 100;
-
-ALTER FUNCTION adq.f_solicitud_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
-  OWNER TO postgres;
