@@ -801,7 +801,6 @@ BEGIN
             from segu.tusuario_rol tur
             where tur.id_usuario = v_parametros.id_usuario and tur.id_rol = 1;
 
-
          if (p_administrador = 1 and v_contador > 0) then
                v_condicion = '';
          ELSIF (v_parametros.id_usuario = 0)THEN
@@ -852,9 +851,10 @@ BEGIN
                           INNER JOIN adq.tsolicitud ts ON ts.id_solicitud = tpc.id_solicitud
                           INNER JOIN orga.vfuncionario vf ON vf.id_funcionario = ts.id_funcionario
                           left JOIN leg.tcontrato tleg on tleg.id_cotizacion = tc.id_cotizacion
+                          INNER JOIN adq.vcotizacion vc ON vc.id_cotizacion = tc.id_cotizacion
 
                           WHERE ttd.codigo = ''FORM500'' and tc.estado!=''anulado''  and tpp.estado_reg = ''activo'' AND tc.requiere_contrato = ''no'' and
-                          tpp.es_ultima_cuota and ts.id_gestion = '||v_id_gestion||' and tdw.chequeado = '''||v_parametros.chequeado||''''||v_condicion||'
+                          tpp.es_ultima_cuota and ts.id_gestion = '||v_id_gestion||' and vc.monto_total_adjudicado_mb>=20000 and tdw.chequeado = '''||v_parametros.chequeado||''''||v_condicion||'
 
 
                           UNION ALL
@@ -897,10 +897,11 @@ BEGIN
                           INNER JOIN adq.tsolicitud ts ON ts.id_solicitud = tpc.id_solicitud
                           INNER JOIN orga.vfuncionario vf ON vf.id_funcionario = ts.id_funcionario
                           INNER JOIN leg.tcontrato tleg on tleg.id_cotizacion = tc.id_cotizacion
+                          INNER JOIN adq.vcotizacion vc ON vc.id_cotizacion = tc.id_cotizacion
 
                           WHERE ttd.codigo = ''FORM500'' AND tc.requiere_contrato = ''si'' and tleg.fecha_elaboracion is not null and
                           tpc.estado = ''proceso'' AND tc.estado <> ''anulado'' AND
-                          tpp.es_ultima_cuota and ts.id_gestion = '||v_id_gestion||' and tdw.chequeado = '''||v_parametros.chequeado||''''||v_condicion||'
+                          tpp.es_ultima_cuota and ts.id_gestion = '||v_id_gestion||' and vc.monto_total_adjudicado_mb>=20000 and tdw.chequeado = '''||v_parametros.chequeado||''''||v_condicion||'
                         )
 
 
@@ -1016,9 +1017,10 @@ BEGIN
                           INNER JOIN adq.tsolicitud ts ON ts.id_solicitud = tpc.id_solicitud
                           INNER JOIN orga.vfuncionario vf ON vf.id_funcionario = ts.id_funcionario
                           left JOIN leg.tcontrato tleg on tleg.id_cotizacion = tc.id_cotizacion
+                          INNER JOIN adq.vcotizacion vc ON vc.id_cotizacion = tc.id_cotizacion
 
                           WHERE ttd.codigo = ''FORM500'' and tc.estado!=''anulado''  and tpp.estado_reg = ''activo'' AND tc.requiere_contrato = ''no'' AND
-                          tpp.es_ultima_cuota and ts.id_gestion = '||v_id_gestion||' and tdw.chequeado = '''||v_parametros.chequeado||''''||v_condicion||'
+                          tpp.es_ultima_cuota and ts.id_gestion = '||v_id_gestion||' and vc.monto_total_adjudicado_mb>=20000 and tdw.chequeado = '''||v_parametros.chequeado||''''||v_condicion||'
 
 
                           UNION ALL
@@ -1061,10 +1063,11 @@ BEGIN
                           INNER JOIN adq.tsolicitud ts ON ts.id_solicitud = tpc.id_solicitud
                           INNER JOIN orga.vfuncionario vf ON vf.id_funcionario = ts.id_funcionario
                           INNER JOIN leg.tcontrato tleg on tleg.id_cotizacion = tc.id_cotizacion
+                          INNER JOIN adq.vcotizacion vc ON vc.id_cotizacion = tc.id_cotizacion
 
                           WHERE ttd.codigo = ''FORM500'' AND tc.requiere_contrato = ''si'' and tleg.fecha_elaboracion is not null and
                           tpc.estado = ''proceso'' AND tc.estado <> ''anulado'' AND
-                          tpp.es_ultima_cuota and ts.id_gestion = '||v_id_gestion||' and tdw.chequeado = '''||v_parametros.chequeado||''''||v_condicion||'
+                          tpp.es_ultima_cuota and ts.id_gestion = '||v_id_gestion||' and vc.monto_total_adjudicado_mb>=20000 and tdw.chequeado = '''||v_parametros.chequeado||''''||v_condicion||'
                         )
 
                         select count(id_cotizacion)
@@ -1097,8 +1100,4 @@ LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
-PARALLEL UNSAFE
 COST 100;
-
-ALTER FUNCTION adq.f_reporte_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
-  OWNER TO postgres;

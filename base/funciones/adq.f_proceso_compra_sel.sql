@@ -922,7 +922,7 @@ v_consulta = '                      select  sol.num_tramite,
                             		sol.tipo_concepto::varchar,
                                     ''Contratación Directa''::varchar as modalidad,
                                     cot.requiere_contrato::varchar,
-                                    cot.numero_oc::varchar,
+                                    sol.nro_po::varchar,
                                     con.numero::varchar as numero_contrato,
                                     COALESCE(con.fecha_elaboracion,cot.fecha_adju)::date as fecha_elaboracion,
                                     con.objeto::varchar as objeto_contrato,
@@ -970,7 +970,7 @@ v_consulta = '                      select  sol.num_tramite,
                                    pc.objeto,
                                    cot.fecha_entrega,
                                    cot.tiempo_entrega,
-                                   cot.numero_oc,
+                                   sol.nro_po,
                                    cot.fecha_entrega,
                                    dep.codigo,
                                    cot.estado,
@@ -1015,8 +1015,4 @@ LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
-PARALLEL UNSAFE
 COST 100;
-
-ALTER FUNCTION adq.f_proceso_compra_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
-  OWNER TO postgres;
