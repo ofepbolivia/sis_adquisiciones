@@ -1078,12 +1078,12 @@ header("content-type: text/javascript; charset=UTF-8");
                         catalogo_tipo:'prioridad'
                     },*/
                     store: new Ext.data.ArrayStore({
-                            fields: ['id_prioridad', 'valor'],
+                            fields: ['id_prioridad', 'valor', 'desc'],
                             data: [
-                                ['383', 'AOG'],
-                                ['384', 'A'],
-                                ['385', 'B'],
-                                ['386', 'C'],
+                                ['383', 'AOG', 'Super Prioritario'],
+                                ['384', 'A', 'Prioritario'],
+                                ['385', 'B','Prioridad Media'],
+                                ['386', 'C','Prioridad Baja'],
                                 ['387', 'No Aplica']
                             ]
                         }
@@ -1092,7 +1092,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         '<tpl for=".">',
                         '<div class="x-combo-list-item">',
                         '<div class="awesomecombo-item {checked}">',
-                        '<p>Prioridad:<b style="color: green;"> {valor}</b></p>',
+                        '<p>Prioridad:<b style="color: green;"> {valor} - {desc}</b></p>',
                         '</div>',
                         '</div><div><p><img src="./../../../sis_adquisiciones/media/images/{valor}.png" width="215" height="25"></p>',
                         '</div></tpl>'
@@ -1101,6 +1101,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     displayField: 'valor',
                     typeAhead: true,
                     triggerAction: 'all',
+                    listWidth: '220',
+                    resizable: true,
                     mode: 'local',
                     selectOnFocus: true,
                     anchor: '83%',
