@@ -52,6 +52,7 @@ DECLARE
 
     v_des_con_ingas			varchar;
     v_num_tramite			varchar;
+    v_orden_trabajo2		integer;
 
 
 BEGIN
@@ -251,9 +252,9 @@ BEGIN
              where sol.id_solicitud = v_parametros.id_solicitud;
       		 -- raise exception '%, %',v_des_concepto_ingas, v_des_con_ingas;
 
-           	IF (v_des_con_ingas <> v_des_concepto_ingas)THEN
+           	/*IF (v_des_con_ingas <> v_des_concepto_ingas)THEN
             	raise exception 'El Concepto % es distinto a los anteriores del Detalle de Solicitud del número de trámite %, agrupar los Conceptos de forma independiente',v_des_concepto_ingas,v_num_tramite;
-            end if;
+            end if;*/
 
           END IF;
           ---------------------------------------------------
@@ -267,7 +268,7 @@ BEGIN
 
 		end;
 
-	/*********************************
+/*********************************
  	#TRANSACCION:  'ADQ_DGSTSOL_INS'
  	#DESCRIPCION:	Insercion detalle gasto solicitud
  	#AUTOR:		Gonzalo Sarmiento
@@ -277,6 +278,8 @@ BEGIN
 	elsif(p_transaccion='ADQ_DGSTSOL_INS')then
 
         begin
+
+
 
            -- obtener parametros de solicitud
 
@@ -291,6 +294,13 @@ BEGIN
             from adq.tsolicitud s
             where  s.id_solicitud = v_parametros.id_solicitud;
 
+            --en el campo v_parametros.id_centro_costo llegara el codigo de centro de costo
+            SELECT cc.id_centro_costo
+            into v_id_centro_costo
+            from param.vcentro_costo cc
+            where cc.codigo_tcc::integer = v_parametros.id_centro_costo
+            and cc.id_gestion = v_id_gestion;
+
            --recupera el nombre del concepto de gasto
 
             select
@@ -298,7 +308,7 @@ BEGIN
             into
             v_registros_cig
             from param.tconcepto_ingas cig
-            where upper(cig.desc_ingas) =  upper(v_parametros.concepto_gasto)
+            where upper(trim(cig.desc_ingas)) =  upper(trim(v_parametros.concepto_gasto))
             and 'adquisiciones' = ANY(cig.sw_autorizacion);
 
             IF v_registros_cig.id_concepto_ingas IS NULL THEN
@@ -320,7 +330,7 @@ BEGIN
               v_id_partida,
               v_id_cuenta,
               v_id_auxiliar
-           FROM conta.f_get_config_relacion_contable('CUECOMP', v_id_gestion, v_registros_cig.id_concepto_ingas, v_parametros.id_centro_costo,  'No se encontro relación contable para el conceto de gasto: '||v_registros_cig.desc_ingas||'. <br> Mensaje: ');
+           FROM conta.f_get_config_relacion_contable('CUECOMP', v_id_gestion, v_registros_cig.id_concepto_ingas, v_id_centro_costo,  'No se encontro relación contable para el conceto de gasto: '||v_registros_cig.desc_ingas||'. <br> Mensaje: ');
 
 
         IF  v_id_partida  is NULL  THEN
@@ -368,16 +378,18 @@ BEGIN
                              NULL);
 
 
-           ---------------------------------
-          select otrab.id_orden_trabajo,tcc.id_tipo_cc,cin.id_concepto_ingas
-           into v_orden_trabajo,v_id_centro_costo,v_id_concepto_ingas
+           --control orden de trabajo-concepto
+          select otrab.id_orden_trabajo
+           into v_orden_trabajo
            from conta.torden_trabajo otrab
            join conta.ttipo_cc_ot tccot on tccot.id_orden_trabajo = otrab.id_orden_trabajo
            join param.ttipo_cc tcc on tcc.id_tipo_cc = tccot.id_tipo_cc
            join param.tcentro_costo ccos on ccos.id_tipo_cc = tcc.id_tipo_cc
-           join adq.tsolicitud_det sd on sd.id_centro_costo = ccos.id_centro_costo
-           join param.tconcepto_ingas cin on cin.id_concepto_ingas = sd.id_concepto_ingas
-           where ccos.id_centro_costo = v_parametros.id_centro_costo;
+           --join adq.tsolicitud_det sd on sd.id_centro_costo = ccos.id_centro_costo
+           --join param.tconcepto_ingas cin on cin.id_concepto_ingas = sd.id_concepto_ingas
+           where ccos.id_centro_costo = v_id_centro_costo
+           GROUP by otrab.id_orden_trabajo;
+
 
            select otrab.desc_orden
            into v_desc_orden_trabajo
@@ -388,7 +400,7 @@ BEGIN
            into  v_desc_centro_costo
            from param.ttipo_cc tcc
            join param.tcentro_costo ccos on ccos.id_tipo_cc = tcc.id_tipo_cc
-           where ccos.id_centro_costo = v_parametros.id_centro_costo;
+           where ccos.id_centro_costo = v_id_centro_costo;
 
            select cin.desc_ingas
            into v_des_concepto_ingas
@@ -396,10 +408,21 @@ BEGIN
            where cin.id_concepto_ingas = v_registros_cig.id_concepto_ingas;
 
 
-           if ( v_orden_trabajo <> v_id_orden_trabajo)THEN
+            /*select otr.id_orden_trabajo
+            into v_orden_trabajo2
+            from conta.torden_trabajo otr
+            where otr.id_orden_trabajo_fk = v_orden_trabajo
+            and ;*/
+          /*  select otr.id_orden_trabajo
+            into v_orden_trabajo2
+            from conta.torden_trabajo otr
+            where upper(otr.codigo)=upper(v_parametros.orden_trabajo);
+
+raise exception '%, %', v_orden_trabajo2, v_parametros.orden_trabajo;*/
+           /*if ( v_orden_trabajo <> v_id_orden_trabajo)THEN
             	raise exception '-El Orden Trabajo % no pertece al Concepto % del Centro de Costo %',v_desc_orden_trabajo,v_des_concepto_ingas,v_desc_centro_costo  ;
-           end if;
-        -----------------------------
+           end if;*/
+
 
         	--Sentencia de la insercion
         	insert into adq.tsolicitud_det(
@@ -426,7 +449,7 @@ BEGIN
             precio_unitario_mb
 
           	) values(
-			v_parametros.id_centro_costo,
+			v_id_centro_costo,
 			v_parametros.descripcion,
 			v_parametros.precio_unitario,
 			v_parametros.id_solicitud,
@@ -458,6 +481,7 @@ BEGIN
             return v_resp;
 
 		end;
+
 
     /*********************************
  	#TRANSACCION:  'ADQ_DGSTSOL_ELI'
@@ -605,9 +629,9 @@ BEGIN
              where sol.id_solicitud = v_parametros.id_solicitud;
       		 -- raise exception '%, %',v_des_concepto_ingas, v_des_con_ingas;
 
-           	IF (v_des_con_ingas <> v_des_concepto_ingas)THEN
+           	/*IF (v_des_con_ingas <> v_des_concepto_ingas)THEN
             	raise exception 'El Concepto % es distinto a los anteriores del Detalle de Solicitud del número de trámite %, agrupar los Conceptos de forma independiente',v_des_concepto_ingas,v_num_tramite;
-            end if;
+            end if;*/
 
           END IF;
           ---------------------------------------------------
