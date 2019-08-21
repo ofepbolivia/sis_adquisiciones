@@ -618,7 +618,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.cmbNumTramite.setValue(d.num_tramite);
                 this.cmbIdSolicitud.setValue(d.id_solicitud);
                 this.cmbIdDepto.setValue(this.cmbDeptoAdq.getValue());
-                this.cmbInstrucRPC.setValue(d.obs+' \n----- \n Intr:'+d.instruc_rpc)
+                // this.cmbInstrucRPC.setValue(d.obs+' \n----- \n Intr:'+d.instruc_rpc)
+                this.cmbInstrucRPC.setValue(d.obs);
                 this.winProc.show();
                 this.cmb_id_depto_usuario_proc.store.baseParams.id_depto = d.id_depto;
                 this.cmb_id_depto_usuario_proc.modificado = true;
