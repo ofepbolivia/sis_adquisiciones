@@ -102,7 +102,8 @@ Phx.vista.SolReporteEje=Ext.extend(Phx.frmInterfaz,{
                 name:'id_moneda',
                 origen:'MONEDA',
                  allowBlank:false,
-                fieldLabel:'Moneda'
+                fieldLabel:'Moneda',
+                baseParams: {id_moneda: '1'}
               },
             type:'ComboRec',
             form:true
