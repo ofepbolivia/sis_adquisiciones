@@ -1088,6 +1088,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     type: 'Field',
                     filters: {pfiltro: 'sol.cuce', type: 'string'},
                     valor: 0,
+                    bottom_filter: true,
                     id_grupo: 1,
                     grid: false,
                     form: false
