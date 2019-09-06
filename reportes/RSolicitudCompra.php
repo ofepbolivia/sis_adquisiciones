@@ -5,7 +5,7 @@ require_once dirname(__FILE__).'/../../pxp/pxpReport/Report.php';
     
     private $dataSource;    
     public function setDataSource(DataSource $dataSource) {
-        $this->dataSource = $dataSource;
+        $this->dataSource = $dataSource;        
     }
     
     public function getDataSource() {
@@ -205,6 +205,177 @@ Class RSolicitudCompra extends Report {
         
         $pdf->Ln();
         $pdf->Ln();
+        $firma_solicitante = $this->getDataSource()->getParameter('desc_funcionario');
+        $cargo_solicitante = $this->getDataSource()->getParameter('cargo_desc_funcionario');
+        $firma_gerente = $this->getDataSource()->getParameter('desc_funcionario_apro');
+        $cargo_gerente = $this->getDataSource()->getParameter('cargo_desc_funcionario_apro');
+        $nro_tramite_qr = $this->getDataSource()->getParameter('num_tramite');
+        $prioridad = $this->getDataSource()->getParameter('prioridad');
+        $firma_rpc = $this->getDataSource()->getParameter('desc_funcionario_rpc');
+        $cargo_rpc = $this->getDataSource()->getParameter('cargo_desc_funcionario_rpc');      
+        //$date = date('d/m/Y');        
+       //var_dump($prioridad);exit;
+       
+        if ($this->getDataSource()->getParameter('fecha_soli') >= '2019-09-01') {
+            
+            $pdf->GetY() >= 234 && $pdf->Ln(20);
+
+            if($this->getDataSource()->getParameter('estado')=='borrador'){
+                    $tbl = '<table>
+                    <tr>
+                    <td style="width: 15%"></td>
+                    <td style="width: 70%">
+                    <table cellspacing="0" cellpadding="1" border="1" style="font-family: Calibri; font-size: 9px;">
+                        <tr>
+                            <td style="font-family: Calibri; font-size: 9px;"><b> Solicitado por:</b> <br> </td>
+                            <td style="font-family: Calibri; font-size: 9px;"><b> Aprobado por:</b><br> </td>
+                        </tr>
+                        <tr>
+                            <td align="center" >
+                                <br><br>
+                                <img  style="width: 95px; height: 95px;" src="" alt="Logo"><br>
+
+                            </td>
+                            <td align="center" >
+                                <br><br>
+                                <img  style="width: 95px; height: 95px;" src="" alt="Logo"><br>
+
+                            </td>
+                        </tr>
+                    </table>
+                    </td>
+                    <td style="width:15%;"></td>
+                    </tr>
+                    </table>';
+            $pdf->Ln(5);
+            $pdf->writeHTML($tbl, true, false, false, false, '');                                                      
+            }
+            else if($prioridad == 383 ){                
+                $estados_prioridad = array('vbpoa', 'suppresu', 'vbpresupuestos', 'vbrpc');                        
+                if ($this->getDataSource()->getParameter('estado') != 'borrador' and in_array($this->getDataSource()->getParameter('estado'),$estados_prioridad)){
+                    
+                    $tbl = '<table>
+                            <tr>
+                            <td style="width: 15%"></td>
+                            <td style="width: 70%">
+                            <table cellspacing="0" cellpadding="1" border="1">
+                                <tr>
+                                    <td style="font-family: Calibri; font-size: 9px;"><b> Solicitado por:</b>' .$firma_solicitante. '</td>
+                                    <td style="font-family: Calibri; font-size: 9px;"><b> Aprobado por:</b><br> </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" >
+                                        <br><br>
+                                        <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_solicitante, $cargo_solicitante, $nro_tramite_qr) . '" alt="Logo">                                        
+                                    </td>
+                                    <td align="center" >
+                                        <br><br>
+                                        <img  style="width: 95px; height: 95px;" src="" alt="Logo"><br>
+
+                                    </td>                                
+                                </tr>
+                            </table>
+                            </td>
+                            <td style="width:15%;"></td>
+                            </tr>
+                            </table>
+        
+                        ';
+                    $pdf->Ln(5);
+                    $pdf->writeHTML($tbl, true, false, false, false, '');
+                }else{
+                    $tbl = '<table>
+                            <tr>
+                            <td style="width: 15%"></td>
+                            <td style="width: 70%">
+                            <table cellspacing="0" cellpadding="1" border="1" style="font-family: Calibri; font-size: 9px;">
+                                <tr>
+                                    <td style="font-family: Calibri; font-size: 9px;"><b> Solicitado por:</b>' .$firma_solicitante. '</td>
+                                    <td style="font-family: Calibri; font-size: 9px;"><b> Aprobado por:</b>' .$firma_gerente. '</td>
+                                </tr>
+                                <tr>
+                                    <td align="center" >
+                                        <br><br>
+                                        <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_solicitante, $cargo_solicitante, $nro_tramite_qr) . '" alt="Logo">    
+                                    </td>
+                                    <td align="center" >
+                                        <br><br>
+                                        <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_rpc, $cargo_rpc, $nro_tramite_qr) . '" alt="Logo">
+                                    </td>
+                                </tr>
+                            </table>
+                            </td>
+                            <td style="width:15%;"></td>
+                            </tr>
+                            </table>
+                        ';
+                    $pdf->Ln(5);
+                    $pdf->writeHTML($tbl, true, false, false, false, '');
+                }   
+            }else if($prioridad != 383){
+                $estados_ant_gerencia = array('vbactif', 'vbuti', 'vbgerencia'); 
+                if( $this->getDataSource()->getParameter('estado') != 'borrador' and in_array($this->getDataSource()->getParameter('estado'),$estados_ant_gerencia)){
+                    $tbl = '<table>
+                            <tr>
+                            <td style="width: 15%"></td>
+                            <td style="width: 70%">
+                            <table cellspacing="0" cellpadding="1" border="1">
+                                <tr>
+                                    <td style="font-family: Calibri; font-size: 9px;"><b> Solicitado por:</b>' .$firma_solicitante. '</td>
+                                    <td style="font-family: Calibri; font-size: 9px;"><b> Aprobado por:</b><br> </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" >
+                                        <br><br>
+                                        <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_solicitante, $cargo_solicitante, $nro_tramite_qr) . '" alt="Logo">                                        
+                                    </td>
+                                    <td align="center" >
+                                        <br><br>
+                                        <img  style="width: 95px; height: 95px;" src="" alt="Logo"><br>
+
+                                    </td>                                
+                                </tr>
+                            </table>
+                            </td>
+                            <td style="width:15%;"></td>
+                            </tr>
+                            </table>
+        
+                        ';
+                    $pdf->Ln(5);
+                    $pdf->writeHTML($tbl, true, false, false, false, '');
+                }else{                                    
+                    $tbl = '<table>
+                            <tr>
+                            <td style="width: 15%"></td>
+                            <td style="width: 70%">
+                            <table cellspacing="0" cellpadding="1" border="1" style="font-family: Calibri; font-size: 9px;">
+                                <tr>
+                                    <td style="font-family: Calibri; font-size: 9px;"><b> Solicitado por:</b>' .$firma_solicitante. '</td>
+                                    <td style="font-family: Calibri; font-size: 9px;"><b> Aprobado por:</b>' .$firma_gerente. '</td>
+                                </tr>
+                                <tr>
+                                    <td align="center" >
+                                        <br><br>
+                                        <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_solicitante, $cargo_solicitante, $nro_tramite_qr) . '" alt="Logo">    
+                                    </td>
+                                    <td align="center" >
+                                        <br><br>
+                                        <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_gerente, $cargo_gerente, $nro_tramite_qr) . '" alt="Logo">
+                                    </td>
+                                </tr>
+                            </table>
+                            </td>
+                            <td style="width:15%;"></td>
+                            </tr>
+                            </table>
+                        ';
+                    $pdf->Ln(5);
+                    $pdf->writeHTML($tbl, true, false, false, false, '');
+                }
+            }            
+        }
+        
 
         //presupuestos para la sisguiente gestion
         /*
@@ -226,8 +397,7 @@ Class RSolicitudCompra extends Report {
             
          $pdf->setTextColor(0,0,0);
          $pdf->setFont('','B');
-         $pdf->setFont('','');
-        
+         $pdf->setFont('','');         
         //cambia el color de lienas
         $pdf->SetDrawColor    (  0,-1,-1,-1,false,'');   
         
@@ -457,6 +627,23 @@ Class RSolicitudCompra extends Report {
                 
         }
         
-    }      
+    }
+    function generarImagen($nom, $car, $ntra){
+        $cadena_qr = 'Nombre: '.$nom. "\n". "Cargo: ".$car. "\n"."N° Tramite: ". $ntra;
+        $barcodeobj = new TCPDF2DBarcode($cadena_qr, 'QRCODE,M');
+        $png = $barcodeobj->getBarcodePngData($w = 8, $h = 8, $color = array(0, 0, 0));
+        $im = imagecreatefromstring($png);
+        if ($im !== false) {
+            header('Content-Type: image/png');
+            imagepng($im, dirname(__FILE__) . "/../../reportes_generados/" . $nom . ".png");
+            imagedestroy($im);
+
+        } else {
+            echo 'A ocurrido un Error.';
+        }
+        $url_archivo = dirname(__FILE__) . "/../../reportes_generados/" . $nom . ".png";
+
+        return $url_archivo;
+    }          
 }
 ?>

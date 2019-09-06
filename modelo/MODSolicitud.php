@@ -476,8 +476,13 @@ class MODSolicitud extends MODbase
         $this->captura('desc_funcionario_rpc', 'text');
         $this->captura('nombre_usuario_ai', 'varchar');
         $this->captura('codigo_uo', 'varchar');
+        $this->captura('cargo_desc_funcionario', 'varchar');
+        $this->captura('cargo_desc_funcionario_apro', 'varchar');
+        $this->captura('prioridad', 'integer');
+        $this->captura('cargo_desc_funcionario_rpc', 'varchar');
 
         $this->armarConsulta();
+        //echo($this->consulta);exit;
         $this->ejecutarConsulta();
 
         return $this->respuesta;
