@@ -278,7 +278,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         }
 
                     },
-                    maxLength: 500
+                    maxLength: 5000
                 },
                 type: 'TextArea',
                 filters: {pfiltro: 'sold.descripcion', type: 'string'},
