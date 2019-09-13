@@ -491,8 +491,12 @@ BEGIN
                         sol.numero,
                         funrpc.desc_funcionario1 as desc_funcionario_rpc,
                         COALESCE(sol.usuario_ai,'''')::varchar as nombre_usuario_ai,
-                        uo.codigo as codigo_uo
-
+                        uo.codigo as codigo_uo,
+						fca.descripcion_cargo::varchar as cargo_desc_funcionario,
+                        fcap.descripcion_cargo::varchar as cargo_desc_funcionario_apro,
+                        sol.prioridad,
+                        frpc.descripcion_cargo::varchar as cargo_desc_funcionario_rpc                        
+                        
 						from adq.tsolicitud sol
 						inner join segu.tusuario usu1 on usu1.id_usuario = sol.id_usuario_reg
 
@@ -510,6 +514,9 @@ BEGIN
 						left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
 
                         inner join wf.testado_wf ew on ew.id_estado_wf = sol.id_estado_wf
+                    	inner join orga.vfuncionario_cargo_lugar fca on fca.id_funcionario = fun.id_funcionario
+					    inner join orga.vfuncionario_cargo_lugar fcap on fcap.id_funcionario = sol.id_funcionario_aprobador 
+                        left join orga.vfuncionario_cargo_lugar frpc on frpc.id_funcionario = sol.id_funcionario_rpc                       
 
 				        where '||v_filtro;
 
