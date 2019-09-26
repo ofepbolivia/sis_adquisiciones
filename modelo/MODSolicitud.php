@@ -480,6 +480,7 @@ class MODSolicitud extends MODbase
         $this->captura('cargo_desc_funcionario_apro', 'varchar');
         $this->captura('prioridad', 'integer');
         $this->captura('cargo_desc_funcionario_rpc', 'varchar');
+        $this->captura('dep_prioridad', 'int4');
 
         $this->armarConsulta();
         //echo($this->consulta);exit;

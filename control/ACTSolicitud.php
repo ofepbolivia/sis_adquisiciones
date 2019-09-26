@@ -426,6 +426,8 @@ class ACTSolicitud extends ACTbase
         $dataSource->putParameter('cargo_desc_funcionario', $datosSolicitud[0]['cargo_desc_funcionario']);
         $dataSource->putParameter('cargo_desc_funcionario_rpc', $datosSolicitud[0]['cargo_desc_funcionario_rpc']);
         $dataSource->putParameter('prioridad', $datosSolicitud[0]['prioridad']);
+        $dataSource->putParameter('dep_prioridad', $datosSolicitud[0]['dep_prioridad']);
+        $dataSource->putParameter('cargo_desc_funcionario_apro', $datosSolicitud[0]['cargo_desc_funcionario_apro']);
 
         //get detalle
         //Reset all extra params:

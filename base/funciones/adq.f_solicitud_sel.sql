@@ -495,8 +495,8 @@ BEGIN
 						fca.descripcion_cargo::varchar as cargo_desc_funcionario,
                         fcap.descripcion_cargo::varchar as cargo_desc_funcionario_apro,
                         sol.prioridad,
-                        frpc.descripcion_cargo::varchar as cargo_desc_funcionario_rpc                        
-                        
+                        frpc.descripcion_cargo::varchar as cargo_desc_funcionario_rpc,                       
+                        dep.prioridad as dep_prioridad
 						from adq.tsolicitud sol
 						inner join segu.tusuario usu1 on usu1.id_usuario = sol.id_usuario_reg
 
