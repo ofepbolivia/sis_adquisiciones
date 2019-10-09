@@ -424,7 +424,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         anchor: '90%',
                         //width: 350,
                         height:100,
-                        maxLength:2000
+                        maxLength:4000
                     },
                     {
                         xtype: 'textfield',
