@@ -213,8 +213,9 @@ Class RSolicitudCompra extends Report {
         $prioridad = $this->getDataSource()->getParameter('prioridad');
         $firma_rpc = $this->getDataSource()->getParameter('desc_funcionario_rpc');
         $cargo_rpc = $this->getDataSource()->getParameter('cargo_desc_funcionario_rpc');      
+        $dep_prioridad = $this->getDataSource()->getParameter('dep_prioridad'); 
         //$date = date('d/m/Y');        
-       //var_dump($prioridad);exit;
+       //var_dump($cargo_gerente);exit;
        
         if ($this->getDataSource()->getParameter('fecha_soli') >= '2019-09-01') {
             
@@ -250,10 +251,9 @@ Class RSolicitudCompra extends Report {
             $pdf->Ln(5);
             $pdf->writeHTML($tbl, true, false, false, false, '');                                                      
             }
-            else if($prioridad == 383 ){                
-                $estados_prioridad = array('vbpoa', 'suppresu', 'vbpresupuestos', 'vbrpc');                        
-                if ($this->getDataSource()->getParameter('estado') != 'borrador' and in_array($this->getDataSource()->getParameter('estado'),$estados_prioridad)){
-                    
+            else if($prioridad == 383 and $dep_prioridad != 1){                
+                $estados_prioridad = array('vbpoa', 'suppresu', 'vbpresupuestos', 'vbrpc');                
+                if ($this->getDataSource()->getParameter('estado') != 'borrador' and in_array($this->getDataSource()->getParameter('estado'),$estados_prioridad)){                    
                     $tbl = '<table>
                             <tr>
                             <td style="width: 15%"></td>
@@ -283,7 +283,7 @@ Class RSolicitudCompra extends Report {
                         ';
                     $pdf->Ln(5);
                     $pdf->writeHTML($tbl, true, false, false, false, '');
-                }else{
+                }else{                    
                     $tbl = '<table>
                             <tr>
                             <td style="width: 15%"></td>
@@ -311,7 +311,71 @@ Class RSolicitudCompra extends Report {
                         ';
                     $pdf->Ln(5);
                     $pdf->writeHTML($tbl, true, false, false, false, '');
-                }   
+                }
+            }  
+                else if ($prioridad == 383 and $dep_prioridad == 1){
+                    $estados_priori = array('vbgerencia');                    
+                    if ($this->getDataSource()->getParameter('estado') != 'borrador' and in_array($this->getDataSource()->getParameter('estado'),$estados_priori)){                    
+                        $tbl = '<table>
+                        <tr>
+                        <td style="width: 15%"></td>
+                        <td style="width: 70%">
+                        <table cellspacing="0" cellpadding="1" border="1">
+                            <tr>
+                                <td style="font-family: Calibri; font-size: 9px;"><b> Solicitado por:</b>' .$firma_solicitante. '</td>
+                                <td style="font-family: Calibri; font-size: 9px;"><b> Aprobado por:</b><br> </td>
+                            </tr>
+                            <tr>
+                                <td align="center" >
+                                    <br><br>
+                                    <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_solicitante, $cargo_solicitante, $nro_tramite_qr) . '" alt="Logo">                                        
+                                </td>
+                                <td align="center" >
+                                    <br><br>
+                                    <img  style="width: 95px; height: 95px;" src="" alt="Logo"><br>
+    
+                                </td>                                
+                            </tr>
+                        </table>
+                        </td>
+                        <td style="width:15%;"></td>
+                        </tr>
+                        </table>
+    
+                    ';
+                    $pdf->Ln(5);
+                    $pdf->writeHTML($tbl, true, false, false, false, '');
+                }else{
+                    $tbl = '<table>
+                            <tr>
+                            <td style="width: 15%"></td>
+                            <td style="width: 70%">
+                            <table cellspacing="0" cellpadding="1" border="1" style="font-family: Calibri; font-size: 9px;">
+                                <tr>
+                                    <td style="font-family: Calibri; font-size: 9px;"><b> Solicitado por:</b>' .$firma_solicitante. '</td>
+                                    <td style="font-family: Calibri; font-size: 9px;"><b> Aprobado por:</b>' .$firma_gerente. '</td>
+                                </tr>
+                                <tr>
+                                    <td align="center" >
+                                        <br><br>
+                                        <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_solicitante, $cargo_solicitante, $nro_tramite_qr) . '" alt="Logo">    
+                                    </td>
+                                    <td align="center" >
+                                        <br><br>
+                                        <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_gerente, $cargo_gerente, $nro_tramite_qr) . '" alt="Logo">
+                                    </td>
+                                </tr>
+                            </table>
+                            </td>
+                            <td style="width:15%;"></td>
+                            </tr>
+                            </table>
+        
+                        ';                    
+            $pdf->Ln(5);
+            $pdf->writeHTML($tbl, true, false, false, false, '');
+                }                               
+  
             }else if($prioridad != 383){
                 $estados_ant_gerencia = array('vbactif', 'vbuti', 'vbgerencia'); 
                 if( $this->getDataSource()->getParameter('estado') != 'borrador' and in_array($this->getDataSource()->getParameter('estado'),$estados_ant_gerencia)){
