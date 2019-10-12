@@ -55,6 +55,7 @@ class MODProveedor extends MODbase{
         $this->captura('telf_persona','varchar');
         $this->captura('cel_instit','varchar');
         $this->captura('telf_instit','varchar');
+		$this->captura('id_beneficiario','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
