@@ -455,6 +455,7 @@ class MODSolicitud extends MODbase
         $this->captura('id_funcionario', 'int4');
         $this->captura('id_estado_wf', 'int4');
         $this->captura('fecha_soli', 'date');
+        $this->captura('fecha_soli_gant', 'date');
         $this->captura('fecha_reg', 'timestamp');
         $this->captura('id_usuario_reg', 'int4');
         $this->captura('fecha_mod', 'timestamp');

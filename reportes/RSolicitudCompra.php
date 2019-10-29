@@ -79,6 +79,12 @@ Class RSolicitudCompra extends Report {
 
         $fecha_reg = substr($this->getDataSource()->getParameter('fecha_reg'),0,4);
         $gestion = $this->getDataSource()->getParameter('desc_gestion');
+
+        if ( $this->getDataSource()->getParameter('fecha_soli_gant') >= '2019-09-01'){
+            $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli_gant');
+        }else{
+            $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli');
+        }
        
         $pdf->Cell($width3, $height, 'Número de Solicitud', 0, 0, 'L', false, '', 0, false, 'T', 'C');
         $pdf->Cell($width3, $height, 'Fecha de Solicitud', 0, 0, 'C', false, '', 0, false, 'T', 'C');
@@ -91,7 +97,7 @@ Class RSolicitudCompra extends Report {
       
         $pdf->SetFont('', '');        
         $pdf->Cell($width3, $height, $this->getDataSource()->getParameter('numero'), 0, 0, 'C', false, '', 0, false, 'T', 'C');        
-        $pdf->Cell($width3, $height, $this->getDataSource()->getParameter('fecha_soli'), 0, 0, 'C', false, '', 0, false, 'T', 'C');
+        $pdf->Cell($width3, $height, $fecha_solicitud, 0, 0, 'C', false, '', 0, false, 'T', 'C');
         $pdf->Cell($width3, $height, $this->getDataSource()->getParameter('fecha_apro'), 0, 0, 'C', false, '', 0, false, 'T', 'C');        
         $pdf->Cell($width2+8, $height, $this->getDataSource()->getParameter('num_tramite'), 0, 0, 'C', false, '', 0, false, 'T', 'C');
 		$pdf->Cell($width2-3, $height, $this->getDataSource()->getParameter('tipo'), 0, 0, 'C', false, '', 0, false, 'T', 'C');

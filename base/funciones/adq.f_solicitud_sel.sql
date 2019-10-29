@@ -56,7 +56,12 @@ DECLARE
     v_solicitud_partida record;
     v_verificar	record;
     v_auxiliar_id		integer;
-
+    v_fecha_sol			date;
+    v_proces_wf			integer;
+    v_cont				integer;
+    v_cont_1			integer;
+	v_fecha				date;
+    v_estado			varchar;
 BEGIN
 
 	v_nombre_funcion = 'adq.f_solicitud_sel';
@@ -440,11 +445,33 @@ BEGIN
             IF  pxp.f_existe_parametro(p_tabla,'id_solicitud') THEN
 
                   v_filtro = 'sol.id_solicitud='||v_parametros.id_solicitud||' and ';
+
+                    select
+                    sol.id_proceso_wf
+                    into v_proces_wf
+                    from adq.tsolicitud sol
+                    where sol.id_solicitud = v_parametros.id_solicitud;
             ELSE
                   v_filtro = 'sol.id_proceso_wf='||v_parametros.id_proceso_wf||' and ';
 
+                  v_proces_wf = v_parametros.id_proceso_wf;
             END IF;
 
+
+          SELECT
+                 max(ewf.fecha_reg::date),
+                 count(ewf.id_estado_wf)
+                 into v_fecha_sol, v_cont
+               FROM  wf.testado_wf ewf
+               INNER JOIN  wf.ttipo_estado te on ewf.id_tipo_estado = te.id_tipo_estado
+               LEFT JOIN   segu.tusuario usu on usu.id_usuario = ewf.id_usuario_reg
+               LEFT JOIN  orga.vfuncionario fun on fun.id_funcionario = ewf.id_funcionario
+               LEFT JOIN  param.tdepto depto on depto.id_depto = ewf.id_depto
+
+               WHERE
+                ewf.id_proceso_wf = v_proces_wf
+                and te.codigo = 'borrador'
+                and te.etapa = 'Solicitante';
 
             --Sentencia de la consulta
 			v_consulta:='select
@@ -470,7 +497,8 @@ BEGIN
 						sol.id_categoria_compra,
 						sol.id_funcionario,
 						sol.id_estado_wf,
-						sol.fecha_soli,
+                        sol.fecha_soli,
+						'''||v_fecha_sol||'''::date as fecha_soli_gant,
 						sol.fecha_reg,
 						sol.id_usuario_reg,
 						sol.fecha_mod,
