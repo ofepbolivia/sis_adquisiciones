@@ -408,6 +408,7 @@ class ACTSolicitud extends ACTbase
         $dataSource->putParameter('tipo', $datosSolicitud[0]['tipo']);
         $dataSource->putParameter('desc_gestion', $datosSolicitud[0]['desc_gestion']);
         $dataSource->putParameter('fecha_soli', $datosSolicitud[0]['fecha_soli']);
+        $dataSource->putParameter('fecha_soli_material', $datosSolicitud[0]['fecha_soli_material']);
         $dataSource->putParameter('fecha_soli_gant', $datosSolicitud[0]['fecha_soli_gant']);
         $dataSource->putParameter('desc_categoria_compra', $datosSolicitud[0]['desc_categoria_compra']);
         $dataSource->putParameter('desc_proceso_macro', $datosSolicitud[0]['desc_proceso_macro']);

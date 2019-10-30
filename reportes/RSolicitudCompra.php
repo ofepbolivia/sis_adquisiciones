@@ -79,11 +79,20 @@ Class RSolicitudCompra extends Report {
 
         $fecha_reg = substr($this->getDataSource()->getParameter('fecha_reg'),0,4);
         $gestion = $this->getDataSource()->getParameter('desc_gestion');
+        $cigla_tramite = array('GM', 'GO', 'GA', 'GC');
 
-        if ( $this->getDataSource()->getParameter('fecha_soli_gant') >= '2019-09-01'){
-            $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli_gant');
+        if(in_array(substr($this->getDataSource()->getParameter('num_tramite'),0, 2), $cigla_tramite)){
+            if ( $this->getDataSource()->getParameter('fecha_soli_material') >= '2019-09-01' ) {
+                $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli_material');
+            }else{
+                $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli');
+            }
         }else{
-            $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli');
+            if ( $this->getDataSource()->getParameter('fecha_soli_gant') >= '2019-09-01'){
+                $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli_gant');
+            }else{
+                $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli');
+            }
         }
        
         $pdf->Cell($width3, $height, 'Número de Solicitud', 0, 0, 'L', false, '', 0, false, 'T', 'C');
