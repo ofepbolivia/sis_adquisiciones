@@ -232,7 +232,7 @@ Class RSolicitudCompra extends Report {
         //$date = date('d/m/Y');        
        //var_dump($cargo_gerente);exit;
        
-        if ($this->getDataSource()->getParameter('fecha_soli') >= '2019-09-01') {
+        if ($fecha_solicitud >= '2019-09-01') {
             
             $pdf->GetY() >= 234 && $pdf->Ln(20);
 
