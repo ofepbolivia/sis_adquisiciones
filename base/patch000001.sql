@@ -843,3 +843,9 @@ ALTER TABLE adq.tsolicitud
 ALTER TABLE adq.tsolicitud
   ADD COLUMN fecha_conclusion DATE;
 /***********************************F-SCP-MAY-ADQ-0-21/05/2019****************************************/
+/***********************************I-SCP-YMR-ADQ-0-14/11/2019****************************************/
+ALTER TABLE adq.tsolicitud_det
+  ADD COLUMN id_cotizacion_det INTEGER;    
+ALTER TABLE adq.tsolicitud_det
+    ADD CONSTRAINT fk_cotizacion_det FOREIGN KEY (id_cotizacion_det) REFERENCES mat.tcotizacion_detalle (id_cotizacion_det);
+/***********************************F-SCP-YMR-ADQ-0-14/11/2019****************************************/
