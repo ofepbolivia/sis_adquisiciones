@@ -88,7 +88,8 @@ BEGIN
                         (person.celular1||''  ''||person.celular2)::varchar as cel_persona,
                         (person.telefono1||''  ''||person.telefono2)::varchar as telf_persona,
                         (instit.celular1||''  ''||instit.celular2)::varchar as cel_instit,
-                        (instit.telefono1||''  ''||instit.telefono2)::varchar as telf_instit
+                        (instit.telefono1||''  ''||instit.telefono2)::varchar as telf_instit,
+                        provee.id_beneficiario
                         from param.tproveedor provee
 						inner join segu.tusuario usu1 on usu1.id_usuario = provee.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = provee.id_usuario_mod
