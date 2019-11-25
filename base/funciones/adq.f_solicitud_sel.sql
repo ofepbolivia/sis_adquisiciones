@@ -564,9 +564,9 @@ BEGIN
 						left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
 
                         inner join wf.testado_wf ew on ew.id_estado_wf = sol.id_estado_wf
-                    	inner join orga.vfuncionario_cargo_lugar fca on fca.id_funcionario = fun.id_funcionario
-					    inner join orga.vfuncionario_cargo_lugar fcap on fcap.id_funcionario = sol.id_funcionario_aprobador 
-                        left join orga.vfuncionario_cargo_lugar frpc on frpc.id_funcionario = sol.id_funcionario_rpc                       
+                    	inner join orga.vfuncionario_ultimo_cargo fca on fca.id_funcionario = fun.id_funcionario
+					    inner join orga.vfuncionario_ultimo_cargo fcap on fcap.id_funcionario = sol.id_funcionario_aprobador 
+                        left join orga.vfuncionario_ultimo_cargo frpc on frpc.id_funcionario = sol.id_funcionario_rpc                       
 
 				        where '||v_filtro;
 
