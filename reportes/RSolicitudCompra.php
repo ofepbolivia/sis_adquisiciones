@@ -76,7 +76,7 @@ Class RSolicitudCompra extends Report {
         $pdf->SetFontSize(8.5);
         $pdf->SetFont('', 'B');
         $pdf->setTextColor(0,0,0);
-
+        $fecha_apro = $this->getDataSource()->getParameter('fecha_apro');
         $fecha_reg = substr($this->getDataSource()->getParameter('fecha_reg'),0,4);
         $gestion = $this->getDataSource()->getParameter('desc_gestion');
         $cigla_tramite = array('GM', 'GO', 'GA', 'GC');
@@ -94,7 +94,17 @@ Class RSolicitudCompra extends Report {
                 $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli');
             }
         }
-       
+
+        if(in_array(substr($this->getDataSource()->getParameter('num_tramite'),0, 2), $cigla_tramite)){
+            if( $fecha_solicitud  >= '2019-10-01' ){
+                if ($fecha_apro != null || $fecha_apro != ''){
+                    $fecha_apro = date_format(date_create($fecha_solicitud), 'd-m-Y');
+                }
+            }
+        }
+        if ($fecha_apro != null || $fecha_apro != ''){
+            $fecha_apro = date_format(date_create($fecha_apro), 'd-m-Y');
+        }       
         $pdf->Cell($width3, $height, 'Número de Solicitud', 0, 0, 'L', false, '', 0, false, 'T', 'C');
         $pdf->Cell($width3, $height, 'Fecha de Solicitud', 0, 0, 'C', false, '', 0, false, 'T', 'C');
         $pdf->Cell($width3, $height, 'Fecha de Aprobacion', 0, 0, 'C', false, '', 0, false, 'T', 'C');
@@ -106,8 +116,8 @@ Class RSolicitudCompra extends Report {
       
         $pdf->SetFont('', '');        
         $pdf->Cell($width3, $height, $this->getDataSource()->getParameter('numero'), 0, 0, 'C', false, '', 0, false, 'T', 'C');        
-        $pdf->Cell($width3, $height, $fecha_solicitud, 0, 0, 'C', false, '', 0, false, 'T', 'C');
-        $pdf->Cell($width3, $height, $this->getDataSource()->getParameter('fecha_apro'), 0, 0, 'C', false, '', 0, false, 'T', 'C');        
+        $pdf->Cell($width3, $height, date_format(date_create($fecha_solicitud), 'd-m-Y'), 0, 0, 'C', false, '', 0, false, 'T', 'C');
+        $pdf->Cell($width3, $height, $fecha_apro, 0, 0, 'C', false, '', 0, false, 'T', 'C');        
         $pdf->Cell($width2+8, $height, $this->getDataSource()->getParameter('num_tramite'), 0, 0, 'C', false, '', 0, false, 'T', 'C');
 		$pdf->Cell($width2-3, $height, $this->getDataSource()->getParameter('tipo'), 0, 0, 'C', false, '', 0, false, 'T', 'C');
         $pdf->Cell($width2-3, $height, $this->getDataSource()->getParameter('desc_moneda'), 0, 0, 'C', false, '', 0, false, 'T', 'C');
