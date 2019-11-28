@@ -96,7 +96,7 @@ Class RSolicitudCompra extends Report {
         }
 
         if(in_array(substr($this->getDataSource()->getParameter('num_tramite'),0, 2), $cigla_tramite)){
-            if( $fecha_solicitud  >= '2019-10-01' ){
+            if( $fecha_solicitud  >= '2019-09-01' ){
                 if ($fecha_apro != null || $fecha_apro != ''){
                     $fecha_apro = date_format(date_create($fecha_solicitud), 'd-m-Y');
                 }
