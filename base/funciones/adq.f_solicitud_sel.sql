@@ -63,6 +63,7 @@ DECLARE
 	v_fecha				date;
     v_nro_tramite		varchar;
     v_fecha_sol_material date;
+    v_id_estado_wf		integer;
 BEGIN
 
 	v_nombre_funcion = 'adq.f_solicitud_sel';
@@ -478,20 +479,29 @@ BEGIN
                 where sol.nro_tramite = v_nro_tramite;
 
             else
-              select
-                     max(ewf.fecha_reg::date),
-                     count(ewf.id_estado_wf)
-                     into v_fecha_sol, v_cont
+
+                select es.id_estado_wf
+                	into v_id_estado_wf 
+                from wf.testado_wf es
+                where es.fecha_reg = (
+                select
+                     max(ewf.fecha_reg)
                    FROM  wf.testado_wf ewf
                    INNER JOIN  wf.ttipo_estado te on ewf.id_tipo_estado = te.id_tipo_estado
                    LEFT JOIN   segu.tusuario usu on usu.id_usuario = ewf.id_usuario_reg
                    LEFT JOIN  orga.vfuncionario fun on fun.id_funcionario = ewf.id_funcionario
                    LEFT JOIN  param.tdepto depto on depto.id_depto = ewf.id_depto
-
                    WHERE
                     ewf.id_proceso_wf = v_proces_wf
                     and te.codigo = 'borrador'
-                    and te.etapa = 'Solicitante';
+                    and te.etapa = 'Solicitante');
+
+              select  
+                     ew.fecha_reg::date
+                     into v_fecha_sol
+                   FROM  wf.testado_wf ew
+                   where ew.id_estado_anterior = v_id_estado_wf;
+                                   
           	end if;
 
             --Sentencia de la consulta
