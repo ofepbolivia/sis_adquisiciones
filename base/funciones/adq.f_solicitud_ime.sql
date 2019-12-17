@@ -152,6 +152,11 @@ DECLARE
 	   --Reglas
        v_codigo_cat					varchar;
 
+       v_estado						  varchar;
+       v_codigo_sol_pc			varchar;
+       v_fecha_sol					date;
+       v_tipo						    varchar;
+
 BEGIN
 
     v_nombre_funcion = 'adq.f_solicitud_ime';
@@ -185,6 +190,13 @@ BEGIN
         	raise exception 'En cumplimiento a circular instructiva emitida por el Departamento Administrativo,
             ya no es posible registrar solicitudes de compra nacional.';
         end if;*/
+
+         --(may) 17-12-2019 para la gestion 2019 no se pueden realizar registros para tramites CNAPD Y CINTPD
+        IF (v_fecha_aux = 2019 and v_codigo_cat in ('CNPD', 'CINPD', '')) THEN
+        --if(v_fecha_aux = 2019)then
+        	raise exception 'ESTIMADO USUARIO,  A SOLICITUD DEL DEPARTAMENTO DE FINANZAS YA NO ES POSIBLE REGISTRAR SOLICITUDES CNAPD Y CINTPD PARA LA GESTION 2019.';
+        end if;
+
         --reglas
 
         -- determina la fecha del periodo
@@ -658,6 +670,22 @@ BEGIN
 
 
           IF  v_parametros.operacion = 'verificar' THEN
+
+                --(may) 17-12-2019 para la gestion 2019 no se pueden realizar registros para tramites CNAPD Y CINTPD
+                select sol.estado,sol.fecha_soli, tc.codigo, sol.tipo
+                into v_estado,v_fecha_sol, v_codigo_sol_pc, v_tipo
+                from adq.tsolicitud sol
+                join adq.tcategoria_compra tc on tc.id_categoria_compra = sol.id_categoria_compra
+                where sol.id_solicitud = v_parametros.id_solicitud;
+
+                v_fecha_aux = EXTRACT(YEAR FROM v_fecha_sol::date);
+
+                IF (v_estado = 'borrador') THEN
+                	IF (v_fecha_aux = 2019 and v_codigo_sol_pc in ('CNPD', 'CINPD', '') and v_tipo != 'Boa') THEN
+                        raise exception 'ESTIMADO USUARIO,  A SOLICITUD DEL DEPARTAMENTO DE FINANZAS YA NO ES POSIBLE PASAR AL SIGUIENTE ESTADO LAS SOLICITUDES CNAPD Y CINTPD PARA LA GESTION 2019.';
+                    end if;
+                END IF;
+                --
 
               --recupera datos de la solicitud
                select
