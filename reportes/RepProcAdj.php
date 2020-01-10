@@ -87,11 +87,11 @@ class RepProcAdj
         //titulos
 
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, 2, 'PROCESOS ADJUDICADOS ');
-        $this->docexcel->getActiveSheet()->getStyle('A2:L2')->applyFromArray($styleTitulos1);
-        $this->docexcel->getActiveSheet()->mergeCells('A2:L2');
+        $this->docexcel->getActiveSheet()->getStyle('A2:M2')->applyFromArray($styleTitulos1);
+        $this->docexcel->getActiveSheet()->mergeCells('A2:M2');
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, 3, 'Del: ' . $this->objParam->getParametro('fecha_ini') . '   Al: ' . $this->objParam->getParametro('fecha_fin'));
-        $this->docexcel->getActiveSheet()->getStyle('A3:L3')->applyFromArray($styleTitulos3);
-        $this->docexcel->getActiveSheet()->mergeCells('A3:L3');
+        $this->docexcel->getActiveSheet()->getStyle('A3:M3')->applyFromArray($styleTitulos3);
+        $this->docexcel->getActiveSheet()->mergeCells('A3:M3');
 
         //*************************************FIN TITULO*****************************************
 
@@ -108,6 +108,7 @@ class RepProcAdj
         $this->docexcel->getActiveSheet()->getColumnDimension('J')->setWidth(40);
         $this->docexcel->getActiveSheet()->getColumnDimension('K')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('L')->setWidth(15);
+        $this->docexcel->getActiveSheet()->getColumnDimension('M')->setWidth(45);
 
 
         $styleTitulos = array(
@@ -131,9 +132,9 @@ class RepProcAdj
                     'style' => PHPExcel_Style_Border::BORDER_THIN
                 )
             ));
-        $this->docexcel->getActiveSheet()->getStyle('A4:L4')->getAlignment()->setWrapText(true);
+        $this->docexcel->getActiveSheet()->getStyle('A4:M4')->getAlignment()->setWrapText(true);
 
-        $this->docexcel->getActiveSheet()->getStyle('A4:L4')->applyFromArray($styleTitulos);
+        $this->docexcel->getActiveSheet()->getStyle('A4:M4')->applyFromArray($styleTitulos);
 
         //*************************************Cabecera*****************************************
         $this->docexcel->getActiveSheet()->setCellValue('A4','CUCE');
@@ -148,6 +149,7 @@ class RepProcAdj
         $this->docexcel->getActiveSheet()->setCellValue('J4','OBJETO CONTRATO');
         $this->docexcel->getActiveSheet()->setCellValue('K4','PROVEEDOR');
         $this->docexcel->getActiveSheet()->setCellValue('L4','MONTO BS.');
+        $this->docexcel->getActiveSheet()->setCellValue('M4','DESCRIPCION');
 
 
     }

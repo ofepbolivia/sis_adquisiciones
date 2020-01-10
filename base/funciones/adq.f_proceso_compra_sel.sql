@@ -927,7 +927,8 @@ v_consulta = '                      select  sol.num_tramite,
                                     COALESCE(con.fecha_elaboracion,cot.fecha_adju)::date as fecha_elaboracion,
                                     con.objeto::varchar as objeto_contrato,
                                     p.desc_proveedor::varchar as proveedor_adjudicado,
-                                    (COALESCE(sum(cd.cantidad_adju * cd.precio_unitario_mb), 0::numeric))::varchar AS monto_total_adjudicado_mb
+                                    (COALESCE(sum(cd.cantidad_adju * cd.precio_unitario_mb), 0::numeric))::varchar AS monto_total_adjudicado_mb,
+                                    sol.justificacion::varchar
 
 
                from adq.tsolicitud sol
@@ -983,7 +984,8 @@ v_consulta = '                      select  sol.num_tramite,
                                    con.fecha_inicio,
                                    con.fecha_fin,
                                    mon.codigo,
-                                   op.nro_cuota_vigente
+                                   op.nro_cuota_vigente,
+                                   sol.justificacion
 
 
         	order by sol.num_tramite';

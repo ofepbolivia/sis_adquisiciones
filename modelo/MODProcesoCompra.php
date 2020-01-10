@@ -560,6 +560,7 @@ class MODProcesoCompra extends MODbase
         $this->captura('objeto', 'varchar');
         $this->captura('desc_proveedor', 'varchar');
         $this->captura('monto_total_adjudicado_mb', 'varchar');
+        $this->captura('justificacion', 'varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
