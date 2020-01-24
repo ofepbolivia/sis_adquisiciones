@@ -174,7 +174,7 @@ BEGIN
 	if (p_transaccion='ADQ_SOL_INS') then
 
         begin
-        v_fecha_aux = EXTRACT(YEAR FROM v_parametros.fecha_soli::date);
+		v_fecha_aux = EXTRACT(YEAR FROM v_parametros.fecha_soli::date);
 
         --(f.e.a)reglas
         if(v_fecha_aux = 2017)then
@@ -740,15 +740,15 @@ BEGIN
 
 
 
-
-                  IF exists ( select 1
+				--24-01-2020 (may) se quita el control para que permita importes totales 0 en el detalle a solicitud de adq
+             /*     IF exists ( select 1
                   from adq.tsolicitud_det sd
                   where sd.id_solicitud = v_parametros.id_solicitud
                   and sd.estado_reg = 'activo' and (COALESCE( sd.precio_ga_mb,0)  + COALESCE(sd.precio_sg_mb,0)=0)) THEN
 
                       raise exception 'Al menos uno del los items tiene un precio total de 0, verifique e intentelo nuevamente';
 
-                  END IF;
+                  END IF;*/
 
 
                   -- obtiene parametros para definir aprobador
