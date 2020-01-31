@@ -250,7 +250,8 @@ BEGIN
                         tcat.id_catalogo as id_prioridad,
                         sol.list_proceso,
                         sol.cuce,
-                        sol.fecha_conclusion
+                        sol.fecha_conclusion,
+                        sol.presupuesto_aprobado
 
 						from adq.tsolicitud sol
 						inner join segu.tusuario usu1 on usu1.id_usuario = sol.id_usuario_reg

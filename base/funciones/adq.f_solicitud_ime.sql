@@ -157,6 +157,9 @@ DECLARE
        v_fecha_sol					date;
        v_tipo						    varchar;
 
+       --bvp
+	   v_llave_aprobado			varchar;
+	   v_si_no					varchar;
 BEGIN
 
     v_nombre_funcion = 'adq.f_solicitud_ime';
@@ -327,7 +330,8 @@ BEGIN
             precontrato,
             nro_po,
             fecha_po,
-            prioridad
+            prioridad,
+            presupuesto_aprobado
           	) values(
 			'activo',
 			--v_parametros.id_solicitud_ext,
@@ -367,7 +371,8 @@ BEGIN
             COALESCE(v_parametros.precontrato,'no'),
             trim(both ' ' from v_parametros.nro_po),
             v_parametros.fecha_po,
-			v_parametros.prioridad
+			v_parametros.prioridad,
+            'verificar'
 
 			)RETURNING id_solicitud into v_id_solicitud;
 
@@ -2200,6 +2205,46 @@ BEGIN
                 --Definicion de la respuesta
                 v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Se insertaron ajustes ');
                 v_resp = pxp.f_agrega_clave(v_resp,'id_solicitud',v_parametros.id_solicitud::varchar);
+
+          --Devuelve la respuesta
+          return v_resp;
+
+		end;
+
+    /*********************************
+ 	#TRANSACCION:  'ADQ_VALPRESU_IME'
+ 	#DESCRIPCION:	validar presupuesto a nivel centro de costo
+ 	#AUTOR:	    breydi vasquez
+ 	#FECHA:		07-01-2020
+	***********************************/
+
+	elsif(p_transaccion='ADQ_VALPRESU_IME')then
+
+		begin
+
+			select sol.presupuesto_aprobado
+            	into v_llave_aprobado
+            from adq.tsolicitud sol
+            where sol.id_solicitud = v_parametros.id_solicitud;
+
+			if v_parametros.aprobar = 'si' and v_llave_aprobado <> 'aprobado' then
+
+                  update adq.tsolicitud  set
+                  presupuesto_aprobado = 'aprobado'
+                  where id_solicitud = v_parametros.id_solicitud;
+
+            else
+            	if v_llave_aprobado <> 'aprobado' then
+                  update adq.tsolicitud  set
+                  presupuesto_aprobado = 'sin_presupuesto_cc'
+                  where id_solicitud = v_parametros.id_solicitud;  
+                end if;          
+            end if;
+
+
+          --Definicion de la respuesta
+          v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Se Actualizo con exito');
+          v_resp = pxp.f_agrega_clave(v_resp,'id_solicitud',v_parametros.id_solicitud::varchar);
 
           --Devuelve la respuesta
           return v_resp;

@@ -37,7 +37,11 @@ header("content-type: text/css; charset=UTF-8");
     .obligatorio{
         background-color: #EAA8A8;
     }
+    .sin_presupuestos_cc{
 
+        background-color:  #d070ec;
+        color: #900;
+    }
 
 
 

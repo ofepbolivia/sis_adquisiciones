@@ -86,6 +86,9 @@ class ACTSolicitud extends ACTbase
 
         $this->objParam->addParametro('id_funcionario_usu', $_SESSION["ss_id_funcionario"]);
 
+        //filtro breydi.vasquez 07/01/2020 
+        $this->objParam->getParametro('tramite_sin_presupuesto_centro_c') != '' && $this->objParam->addFiltro("sol.presupuesto_aprobado = ''sin_presupuesto_cc'' ");
+
         if ($this->objParam->getParametro('tipoReporte') == 'excel_grid' || $this->objParam->getParametro('tipoReporte') == 'pdf_grid') {
             $this->objReporte = new Reporte($this->objParam, $this);
             $this->res = $this->objReporte->generarReporteListado('MODSolicitud', 'listarSolicitud');
@@ -568,7 +571,7 @@ class ACTSolicitud extends ACTbase
 
             if (in_array($estado_sol, $estado_sin_presupuesto) || $onlyData) {
 
-                $cont_grup = 0;
+                $cont_grup = 0;                
                 foreach ($arrayResp as $value2) {
                     $cc_array = array();
                     $total_pre = 0;
@@ -592,7 +595,7 @@ class ACTSolicitud extends ACTbase
                     $this->objParam->addParametro('id_partida', $value_det["id_partida"]);
                     $this->objParam->addParametro('id_moneda', $id_moneda);
                     $this->objParam->addParametro('monto_total', $total_pre);
-
+                    $this->objParam->addParametro('id_solicitud', $value_det['id_solicitud']);
 
                     $this->objFunc = $this->create('sis_presupuestos/MODPresupuesto');
                     $resultSolicitud = $this->objFunc->verificarPresupuesto();
@@ -929,7 +932,11 @@ class ACTSolicitud extends ACTbase
         $this->res=$this->objFunc->insertarCuce($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
-
+    function aprobarPresupuestoSolicitud(){
+        $this->objFunc=$this->create('MODSolicitud');
+        $this->res=$this->objFunc->aprobarPresupuestoSolicitud($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }        
 
     /*
 

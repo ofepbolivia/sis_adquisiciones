@@ -143,7 +143,8 @@ BEGIN
               id_contrato,
               obs,
               id_funcionario_gerente,
-              codigo_poa
+              codigo_poa,
+              presupuesto_aprobado
             ) 
             VALUES (
               p_id_usuario,
@@ -166,7 +167,8 @@ BEGIN
               v_id_contrato,
               v_registros_cotizacion.justificacion,
               v_registros_cotizacion.id_funcionario_aprobador,
-              v_registros_cotizacion.codigo_poa
+              v_registros_cotizacion.codigo_poa,
+              'verificar'
               
             ) RETURNING id_obligacion_pago into v_id_obligacion_pago;
     

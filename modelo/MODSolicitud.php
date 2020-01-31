@@ -102,10 +102,11 @@ class MODSolicitud extends MODbase
 
         $this->captura('cuce', 'varchar');
         $this->captura('fecha_conclusion', 'date');
-
+        $this->captura('presupuesto_aprobado', 'varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
+        //echo($this->consulta);exit;
         $this->ejecutarConsulta();
 
         //Devuelve la respuesta
@@ -954,7 +955,24 @@ class MODSolicitud extends MODbase
         //Devuelve la respuesta
         return $this->respuesta;
     }
+    function aprobarPresupuestoSolicitud()
+    {
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento = 'adq.f_solicitud_ime';
+        $this->transaccion = 'ADQ_VALPRESU_IME';
+        $this->tipo_procedimiento = 'IME';
 
+        //Define los parametros para la funcion
+        $this->setParametro('id_solicitud', 'id_solicitud', 'int4');
+        $this->setParametro('aprobar', 'aprobar', 'varchar');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }     
 
 }
 

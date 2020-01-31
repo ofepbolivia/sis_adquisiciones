@@ -17,15 +17,32 @@ header("content-type: text/javascript; charset=UTF-8");
             viewConfig: {
                 //stripeRows: false,
                 autoFill: true,
-                getRowClass: function (record) {
+                getRowClass: function (record) {                    
+                    
                     if (record.data.prioridad == 'C') {
-                        return 'prioridad_menor';
+                        if(record.data.presupuesto_aprobado == 'sin_presupuesto_cc'){
+                            return 'sin_presupuestos_cc';
+                        }else{
+                            return 'prioridad_menor';
+                        }
                     } else if (record.data.prioridad == 'B') {
-                        return 'prioridad_importanteB';
+                        if(record.data.presupuesto_aprobado == 'sin_presupuesto_cc'){
+                            return 'sin_presupuestos_cc';
+                        }else{                        
+                            return 'prioridad_importanteB';
+                        }
                     } else if (record.data.prioridad == 'AOG') {
-                        return 'prioridad_importanteA';
+                        if(record.data.presupuesto_aprobado == 'sin_presupuesto_cc'){
+                            return 'sin_presupuestos_cc';
+                        }else{
+                            return 'prioridad_importanteA';
+                        }
                     } else if (record.data.prioridad == 'A') {
-                        return 'prioridad_medio';
+                        if(record.data.presupuesto_aprobado == 'sin_presupuesto_cc'){
+                            return 'sin_presupuestos_cc';
+                        }else{
+                            return 'prioridad_medio';
+                        }
                     }
                 }/*,
         listener: {
@@ -1263,7 +1280,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 {name: 'id_prioridad', type: 'numeric'},
                 'list_proceso',
                 'cuce',
-                {name: 'fecha_conclusion', type: 'date', dateFormat: 'Y-m-d'}
+                {name: 'fecha_conclusion', type: 'date', dateFormat: 'Y-m-d'},
+                {name: 'presupuesto_aprobado', type: 'string'},
             ],
 
             arrayDefaultColumHidden: ['id_fecha_reg', 'id_fecha_mod',

@@ -849,3 +849,10 @@ ALTER TABLE adq.tsolicitud_det
 ALTER TABLE adq.tsolicitud_det
     ADD CONSTRAINT fk_cotizacion_det FOREIGN KEY (id_cotizacion_det) REFERENCES mat.tcotizacion_detalle (id_cotizacion_det);
 /***********************************F-SCP-YMR-ADQ-0-14/11/2019****************************************/
+/***********************************I-SCP-BVP-ADQ-0-31/01/2020****************************************/
+ALTER TABLE adq.tsolicitud
+  ADD COLUMN presupuesto_aprobado VARCHAR;
+
+COMMENT ON COLUMN adq.tsolicitud.presupuesto_aprobado
+IS 'Usado para control de presupuesto.';
+/***********************************F-SCP-BVP-ADQ-0-31/01/2020****************************************/

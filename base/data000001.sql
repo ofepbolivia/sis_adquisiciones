@@ -975,3 +975,11 @@ select pxp.f_insert_tgui ('<i class="fa fa-file-text-o fa-2x"></i> Consulta Form
 select pxp.f_insert_tgui ('<i class="fa fa-file-text-o fa-2x"></i> Consulta Form. 500', 'Consulta Formulario 500', 'CONFORM500', 'si', 22, 'sis_adquisiciones/vista/reporte/ConsultaForm500.php', 2, '', 'ConsultaForm500', 'ADQ');
 select pxp.f_insert_tgui ('Conformidad Final de Pagos(Firma Conformidad)', 'Conformidad Final de Pagos(Firma Conformidad)', 'CONFINPAG', 'si', 23, 'sis_tesoreria/vista/plan_pago/PlanPagoConformidadFinal.php', 2, '', 'PlanPagoConformidadFinal', 'ADQ');
 /***********************************F-DAT-FEA-ADQ-0-07/11/2018****************************************/
+
+/***********************************I-DAT-RAC-ADQ-0-12/10/2017*****************************************/
+  
+INSERT INTO pxp.variable_global ("variable", "valor", "descripcion")
+VALUES 
+  (E'pre_verificar_tipo_cc_control', E'si', E'Control para verificar el presupeusto a nivel centro de costos sistemas de adquiciciones y obligaciones de pago');
+  
+/***********************************F-DAT-RAC-ADQ-0-12/10/2017*****************************************/
