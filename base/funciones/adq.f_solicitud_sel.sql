@@ -64,6 +64,9 @@ DECLARE
     v_nro_tramite		varchar;
     v_fecha_sol_material date;
     v_id_estado_wf		integer;
+
+   v_id_uo				integer;
+
 BEGIN
 
 	v_nombre_funcion = 'adq.f_solicitud_sel';
@@ -179,6 +182,40 @@ BEGIN
 			IF  lower(v_parametros.tipo_interfaz) in ('solicitudhistorico') THEN
  			    v_filtro = ' ';
             END IF;
+
+
+
+            --(31-01-2020) MAY nuevo filtro consulta solicitudes para cada gerencia
+            IF  (lower(v_parametros.tipo_interfaz) in ('solicitudhistoricoxgerencia')) THEN
+
+ 			    --busca id_uo del usuario
+                  SELECT uo.id_uo
+                  INTO v_id_uo
+                  FROM orga.tfuncionario f
+                  inner join segu.tusuario usu on usu.id_persona = f.id_persona
+                  inner join orga.tuo_funcionario func on func.id_funcionario = f.id_funcionario
+                  inner join orga.tuo uo on uo.estado_reg='activo' and uo.id_uo = tes.f_get_uo_gerencia_proceso(func.id_uo,null::integer,null::date)
+                  WHERE usu.id_usuario= p_id_usuario;
+
+                  IF v_historico =  'si' THEN
+                     v_strg_sol = 'DISTINCT(sol.id_solicitud)';
+                     v_strg_obs = '''---''::text';
+                  ELSE
+                     v_strg_sol = 'sol.id_solicitud';
+                     v_strg_obs = 'ew.obs';
+                  END IF;
+
+            --raise exception  'llega %', v_id_uo;
+             v_inner = '   inner join wf.testado_wf ew on ew.id_proceso_wf = sol.id_proceso_wf
+                           inner JOIN orga.tuo_funcionario uof on uof.id_funcionario = sol.id_funcionario and uof.tipo = ''oficial'' and uof.estado_reg = ''activo'' and (current_date <= uof.fecha_finalizacion or  uof.fecha_finalizacion is null)
+			               inner JOIN orga.tuo tuo on tuo.id_uo = tes.f_get_uo_gerencia_proceso(uof.id_uo,null::integer,null::date)  ';
+
+             v_filtro = ' tuo.id_uo = '||v_id_uo||'  and  ';
+
+
+
+            END IF;
+
 
     		--Sentencia de la consulta
 			v_consulta:='select
@@ -396,6 +433,40 @@ BEGIN
 			IF  lower(v_parametros.tipo_interfaz) in ('solicitudhistorico') THEN
  			    v_filtro = ' ';
             END IF;
+
+
+             --(31-01-2020) MAY nuevo filtro consulta solicitudes para cada gerencia
+            IF  (lower(v_parametros.tipo_interfaz) in ('solicitudhistoricoxgerencia')) THEN
+
+ 			    --busca id_uo del usuario
+                  SELECT uo.id_uo
+                  INTO v_id_uo
+                  FROM orga.tfuncionario f
+                  inner join segu.tusuario usu on usu.id_persona = f.id_persona
+                  inner join orga.tuo_funcionario func on func.id_funcionario = f.id_funcionario
+                  inner join orga.tuo uo on uo.estado_reg='activo' and uo.id_uo = tes.f_get_uo_gerencia_proceso(func.id_uo,null::integer,null::date)
+                  WHERE usu.id_usuario= p_id_usuario;
+
+                  IF v_historico =  'si' THEN
+                     v_strg_sol = 'DISTINCT(sol.id_solicitud)';
+                     v_strg_obs = '''---''::text';
+                  ELSE
+                     v_strg_sol = 'sol.id_solicitud';
+                     v_strg_obs = 'ew.obs';
+                  END IF;
+
+            --raise exception  'llega %', v_id_uo;
+             v_inner = '   inner join wf.testado_wf ew on ew.id_proceso_wf = sol.id_proceso_wf
+                           inner JOIN orga.tuo_funcionario uof on uof.id_funcionario = sol.id_funcionario and uof.tipo = ''oficial'' and uof.estado_reg = ''activo'' and (current_date <= uof.fecha_finalizacion or  uof.fecha_finalizacion is null)
+			               inner JOIN orga.tuo tuo on tuo.id_uo = tes.f_get_uo_gerencia_proceso(uof.id_uo,null::integer,null::date)  ';
+
+             v_filtro = ' tuo.id_uo = '||v_id_uo||'  and  ';
+
+
+
+            END IF;
+            --
+
 
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='select count('||v_strg_sol||')
