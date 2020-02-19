@@ -193,7 +193,7 @@ BEGIN
                   INTO v_id_uo
                   FROM orga.tfuncionario f
                   inner join segu.tusuario usu on usu.id_persona = f.id_persona
-                  inner join orga.tuo_funcionario func on func.id_funcionario = f.id_funcionario
+                  inner join orga.tuo_funcionario func on func.id_funcionario = f.id_funcionario and func.estado_reg = 'activo'
                   inner join orga.tuo uo on uo.estado_reg='activo' and uo.id_uo = tes.f_get_uo_gerencia_proceso(func.id_uo,null::integer,null::date)
                   WHERE usu.id_usuario= p_id_usuario;
 
@@ -443,7 +443,7 @@ BEGIN
                   INTO v_id_uo
                   FROM orga.tfuncionario f
                   inner join segu.tusuario usu on usu.id_persona = f.id_persona
-                  inner join orga.tuo_funcionario func on func.id_funcionario = f.id_funcionario
+                  inner join orga.tuo_funcionario func on func.id_funcionario = f.id_funcionario and func.estado_reg = 'activo'
                   inner join orga.tuo uo on uo.estado_reg='activo' and uo.id_uo = tes.f_get_uo_gerencia_proceso(func.id_uo,null::integer,null::date)
                   WHERE usu.id_usuario= p_id_usuario;
 
