@@ -5750,3 +5750,7 @@ select pxp.f_insert_testructura_gui ('CONFORM400', 'ADQ');
 select pxp.f_insert_testructura_gui ('CONFORM500', 'ADQ');
 select pxp.f_insert_testructura_gui ('CONFINPAG', 'ADQ');
 /***********************************F-DEP-FEA-ADQ-0-07/11/2018****************************************/
+/***********************************I-DEP-BVP-ADQ-0-19/02/2020****************************************/
+ALTER TABLE adq.tsolicitud
+  ALTER COLUMN presupuesto_aprobado SET DEFAULT 'verificar';
+  /***********************************I-DEP-BVP-ADQ-0-19/02/2018****************************************/

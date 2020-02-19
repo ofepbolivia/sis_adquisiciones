@@ -261,7 +261,19 @@ header("content-type: text/javascript; charset=UTF-8");
 
         sigEstado:function(){
             var rec=this.sm.getSelected();
-            this.mostrarWizard(rec);
+            if (this.nombreVista == 'solicitudvbpoa' && rec.data.codigo_poa == null){
+                Ext.Msg.show({
+                    title:'<h1 style="font-size:15px;">Aviso!</h1>',
+                    msg: '<p style="font-weight:bold; font-size:12px;">Es necesario registrar el codigo poa previamente</p>',
+                    buttons: Ext.Msg.OK,
+                    width:450,
+                    height:200,
+                    icon: Ext.MessageBox.WARNING,
+                    scope:this
+                });
+            }else {
+                this.mostrarWizard(rec);
+            }
 
 
         },

@@ -359,7 +359,8 @@ p_hstore->'id_solicitud'
                   --modifca bandera de comprometido  
                    update adq.tsolicitud  s set 
                         presu_comprometido =  'si',
-                        fecha_apro = now()
+                        fecha_apro = now(),
+                        presupuesto_aprobado = 'aprobado'
                    where id_solicitud = p_id_solicitud;
              END IF;
              
@@ -405,7 +406,8 @@ p_hstore->'id_solicitud'
                   --modifca bandera de comprometido  
                    update adq.tsolicitud  s set 
                         presu_comprometido =  'si',
-                        fecha_apro = now()
+                        fecha_apro = now(),
+                        presupuesto_aprobado = 'aprobado'
                    where id_solicitud = p_id_solicitud;
             
             END IF; 

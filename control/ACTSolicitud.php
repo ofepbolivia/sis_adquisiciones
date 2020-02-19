@@ -449,12 +449,19 @@ class ACTSolicitud extends ACTbase
 
         //agrupa el detalle de la solcitud por centros de costos y partidas
 
-        if ($sw_cat["valor"] == 'si') {
-            //si la categoria esta habilita tenemos que agrupar la verificacion presupeustaria por categoria
-            $solicitudDetAgrupado = $this->groupArray($resultSolicitudDet->getDatos(), 'codigo_partida', 'id_categoria_prog', $datosSolicitud[0]['id_moneda'], $datosSolicitud[0]['estado'], $onlyData);
-        } else {
-            //de lo contrario agrupamos por centro de costo
+        if( $datosSolicitud[0]['fecha_reg'] >= '2020-01-01') {
             $solicitudDetAgrupado = $this->groupArray($resultSolicitudDet->getDatos(), 'codigo_partida', 'desc_centro_costo', $datosSolicitud[0]['id_moneda'], $datosSolicitud[0]['estado'], $onlyData);
+        }else{
+
+            if ($sw_cat["valor"] == 'si') {
+                //si la categoria esta habilita tenemos que agrupar la verificacion presupeustaria por categoria
+                $solicitudDetAgrupado = $this->groupArray($resultSolicitudDet->getDatos(), 'codigo_partida', 'id_categoria_prog', $datosSolicitud[0]['id_moneda'], $datosSolicitud[0]['estado'], $onlyData);
+            } else {
+                //de lo contrario agrupamos por centro de costo
+                $solicitudDetAgrupado = $this->groupArray($resultSolicitudDet->getDatos(), 'codigo_partida', 'desc_centro_costo', $datosSolicitud[0]['id_moneda'], $datosSolicitud[0]['estado'], $onlyData);
+            }
+
+
         }
 
         $solicitudDetDataSource = new DataSource();
@@ -603,6 +610,14 @@ class ACTSolicitud extends ACTbase
                     $arrayResp[$cont_grup]["presu_verificado"] = $resultSolicitud->datos["presu_verificado"];
                     $arrayResp[$cont_grup]["total_presu_verificado"] = $total_pre;
                     $arrayResp[$cont_grup]["grup_desc_centro_costo"] = $grup_desc_centro_costo;
+
+                    $this->objParam1 = new CTParametro(null, null, null);
+                    $this->objParam1->addParametro('id_presupuesto', $value_det["id_presupuesto"]);
+                    $this->objParam1->addParametro('id_partida', $value_det["id_partida"]);
+                    $this->objFunc1 = $this->create('sis_presupuestos/MODPresupuesto');
+                    $resultSolicitud1 = $this->objFunc1->capturaPresupuesto();
+
+                    $arrayResp[$cont_grup]["captura_presupuesto"] = $resultSolicitud1->datos["captura_presupuesto"];
                     $cont_grup++;
 
 

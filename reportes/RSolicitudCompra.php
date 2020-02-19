@@ -564,7 +564,7 @@ Class RSolicitudCompra extends Report {
              $pdf-> MultiRow($RowArray,false,0); 
             
             //chequear disponibilidad
-            
+
             $estado_sin_presupuesto = array("borrador", "pendiente", "vbgerencia", "vbpresupuestos");
 	 	    if (in_array($this->getDataSource()->getParameter('estado'), $estado_sin_presupuesto)){
                 //verifica la disponibilidad de presupeusto para el  agrupador     
@@ -643,6 +643,7 @@ Class RSolicitudCompra extends Report {
             $pdf->tablealigns=$conf_det2_tablealigns;
             $pdf->tablenumbers=$conf_det2_tablenumbers;
             $pdf->tableborders=$conf_tableborders;
+
             
             foreach ($row['groupeddata'] as $solicitudDetalle) {
 
@@ -650,8 +651,8 @@ Class RSolicitudCompra extends Report {
                             <td style="text-align: justify;">'.$solicitudDetalle['desc_concepto_ingas'].'</td>
                             <td>'.stripcslashes(nl2br(htmlentities($solicitudDetalle['descripcion']))).'</td>
                             <td style="text-align: center;">'.$solicitudDetalle['cantidad'].'</td>
-                            <td>'.$solicitudDetalle['precio_unitario'].'</td>
-                            <td>'.$solicitudDetalle['precio_total'].'</td>
+                            <td style="text-align: right;">'.number_format($solicitudDetalle['precio_unitario'],2,',','.').'</td>
+                            <td style="text-align: right;">'.number_format($solicitudDetalle['precio_total'],2,',','.').'</td>
                          </tr>
                         ';
                 /*$RowArray = array(
@@ -675,13 +676,32 @@ Class RSolicitudCompra extends Report {
            $pdf->tablealigns=$conf_tp_tablealigns;
            $pdf->tablenumbers=$conf_tp_tablenumbers;
            $pdf->tableborders=$conf_tp_tableborders;
+
+
+            $saldo_comprometer = (double) $row['captura_presupuesto'];
+
+            $dif = $saldo_comprometer -  $totalRef;
+
             $table.='<tr>
-                            <td colspan="3" align="center">TOTAL</td>
+                            <td colspan="3" align="center"><b>TOTAL</b></td>
                             
-                            <td>('.$this->getDataSource()->getParameter('desc_moneda').')</td>
-                            <td>'.number_format ($totalRef,2).'</td>
-                     </tr>
-                        ';
+                            <td style="font-weight: bold">('.$this->getDataSource()->getParameter('desc_moneda').')</td>
+                            <td style="text-align: right; font-weight: bold">'.number_format ($totalRef,2, ',', '.').'</td>
+                     </tr>';
+            if ($disponibilida == "NO DISPONIBLE") {
+                $table .= '                     
+                         <tr>
+                                <td colspan="3" align="center"></td>
+                                <td style="text-align: right; color:red;">Saldo Disponible</td>
+                                <td style="text-align: right; color:red;">' . number_format($saldo_comprometer, 2, ',', '.') . '</td>                                
+                         </tr>
+                         <tr>
+                                <td colspan="3" align="center"></td>
+                                <td style="text-align: right; color:red;">Diferencia</td>
+                                <td style="text-align: right; color:red;">' . number_format($dif, 2, ',', '.') . '</td>                                                                
+                         </tr>';
+            }
+
            /*$RowArray = array(
                         'precio_unitario' => '('.$this->getDataSource()->getParameter('desc_moneda').')',
                         'precio_total' => $totalRef

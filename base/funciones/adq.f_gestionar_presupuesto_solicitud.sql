@@ -484,11 +484,13 @@ BEGIN
                                             par.codigo,
                                             par.nombre_partida,
                                             p.codigo_cc,
-                                           pxp.aggarray(p.id_centro_costo) AS id_centro_costos 
+                                           pxp.aggarray(p.id_centro_costo) AS id_centro_costos,
+                                           cat.codigo_categoria
                                           FROM  adq.tsolicitud s 
                                           INNER JOIN adq.tsolicitud_det sd on s.id_solicitud = sd.id_solicitud
                                           inner join pre.tpartida par on par.id_partida = sd.id_partida
                                           inner join pre.vpresupuesto_cc   p  on p.id_centro_costo = sd.id_centro_costo and sd.estado_reg = 'activo'
+                                          inner join pre.vcategoria_programatica cat on cat.id_categoria_programatica =p.id_categoria_prog
                                           WHERE  sd.id_solicitud = p_id_solicitud_compra
                                                  and sd.estado_reg = 'activo' 
                                                  and sd.cantidad > 0
@@ -502,7 +504,8 @@ BEGIN
                                           s.id_moneda,
                                           par.codigo,
                                           par.nombre_partida,
-                                           p.codigo_cc ) 
+                                          p.codigo_cc,
+                                          cat.codigo_categoria)
                                       LOOP
                                              
                                           select  
@@ -520,7 +523,7 @@ BEGIN
                                                                     
                                                                     
                                           IF   v_resp_pre = 'false' THEN        
-                                               v_mensage_error = v_mensage_error||format('Presupuesto:  %s, partida (%s) %s <BR/>', v_registros.codigo_cc, v_registros.codigo,v_registros.nombre_partida);    
+                                               v_mensage_error = v_mensage_error||format(' Categoria Programatica:  %s, Partida: %s - %s , comuniquese con la unidad de presupuestos para solicitar una modificacion presupuestaria. <BR/>', v_registros.codigo_categoria, v_registros.codigo,v_registros.nombre_partida);
                                                v_sw_error = true;
                                           
                                           END IF;                         
@@ -727,7 +730,7 @@ BEGIN
                                                                         
                                                                         
                                             IF   v_resp_pre = 'false' THEN        
-                                                v_mensage_error = v_mensage_error||format('Presupuesto:  %s, partida (%s) %s <BR/>', v_registros.codigo_cc, v_registros.codigo,v_registros.nombre_partida);    
+                                                v_mensage_error = v_mensage_error||format('Presupuesto:  %s, partida (%s) %s <BR/> Comuniquese con la unidad de presupuestos para solicitar una modificacion presupuestaria.', v_registros.codigo_cc, v_registros.codigo,v_registros.nombre_partida);
                                                 v_sw_error = true;
                                                     
                                             END IF;                         
