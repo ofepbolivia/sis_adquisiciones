@@ -514,6 +514,7 @@ BEGIN
                                                 v_id_centro_costo
                                           from  adq.tsolicitud_det sd
                                           where  sd.id_solicitud = p_id_solicitud_compra
+                                          and sd.estado_reg = 'activo'
                                           limit 1 offset 0;   
                                             
                                           v_resp_pre = pre.f_verificar_presupuesto_partida ( v_registros.id_centro_costos[1],
@@ -648,7 +649,8 @@ BEGIN
                                             INTO
                                                 v_id_centro_costo
                                           from  adq.tsolicitud_det sd
-                                          where  sd.id_solicitud = p_id_solicitud_compra;   
+                                          where  sd.id_solicitud = p_id_solicitud_compra
+                                          and sd.estado_reg = 'activo';
                                             
                                           v_resp_pre = pre.f_verificar_presupuesto_partida ( v_id_centro_costo,
                                                                     v_registros.id_partida,
@@ -721,7 +723,8 @@ BEGIN
                                                 INTO
                                                     v_id_centro_costo
                                             from  adq.tsolicitud_det sd
-                                            where  sd.id_solicitud = p_id_solicitud_compra;   
+                                            where  sd.id_solicitud = p_id_solicitud_compra
+                                            and sd.estado_reg = 'activo';
                                                 
                                             v_resp_pre = pre.f_verificar_presupuesto_partida_centro_costo(v_id_centro_costo,
                                                                         v_registros.id_partida,
