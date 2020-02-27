@@ -57,6 +57,16 @@ class MODProveedor extends MODbase{
         $this->captura('telf_instit','varchar');
 		$this->captura('id_beneficiario','varchar');
 
+		$this->captura('condicion','varchar');
+		$this->captura('actividad','varchar');
+		$this->captura('num_proveedor','int4');
+
+		$this->captura('nombre_persona','varchar');
+		$this->captura('apellido_paterno','varchar');
+		$this->captura('apellido_materno','varchar');
+		$this->captura('codigo_telf','varchar');
+		$this->captura('codigo_telf_institucion','varchar');
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		//echo $this->consulta;exit;
@@ -98,7 +108,10 @@ class MODProveedor extends MODbase{
 		$this->setParametro('id_lugar','id_lugar','int4');
   
 		$this->setParametro('register','register','varchar');
-		$this->setParametro('nombre','nombre','varchar');
+
+		//$this->setParametro('nombre','nombre','varchar');
+		$this->setParametro('nombre_persona','nombre_persona','varchar');
+
 		$this->setParametro('apellido_paterno','apellido_paterno','varchar');
 		$this->setParametro('apellido_materno','apellido_materno','varchar');
 		$this->setParametro('ci','ci','int4');
@@ -114,6 +127,14 @@ class MODProveedor extends MODbase{
 		$this->setParametro('contacto','contacto','text');
 
         $this->setParametro('tipo_prov','tipo_prov','varchar');
+
+		$this->setParametro('condicion','condicion','varchar');
+		$this->setParametro('actividad','actividad','varchar');
+		$this->setParametro('num_proveedor','num_proveedor','int4');
+		$this->setParametro('codigo_telf','codigo_telf','varchar');
+		$this->setParametro('codigo_telf_institucion','codigo_telf_institucion','varchar');
+
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -157,12 +178,14 @@ class MODProveedor extends MODbase{
 		$this->setParametro('id_lugar','id_lugar','int4');
   
 		$this->setParametro('register','register','varchar');
-		$this->setParametro('nombre','nombre','varchar');
+		//27-02-2020 (may) se comenta porq nodebe modificarsenombre y apellidos
+		/*$this->setParametro('nombre','nombre','varchar');
 		$this->setParametro('apellido_paterno','apellido_paterno','varchar');
-		$this->setParametro('apellido_materno','apellido_materno','varchar');
+		$this->setParametro('apellido_materno','apellido_materno','varchar');*/
 		$this->setParametro('ci','ci','int4');
 		$this->setParametro('correo','correo','varchar');
-		$this->setParametro('celular1','celular1','bigint');
+		//$this->setParametro('celular1','celular1','bigint');
+		$this->setParametro('celular1','celular1','varchar');
 		$this->setParametro('celular2','celular2','bigint');
 		$this->setParametro('telefono1','telefono1','bigint');
 		$this->setParametro('telefono2','telefono2','bigint');
@@ -173,6 +196,12 @@ class MODProveedor extends MODbase{
 		$this->setParametro('contacto','contacto','text');
 
 		$this->setParametro('tipo_prov','tipo_prov','varchar');
+
+		$this->setParametro('condicion','condicion','varchar');
+		$this->setParametro('actividad','actividad','varchar');
+		$this->setParametro('num_proveedor','num_proveedor','int4');
+		$this->setParametro('codigo_telf','codigo_telf','varchar');
+		$this->setParametro('codigo_telf_institucion','codigo_telf_institucion','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

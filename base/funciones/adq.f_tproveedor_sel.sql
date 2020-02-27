@@ -89,11 +89,23 @@ BEGIN
                         (person.telefono1||''  ''||person.telefono2)::varchar as telf_persona,
                         (instit.celular1||''  ''||instit.celular2)::varchar as cel_instit,
                         (instit.telefono1||''  ''||instit.telefono2)::varchar as telf_instit,
-                        provee.id_beneficiario
+                        provee.id_beneficiario,
+
+                        provee.condicion,
+                		provee.actividad,
+                		provee.num_proveedor,
+
+                        person.nombre as nombre_persona,
+                        person.ap_paterno as apellido_paterno,
+                        person.ap_materno as apellido_materno,
+                        per.codigo_telf,
+                        instit.codigo_telf_institucion
+
                         from param.tproveedor provee
 						inner join segu.tusuario usu1 on usu1.id_usuario = provee.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = provee.id_usuario_mod
                         left join segu.vpersona2 person on person.id_persona=provee.id_persona
+                        left join segu.tpersona per on per.id_persona = person.id_persona
                         left join param.tinstitucion instit on instit.id_institucion=provee.id_institucion
                         left join param.tlugar lug on lug.id_lugar = provee.id_lugar
 				        where '||v_where||' and ';

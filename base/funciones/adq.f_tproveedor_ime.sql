@@ -89,23 +89,50 @@ BEGIN
                 if v_parametros.register = 'before_registered' then
 					--RAISE EXCEPTION 'salida: %',v_codigo_gen;
                     insert into param.tproveedor
-                    (id_usuario_reg, 				fecha_reg,					estado_reg,
-                     id_institucion,				id_persona,					tipo,
-                     numero_sigma,					codigo,						nit,
-                     id_lugar,						rotulo_comercial, 			contacto)
+                    (id_usuario_reg,
+                    fecha_reg,
+                    estado_reg,
+                    id_institucion,
+                    id_persona,
+                    tipo,
+                    numero_sigma,
+                    codigo,
+                    nit,
+                    id_lugar,
+                    rotulo_comercial,
+                    contacto,
+
+                    condicion,
+                    actividad,
+                    num_proveedor
+
+                    )
                     values
-                    (p_id_usuario,					now(),						'activo',
-                    v_parametros.id_institucion,	v_parametros.id_persona,	case when v_parametros.tipo_prov <>'' THEN
+                    (
+                    p_id_usuario,
+                    now(),
+                    'activo',
+                    v_parametros.id_institucion,
+                    v_parametros.id_persona,
+                    case when v_parametros.tipo_prov <>'' THEN v_parametros.tipo_prov
+                											when v_parametros.id_persona is NULL THEN
 
-                        																 v_parametros.tipo_prov
-                																                            when v_parametros.id_persona is NULL THEN
+                                                                    'institucion'
+                                                             else
+                                                                    'persona'
+                                                            end,
+                    v_parametros.numero_sigma,
+                    v_codigo_gen,
+                    v_parametros.nit,
+                    v_parametros.id_lugar,
+                    v_parametros.rotulo_comercial,
+                    v_parametros.contacto,
 
-                                                                                    'institucion'
-                                                                             else
-                                                                                    'persona'
-                                                                            end,
-                    v_parametros.numero_sigma,		v_codigo_gen,		v_parametros.nit,
-                    v_parametros.id_lugar,			v_parametros.rotulo_comercial,	v_parametros.contacto)RETURNING id_proveedor into v_id_proveedor;
+                    v_parametros.condicion,
+                    v_parametros.actividad,
+                    v_parametros.num_proveedor
+
+                    )RETURNING id_proveedor into v_id_proveedor;
                 else
                     if (v_parametros.tipo = 'persona')then
                         insert into segu.tpersona (
@@ -122,9 +149,11 @@ BEGIN
                                    --extension,
                                    genero,
                                    fecha_nacimiento,
-                                   direccion)
+                                   direccion,
+                                   codigo_telf)
                          values(
-                                v_parametros.nombre,
+                                --v_parametros.nombre,
+                                v_parametros.nombre_persona,
                                 v_parametros.apellido_paterno,
                                 v_parametros.apellido_materno,
                                 v_parametros.ci,
@@ -137,7 +166,8 @@ BEGIN
                                 --v_parametros.extension,
                                 v_parametros.genero,
                                 v_parametros.fecha_nacimiento,
-                                v_parametros.direccion)
+                                v_parametros.direccion,
+                                v_parametros.codigo_telf)
 
                         RETURNING id_persona INTO v_id_persona;
                     else
@@ -162,8 +192,11 @@ BEGIN
                         fecha_reg,
                         id_usuario_mod,
                         fecha_mod,
-                        codigo
+                        codigo,
+                        codigo_telf_institucion
+
                         ) values(
+
                         v_parametros.fax,
                         'activo',
                         v_parametros.casilla,
@@ -183,29 +216,50 @@ BEGIN
                         now(),
                         null,
                         null,
-                        v_parametros.codigo
+                        v_parametros.codigo,
+                        v_parametros.codigo_telf_institucion
 
                         )RETURNING id_institucion into v_id_institucion;
                     end if;
 
                         insert into param.tproveedor
-                        (id_usuario_reg, 				fecha_reg,					estado_reg,
-                         id_institucion,				id_persona,					tipo,
-                         numero_sigma,					codigo,						nit,
-                         id_lugar,						rotulo_comercial,			contacto)
+                        (id_usuario_reg,
+                        fecha_reg,
+                        estado_reg,
+                        id_institucion,
+                        id_persona,
+                        tipo,
+                        numero_sigma,
+                        codigo,
+                        nit,
+                        id_lugar,
+                        rotulo_comercial,
+                        contacto,
+                        num_proveedor
+                        )
                         values
-                        (p_id_usuario,					now(),						'activo',
+                        (
+                        p_id_usuario,
+                        now(),
+                        'activo',
+                        v_id_institucion,
+                        v_id_persona,
+                        case when v_parametros.tipo_prov <>'' THEN
+                                  v_parametros.tipo_prov
+                             when v_id_persona is NULL THEN
+                                  'institucion'
+                             else
+                                  'persona'
+                        end,
+                        v_parametros.numero_sigma,
+                        v_codigo_gen,
+                        v_parametros.nit,
+                        v_parametros.id_lugar,
+                        v_parametros.rotulo_comercial,
+                        v_parametros.contacto,
+                        v_parametros.num_proveedor
 
-                        v_id_institucion,				v_id_persona,			case when v_parametros.tipo_prov <>'' THEN
-                                                                            v_parametros.tipo_prov
-                                                                       when v_id_persona is NULL THEN
-                                                                            'institucion'
-                                                                       else
-                                                                            'persona'
-                                                                  end,
-
-                        v_parametros.numero_sigma,		v_codigo_gen,		v_parametros.nit,
-                        v_parametros.id_lugar,			v_parametros.rotulo_comercial, v_parametros.contacto)RETURNING id_proveedor into v_id_proveedor;
+                        )RETURNING id_proveedor into v_id_proveedor;
                 --end if;
             end if;
 
@@ -266,25 +320,37 @@ BEGIN
             fecha_mod = now(),
             rotulo_comercial = v_parametros.rotulo_comercial,
             contacto = v_parametros.contacto,
-            tipo = v_parametros.tipo_prov
+            tipo = v_parametros.tipo_prov,
+
+            condicion = v_parametros.condicion,
+            actividad = v_parametros.actividad,
+            num_proveedor = v_parametros.num_proveedor
+
             where id_proveedor=v_parametros.id_proveedor;
 
             update param.tinstitucion set
+            direccion = v_parametros.direccion_institucion,
             email2=v_parametros.email2_institucion,
             email1=v_parametros.email1_institucion,
             pag_web=v_parametros.pag_web,
             telefono1=v_parametros.telefono1_institucion,
             telefono2=v_parametros.telefono2_institucion,
             celular1=v_parametros.celular1_institucion,
-            celular2=v_parametros.celular2_institucion
+            celular2=v_parametros.celular2_institucion,
+            codigo_telf_institucion = v_parametros.codigo_telf_institucion
+
             where id_institucion=v_parametros.id_institucion;
 
             update segu.tpersona SET
+            ci = v_parametros.ci,
             correo=v_parametros.correo,
             celular1=v_parametros.celular1,
             telefono1=v_parametros.telefono1,
             telefono2=v_parametros.telefono2,
-            celular2=v_parametros.celular2
+            celular2=v_parametros.celular2,
+            direccion = v_parametros.direccion,
+            codigo_telf = v_parametros.codigo_telf
+
             where id_persona=v_parametros.id_persona;
 
 			--Definicion de la respuesta

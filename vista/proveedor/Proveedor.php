@@ -61,11 +61,13 @@ header("content-type: text/javascript; charset=UTF-8");
                         this.getComponente('rotulo_comercial').setValue(r.data.nombre_completo1);
                     }
 
-                    this.getComponente('nombre').setDisabled(true);
+                    //this.getComponente('nombre').setDisabled(true);
+                    this.getComponente('nombre_persona').setDisabled(true);
                     this.getComponente('apellido_paterno').setDisabled(true);
                     this.getComponente('apellido_materno').setDisabled(true);
                     this.getComponente('ci').setValue(r.data.ci);
-                    this.getComponente('nombre').setValue(r.data.nombre);
+                    //this.getComponente('nombre').setValue(r.data.nombre);
+                    this.getComponente('nombre_persona').setValue(r.data.nombre);
                     this.getComponente('apellido_paterno').setValue(r.data.ap_paterno);
                     this.getComponente('fecha_nacimiento').setValue(r.data.fecha_nacimiento);
                     this.getComponente('direccion').setValue(r.data.direccion);
@@ -171,7 +173,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {
                     config:{
                         name: 'codigo',
-                        fieldLabel: 'codigo',
+                        fieldLabel: 'Código',
                         allowBlank: true,
                         anchor: '100%',
                         gwidth: 100,
@@ -180,6 +182,25 @@ header("content-type: text/javascript; charset=UTF-8");
                     },
                     type:'TextField',
                     filters:{pfiltro:'provee.codigo',type:'string'},
+                    id_grupo:0,
+                    grid:true,
+                    form:true,
+                    bottom_filter : true
+                },
+
+                {
+                    config:{
+                        name: 'num_proveedor',
+                        fieldLabel: 'Número de Proveedor',
+                        allowBlank: true,
+                        anchor: '100%',
+                        gwidth: 100,
+                        maxLength:50,
+                        //readOnly :true,
+                        style: 'color : blue;'
+                    },
+                    type:'NumberField',
+                    filters:{pfiltro:'provee.num_proveedor',type:'string'},
                     id_grupo:0,
                     grid:true,
                     form:true,
@@ -383,7 +404,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     config:{
                         name: 'id_lugar',
                         fieldLabel: 'Lugar',
-                        allowBlank: false,
+                        allowBlank: true,
                         emptyText:'Lugar...',
                         store:new Ext.data.JsonStore(
                             {
@@ -423,6 +444,91 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 {
                     config:{
+                        name: 'id_lugar',
+                        fieldLabel: 'Localidad',
+                        allowBlank: true,
+                        emptyText:'Lugar...',
+                        store:new Ext.data.JsonStore(
+                            {
+                                url: '../../sis_parametros/control/Lugar/listarLugar',
+                                id: 'id_lugar',
+                                root: 'datos',
+                                sortInfo:{
+                                    field: 'nombre',
+                                    direction: 'ASC'
+                                },
+                                totalProperty: 'total',
+                                fields: ['id_lugar','id_lugar_fk','codigo','nombre','tipo','sw_municipio','sw_impuesto','codigo_largo'],
+                                // turn on remote sorting
+                                remoteSort: true,
+                                // baseParams:{tipos:"''departamento'',''pais'',''localidad''",par_filtro:'nombre'}
+                                baseParams:{tipos:"''localidad''",par_filtro:'nombre'}
+                            }),
+                        valueField: 'id_lugar',
+                        displayField: 'nombre',
+                        gdisplayField:'lugar',
+                        hiddenName: 'id_lugar',
+                        triggerAction: 'all',
+                        lazyRender:true,
+                        mode:'remote',
+                        pageSize:50,
+                        queryDelay:500,
+                        anchor:"100%",
+                        gwidth:220,
+                        forceSelection:true,
+                        minChars:2,
+                        renderer:function (value, p, record){return String.format('{0}', record.data['lugar']);}
+                    },
+                    type:'ComboBox',
+                    filters:{pfiltro:'lug.nombre',type:'string'},
+                    id_grupo:0,
+                    grid:true,
+                    form:true
+                },
+                {
+                    config:{
+                        name: 'id_lugar',
+                        fieldLabel: 'Provincia',
+                        allowBlank: true,
+                        emptyText:'Lugar...',
+                        store:new Ext.data.JsonStore(
+                            {
+                                url: '../../sis_parametros/control/Lugar/listarLugar',
+                                id: 'id_lugar',
+                                root: 'datos',
+                                sortInfo:{
+                                    field: 'nombre',
+                                    direction: 'ASC'
+                                },
+                                totalProperty: 'total',
+                                fields: ['id_lugar','id_lugar_fk','codigo','nombre','tipo','sw_municipio','sw_impuesto','codigo_largo'],
+                                // turn on remote sorting
+                                remoteSort: true,
+                                baseParams:{tipos:"''provincia''",par_filtro:'nombre'}
+                            }),
+                        valueField: 'id_lugar',
+                        displayField: 'nombre',
+                        gdisplayField:'lugar',
+                        hiddenName: 'id_lugar',
+                        triggerAction: 'all',
+                        lazyRender:true,
+                        mode:'remote',
+                        pageSize:50,
+                        queryDelay:500,
+                        anchor:"100%",
+                        gwidth:220,
+                        forceSelection:true,
+                        minChars:2,
+                        renderer:function (value, p, record){return String.format('{0}', record.data['lugar']);}
+                    },
+                    type:'ComboBox',
+                    filters:{pfiltro:'lug.nombre',type:'string'},
+                    id_grupo:0,
+                    grid:true,
+                    form:true
+                },
+                {
+                    config:{
                         name: 'contacto',
                         fieldLabel: 'Contacto',
                         allowBlank: true,
@@ -435,6 +541,60 @@ header("content-type: text/javascript; charset=UTF-8");
                     grid:true,
                     form:true
                 },
+
+                {
+                    config:{
+                        name: 'condicion',
+                        fieldLabel: 'Condición Frente al IVA',
+                        allowBlank: true,
+                        anchor: '100%',
+                        gwidth: 100,
+                        typeAhead:true,
+                        triggerAction:'all',
+                        mode:'local',
+                        store:['Responsable Inscripto','Monotributo', 'Exento']
+                    },
+                    type:'ComboBox',
+                    filters:{pfiltro:'provee.condicion',type:'string'},
+                    id_grupo:0,
+                    grid:false,
+                    form:true
+                },
+                {
+                    config:{
+                        name: 'actividad',
+                        fieldLabel: 'Actividad',
+                        allowBlank: true,
+                        anchor: '100%',
+                        gwidth: 100,
+                        typeAhead:true,
+                        triggerAction:'all',
+                        mode:'local',
+                        store:['Administrativo', 'Operativa']
+                    },
+                    type:'ComboBox',
+                    filters:{pfiltro:'provee.actividad',type:'string'},
+                    id_grupo:0,
+                    grid:false,
+                    form:true
+                },
+
+                {
+                    config:{
+                        name: 'desc_dir_proveedor',
+                        fieldLabel: 'Dirección',
+                        allowBlank: true,
+                        anchor: '100%',
+                        gwidth: 200,
+                        maxLength:50
+                    },
+                    type:'Field',
+                    filters:{pfiltro:'instit.direccion#person.direccion',type:'string'},
+                    id_grupo:2,
+                    grid:true,
+                    form:false
+                },
+
                 {
                     config:{
                         name: 'cel_persona',
@@ -522,7 +682,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 {
                     config:{
-                        name: 'nombre',
+                        //name: 'nombre',
+                        name: 'nombre_persona',
                         fieldLabel: 'Nombre',
                         allowBlank: true,
                         anchor: '100%',
@@ -530,7 +691,8 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength:50
                     },
                     type:'TextField',
-                    filters:{pfiltro:'per.nombre',type:'string'},
+                    //filters:{pfiltro:'per.nombre',type:'string'},
+                    filters:{pfiltro:'person.nombre_persona',type:'string'},
                     id_grupo:1,
                     grid:false,
                     form:true
@@ -627,6 +789,38 @@ header("content-type: text/javascript; charset=UTF-8");
                     grid:false,
                     form:true
                 },
+
+                {
+                    config:{
+                        //name: 'casilla',
+                        name: 'codigo_telf',
+                        fieldLabel: 'Código Télefono',
+                        allowBlank: true,
+                        anchor: '100%',
+                        gwidth: 100,
+                        maxLength:50
+                    },
+                    type:'TextField',
+                    //type:'NumberField',
+                    id_grupo:1,
+                    grid:false,
+                    form:true
+                },
+                {
+                    config:{
+                        name: 'codigo_telf_institucion',
+                        fieldLabel: 'Código Télefono',
+                        allowBlank: true,
+                        anchor: '100%',
+                        gwidth: 100,
+                        maxLength:50
+                    },
+                    type:'NumberField',
+                    id_grupo:2,
+                    grid:false,
+                    form:true
+                },
+
                 {
                     config:{
                         name: 'telefono1',
@@ -660,7 +854,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {
                     config:{
                         name: 'genero',
-                        fieldLabel: 'Genero',
+                        fieldLabel: 'Género',
                         allowBlank: true,
                         anchor: '100%',
                         gwidth: 100,
@@ -695,7 +889,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {
                     config:{
                         name: 'direccion',
-                        fieldLabel: 'Direccion',
+                        fieldLabel: 'Dirección',
                         allowBlank: true,
                         anchor: '100%',
                         gwidth: 100,
@@ -766,7 +960,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {
                     config:{
                         name: 'telefono1_institucion',
-                        fieldLabel: 'Telefono 1',
+                        fieldLabel: 'Teléfono 1',
                         allowBlank: true,
                         anchor: '100%',
                         gwidth: 100,
@@ -780,7 +974,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {
                     config:{
                         name: 'telefono2_institucion',
-                        fieldLabel: 'Telefono 2',
+                        fieldLabel: 'Teléfono 2',
                         allowBlank: true,
                         anchor: '100%',
                         gwidth: 100,
@@ -914,7 +1108,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {
                     config:{
                         name: 'codigo_banco',
-                        fieldLabel: 'Codigo Banco',
+                        fieldLabel: 'Código Banco',
                         allowBlank: true,
                         anchor: '100%',
                         gwidth: 100,
@@ -971,7 +1165,17 @@ header("content-type: text/javascript; charset=UTF-8");
                 {name:'nombre_proveedor', type: 'string'},'ci', 'desc_dir_proveedor','contacto',
                 'tipo_prov', 'correo', 'email_instit', 'pag_web', 'cel_persona', 'telf_persona',
                 'cel_instit','telf_instit',
-                {name:'id_beneficiario', type: 'string'}
+                {name:'id_beneficiario', type: 'string'},
+
+                {name:'condicion', type: 'string'},
+                {name:'actividad', type: 'string'},
+                'num_proveedor',
+
+                'nombre_persona',
+                'apellido_paterno',
+                'apellido_materno',
+                'codigo_telf',
+                'codigo_telf_institucion'
             ],
             // arrayDefaultColumHidden: ['correo', 'email_instit', 'pag_web', 'cel_persona', 'telf_persona',
             //     'cel_instit','telf_instit'],
@@ -1185,8 +1389,18 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.ocultarGrupo(2);
                     this.unblockGroup(1);
                     this.getComponente('nombre_institucion').allowBlank = true;
-                    this.getComponente('nombre').allowBlank = false;
-                    this.getComponente('apellido_paterno').allowBlank = false;
+
+                    //27-02-2020 (may) se comenta porque no debe modificarsenombre y apellidos
+                    //this.getComponente('nombre').allowBlank = false;
+                    //this.getComponente('apellido_paterno').allowBlank = false;
+                    this.getComponente('nombre_persona').allowBlank = true;
+                    this.getComponente('apellido_paterno').allowBlank = true;
+                    this.getComponente('apellido_materno').allowBlank = true;
+
+                    // this.getComponente('nombre').setDisabled(true);
+                    this.getComponente('nombre_persona').setDisabled(true);
+                    this.getComponente('apellido_paterno').setDisabled(true);
+                    this.getComponente('apellido_materno').setDisabled(true);
 
 
                     //this.ocultarComponente(this.getComponente('tipo'));
