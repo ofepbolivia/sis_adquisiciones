@@ -2,4 +2,4 @@ sis_adquisiciones
 =================
 
 
-Requiere Framework PXP https://github.com/kplian/pxp
+Requiere Framework PXP https://github.com/ofepbolivia/pxp

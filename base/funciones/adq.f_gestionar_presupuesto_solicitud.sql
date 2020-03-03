@@ -19,6 +19,9 @@ $body$
  AUTOR: 		Rensi Arteaga Copari
  FECHA:	        25-06-2013
  COMENTARIOS:	
+ 
+ ISSUE            FECHA:		      AUTOR       DESCRIPCION
+ 0				12/10/2017			RAC			Se adciona verificacion pro tipo de centro de costo, segun configuración de control de partidas
 ***************************************************************************/
 
 DECLARE
@@ -53,13 +56,20 @@ DECLARE
   v_monto_a_revertir_mb  numeric;
   v_ano_1 integer;
   v_ano_2 integer;
-  v_reg_sol				record;
-  va_num_tramite		varchar[];
-  v_mensage_error		varchar;
-  v_sw_error			boolean;
-  v_resp_pre 			varchar;
+  v_reg_sol						record;
+  va_num_tramite				varchar[];
+  v_mensage_error				varchar;
+  v_sw_error					boolean;
+  v_resp_pre 					varchar;  
+ v_pre_verificar_categoria 		varchar;
+ v_pre_verificar_tipo_cc 		varchar;
+ v_control_partida 				varchar;
+ v_consulta						varchar;
+ v_id_centro_costo				integer;
   
-
+ -- bvp 
+  v_llave_control_presupuesto	varchar;
+  v_pre_verificar_tipo_cc_control varchar;
   
 BEGIN
  
@@ -210,73 +220,74 @@ BEGIN
                               sd.precio_ga,
                               s.fecha_soli,
                               s.num_tramite as nro_tramite
-                              
-                              FROM  adq.tsolicitud s 
-                              INNER JOIN adq.tsolicitud_det sd on s.id_solicitud = sd.id_solicitud and sd.estado_reg = 'activo'
-                              inner join pre.tpresupuesto   p  on p.id_centro_costo = sd.id_centro_costo 
-                              WHERE  sd.id_solicitud = p_id_solicitud_compra
+                            FROM  adq.tsolicitud s 
+                            INNER JOIN adq.tsolicitud_det sd on s.id_solicitud = sd.id_solicitud and sd.estado_reg = 'activo'
+                            inner join pre.tpresupuesto   p  on p.id_centro_costo = sd.id_centro_costo 
+                            WHERE  sd.id_solicitud = p_id_solicitud_compra
                                      and sd.estado_reg = 'activo' 
                                      and sd.cantidad > 0 ) LOOP
                                      
-                     IF(v_registros.id_partida_ejecucion is NULL) THEN
-                     
-                        raise exception 'El presupuesto del detalle con el identificador (%)  no se encuntra comprometido',v_registros.id_solicitud_det;
-                     
-                     END IF;
-                     
-                     v_comprometido=0;
-                     v_ejecutado=0;
-                     
+                     IF(v_registros.id_partida_ejecucion is not  NULL) THEN                     
+                       
+                           
+                           v_comprometido=0;
+                           v_ejecutado=0;
+                           
+                                
+                           
+                           SELECT 
+                                 COALESCE(ps_comprometido,0), 
+                                 COALESCE(ps_ejecutado,0)  
+                             into 
+                                 v_comprometido,
+                                 v_ejecutado
+                           FROM pre.f_verificar_com_eje_pag(v_registros.id_partida_ejecucion,v_registros.id_moneda);   --  RAC,  v_id_moneda_base);
+                           
+                           
+                           v_monto_a_revertir = COALESCE(v_comprometido,0) - COALESCE(v_ejecutado,0);  
+                           
+                           
+                          --armamos los array para enviar a presupuestos          
+                          IF v_monto_a_revertir != 0 THEN
+                           
+                              v_i = v_i +1;                
+                             
+                              va_id_presupuesto[v_i] = v_registros.id_presupuesto;
+                              va_id_partida[v_i]= v_registros.id_partida;
+                              va_momento[v_i]	= 2; --el momento 2 con signo positivo es revertir
+                              va_monto[v_i]  = (v_monto_a_revertir)*-1;  -- considera la posibilidad de que a este item se le aya revertido algun monto
+                              va_id_moneda[v_i]  = v_registros.id_moneda; -- RAC,  v_id_moneda_base;
+                              va_id_partida_ejecucion[v_i]= v_registros.id_partida_ejecucion;
+                              va_columna_relacion[v_i]= 'id_solicitud_compra';
+                              va_fk_llave[v_i] = v_registros.id_solicitud;
+                              va_id_solicitud_det[v_i]= v_registros.id_solicitud_det;
+                              va_num_tramite[v_i] = v_reg_sol.num_tramite;
+                              
+                              
+                               -- la fecha de solictud es la fecha de compromiso 
+                              IF  now()  < v_registros.fecha_soli THEN
+                                va_fecha[v_i] = v_registros.fecha_soli::date;
+                              ELSE
+                                 -- la fecha de reversion como maximo puede ser el 31 de diciembre   
+                                 va_fecha[v_i] = now()::date;
+                                 v_ano_1 =  EXTRACT(YEAR FROM  now()::date);
+                                 v_ano_2 =  EXTRACT(YEAR FROM  v_registros.fecha_soli::date);
+                                 
+                                 IF  v_ano_1  >  v_ano_2 THEN
+                                   va_fecha[v_i] = ('31-12-'|| v_ano_2::varchar)::date;
+                                 END IF;
+                              END IF;
+                          
+                              
+                          END IF;
+                          
+                          
+                          v_men_presu = ' comprometido: '||COALESCE(v_comprometido,0)::varchar||'  ejecutado: '||COALESCE(v_ejecutado,0)::varchar||' \n'||v_men_presu;
                           
                      
-                     SELECT 
-                           COALESCE(ps_comprometido,0), 
-                           COALESCE(ps_ejecutado,0)  
-                       into 
-                           v_comprometido,
-                           v_ejecutado
-                     FROM pre.f_verificar_com_eje_pag(v_registros.id_partida_ejecucion,v_registros.id_moneda);   --  RAC,  v_id_moneda_base);
-                     
-                     
-                     v_monto_a_revertir = COALESCE(v_comprometido,0) - COALESCE(v_ejecutado,0);  
-                     
-                     
-                    --armamos los array para enviar a presupuestos          
-                    IF v_monto_a_revertir != 0 THEN
-                     
-                       	v_i = v_i +1;                
-                       
-                        va_id_presupuesto[v_i] = v_registros.id_presupuesto;
-                        va_id_partida[v_i]= v_registros.id_partida;
-                        va_momento[v_i]	= 2; --el momento 2 con signo positivo es revertir
-                        va_monto[v_i]  = (v_monto_a_revertir)*-1;  -- considera la posibilidad de que a este item se le aya revertido algun monto
-                        va_id_moneda[v_i]  = v_registros.id_moneda; -- RAC,  v_id_moneda_base;
-                        va_id_partida_ejecucion[v_i]= v_registros.id_partida_ejecucion;
-                        va_columna_relacion[v_i]= 'id_solicitud_compra';
-                        va_fk_llave[v_i] = v_registros.id_solicitud;
-                        va_id_solicitud_det[v_i]= v_registros.id_solicitud_det;
-                        va_num_tramite[v_i] = v_reg_sol.num_tramite;
-                        
-                        
-                         -- la fecha de solictud es la fecha de compromiso 
-                        IF  now()  < v_registros.fecha_soli THEN
-                          va_fecha[v_i] = v_registros.fecha_soli::date;
-                        ELSE
-                           -- la fecha de reversion como maximo puede ser el 31 de diciembre   
-                           va_fecha[v_i] = now()::date;
-                           v_ano_1 =  EXTRACT(YEAR FROM  now()::date);
-                           v_ano_2 =  EXTRACT(YEAR FROM  v_registros.fecha_soli::date);
-                           
-                           IF  v_ano_1  >  v_ano_2 THEN
-                             va_fecha[v_i] = ('31-12-'|| v_ano_2::varchar)::date;
-                           END IF;
-                        END IF;
-                    
-                        
-                    END IF;
-                    
-                    
-                    v_men_presu = ' comprometido: '||COALESCE(v_comprometido,0)::varchar||'  ejecutado: '||COALESCE(v_ejecutado,0)::varchar||' \n'||v_men_presu;
+                   ELSE  
+                        raise notice 'El presupuesto del detalle con el identificador (%)  no se encuntra comprometido',v_registros.id_solicitud_det;
+                   END IF;
                     
              
              END LOOP;
@@ -447,70 +458,296 @@ BEGIN
        
        ELSIF p_operacion = 'verificar' THEN
         
-         --verifica si tenemos suficiente presupeusto para comprometer
-           v_i = 0;
-           v_mensage_error = '';
-           v_sw_error = false;
+           --verifica si tenemos suficiente presupeusto para comprometer
+          v_i = 0;
+          v_mensage_error = '';
+          v_sw_error = false;
            
-           -- verifica que solicitud       
-          FOR v_registros in (
+           
+          v_pre_verificar_categoria = pxp.f_get_variable_global('pre_verificar_categoria');
+          v_pre_verificar_tipo_cc = pxp.f_get_variable_global('pre_verificar_tipo_cc');
+          v_pre_verificar_tipo_cc_control = pxp.f_get_variable_global('pre_verificar_tipo_cc_control');
+          v_control_partida = 'si'; --por defeto controlamos los monstos por partidas 
           
-                               SELECT
-                           
-                                    sd.id_centro_costo,
-                                    s.id_gestion,
-                                    s.id_solicitud,
-                                    sd.id_partida,
-                                    sum(sd.precio_ga_mb) as precio_ga_mb,
-                                    p.id_presupuesto,
-                                    s.id_moneda,
-                                    sum(sd.precio_ga) as precio_ga,
-                                    par.codigo,
-                                    par.nombre_partida,
-                                    p.codigo_cc
-                                    
-                                                    
-                              FROM  adq.tsolicitud s 
-                              INNER JOIN adq.tsolicitud_det sd on s.id_solicitud = sd.id_solicitud
-                              inner join pre.tpartida par on par.id_partida = sd.id_partida
-                              inner join pre.vpresupuesto_cc   p  on p.id_centro_costo = sd.id_centro_costo and sd.estado_reg = 'activo'
-                              WHERE  sd.id_solicitud = p_id_solicitud_compra
-                                     and sd.estado_reg = 'activo' 
-                                     and sd.cantidad > 0
-                              
-                              group by 
-                              
-                              sd.id_centro_costo,
-                              s.id_gestion,
-                              s.id_solicitud,
-                              sd.id_partida,
-                              p.id_presupuesto,
-                              s.id_moneda,
-                              par.codigo,
-                              par.nombre_partida,
-                              p.codigo_cc) LOOP
-                                     
-                                
-                              v_resp_pre = pre.f_verificar_presupuesto_partida ( v_registros.id_presupuesto,
-                                                        v_registros.id_partida,
-                                                        v_registros.id_moneda,
-                                                        v_registros.precio_ga);
-                                                        
-                                                        
-                              IF   v_resp_pre = 'false' THEN        
-                                   v_mensage_error = v_mensage_error||format('Presupuesto:  %s, partida (%s) %s <BR/>', v_registros.codigo_cc, v_registros.codigo,v_registros.nombre_partida);    
-                                   v_sw_error = true;
-                              
-                              END IF;                         
+          IF   v_pre_verificar_categoria = 'si' THEN
+          
+            		-- verifica  por categoria programatica     
+                      FOR v_registros in (
+                                         SELECT                                   
+                                            p.id_categoria_prog ,
+                                            s.id_gestion,
+                                            s.id_solicitud,
+                                            sd.id_partida,
+                                            sum(sd.precio_ga_mb) as precio_ga_mb,                                   
+                                            s.id_moneda,
+                                            sum(sd.precio_ga) as precio_ga,
+                                            par.codigo,
+                                            par.nombre_partida,
+                                            p.codigo_cc,
+                                           pxp.aggarray(p.id_centro_costo) AS id_centro_costos,
+                                           cat.codigo_categoria
+                                          FROM  adq.tsolicitud s 
+                                          INNER JOIN adq.tsolicitud_det sd on s.id_solicitud = sd.id_solicitud
+                                          inner join pre.tpartida par on par.id_partida = sd.id_partida
+                                          inner join pre.vpresupuesto_cc   p  on p.id_centro_costo = sd.id_centro_costo and sd.estado_reg = 'activo'
+                                          inner join pre.vcategoria_programatica cat on cat.id_categoria_programatica =p.id_categoria_prog
+                                          WHERE  sd.id_solicitud = p_id_solicitud_compra
+                                                 and sd.estado_reg = 'activo' 
+                                                 and sd.cantidad > 0
+                                          
+                                          group by 
+                                          
+                                          p.id_categoria_prog,
+                                          s.id_gestion,
+                                          s.id_solicitud,
+                                          sd.id_partida,                             
+                                          s.id_moneda,
+                                          par.codigo,
+                                          par.nombre_partida,
+                                          p.codigo_cc,
+                                          cat.codigo_categoria)
+                                      LOOP
+                                             
+                                          select  
+                                                sd.id_centro_costo
+                                            INTO
+                                                v_id_centro_costo
+                                          from  adq.tsolicitud_det sd
+                                          where  sd.id_solicitud = p_id_solicitud_compra
+                                          and sd.estado_reg = 'activo'
+                                          limit 1 offset 0;   
+                                            
+                                          v_resp_pre = pre.f_verificar_presupuesto_partida ( v_registros.id_centro_costos[1],
+                                                                    v_registros.id_partida,
+                                                                    v_registros.id_moneda,
+                                                                    v_registros.precio_ga);
+                                                                    
+                                                                    
+                                          IF   v_resp_pre = 'false' THEN        
+                                               v_mensage_error = v_mensage_error||format(' Categoria Programatica:  %s, Partida: %s - %s , comuniquese con la unidad de presupuestos para solicitar una modificacion presupuestaria. <BR/>', v_registros.codigo_categoria, v_registros.codigo,v_registros.nombre_partida);
+                                               v_sw_error = true;
+                                          
+                                          END IF;                         
+                               
+                         
+                         
+                         END LOOP;
+          
+                     
+          
+          
+          
+          ELSE
+          
+              IF   v_pre_verificar_tipo_cc = 'si' THEN
+                  
+                   --la verificacion sea por tipo de centro de costo del tipo techo, ademas se verifica si es necesario validar por partida 
+                 
+                   FOR v_registros in (SELECT                                   
+                                          tcc.id_tipo_cc_techo, 
+                                          s.id_gestion,
+                                          s.id_solicitud,     
+                                          sum(sd.precio_ga_mb) as precio_ga_mb,                                   
+                                          s.id_moneda,
+                                          sum(sd.precio_ga) as precio_ga,                                         
+                                          tcc.codigo_techo,
+                                          CASE
+                                             WHEN  tcc.control_partida::text = 'no' THEN
+                                                0
+                                            ELSE 
+                                              sd.id_partida
+                                         END AS id_par,
+                                         CASE
+                                             WHEN  tcc.control_partida::text = 'no' THEN
+                                                'No se considera partida'::varchar
+                                            ELSE 
+                                               par.nombre_partida
+                                         END AS nombre_partida_desc,
+                                         pxp.aggarray(p.id_centro_costo) AS id_centro_costos 
+                                        FROM  adq.tsolicitud s 
+                                        INNER JOIN adq.tsolicitud_det sd on s.id_solicitud = sd.id_solicitud
+                                        inner join pre.tpartida par on par.id_partida = sd.id_partida
+                                        --inner join pre.vpresupuesto_cc   p  on p.id_centro_costo = sd.id_centro_costo and sd.estado_reg = 'activo'
+                                        JOIN param.tcentro_costo p ON p.id_centro_costo = sd.id_centro_costo and sd.estado_reg = 'activo'
+                                        JOIN param.vtipo_cc_techo tcc ON tcc.id_tipo_cc = p.id_tipo_cc
+                                        WHERE  sd.id_solicitud =  p_id_solicitud_compra
+                                               and sd.estado_reg = 'activo' 
+                                               and sd.cantidad > 0
+                                                                              
+                                        group by 
+                                                                              
+                                       tcc.id_tipo_cc_techo, 
+                                       tcc.control_partida,
+                                       s.id_gestion,
+                                       s.id_solicitud,
+                                       id_par,                             
+                                       s.id_moneda,
+                                       nombre_partida_desc,
+                                       tcc.codigo_techo) 
+                            LOOP
+                                          
+                                            
+                                          v_resp_pre = pre.f_verificar_presupuesto_partida ( v_registros.id_centro_costos[1],
+                                                                    v_registros.id_par,
+                                                                    v_registros.id_moneda,
+                                                                    v_registros.precio_ga);
+                                                                    
+                                                                    
+                                          IF   v_resp_pre = 'false' THEN        
+                                               v_mensage_error = v_mensage_error||format('Presupuesto:  %s,  (%s)  <BR/>', v_registros.codigo_techo, v_registros.nombre_partida_desc);    
+                                               v_sw_error = true;
+                                          
+                                          END IF;                         
+                               
+                         
+                         
+                         END LOOP;
+                    
                    
-             
-             
-             END LOOP;
-             
+              
+              
+              ELSE
+              
+                  -- Laverificaion es sencilla por presupeusto y por partida
+                   FOR v_registros in (SELECT
+                                                sd.id_centro_costo,
+                                                s.id_gestion,
+                                                s.id_solicitud,
+                                                sd.id_partida,
+                                                sum(sd.precio_ga_mb) as precio_ga_mb,
+                                                p.id_presupuesto,
+                                                s.id_moneda,
+                                                sum(sd.precio_ga) as precio_ga,
+                                                par.codigo,
+                                                par.nombre_partida,
+                                                p.codigo_cc
+                                                
+                                                                
+                                          FROM  adq.tsolicitud s 
+                                          INNER JOIN adq.tsolicitud_det sd on s.id_solicitud = sd.id_solicitud
+                                          inner join pre.tpartida par on par.id_partida = sd.id_partida
+                                          inner join pre.vpresupuesto_cc   p  on p.id_centro_costo = sd.id_centro_costo and sd.estado_reg = 'activo'
+                                          WHERE  sd.id_solicitud = p_id_solicitud_compra
+                                                 and sd.estado_reg = 'activo' 
+                                                 and sd.cantidad > 0
+                                          
+                                          group by 
+                                          
+                                          sd.id_centro_costo,
+                                          s.id_gestion,
+                                          s.id_solicitud,
+                                          sd.id_partida,
+                                          p.id_presupuesto,
+                                          s.id_moneda,
+                                          par.codigo,
+                                          par.nombre_partida,
+                                          p.codigo_cc) 
+                            LOOP
+                                             
+                                          select  
+                                                sd.id_centro_costo
+                                            INTO
+                                                v_id_centro_costo
+                                          from  adq.tsolicitud_det sd
+                                          where  sd.id_solicitud = p_id_solicitud_compra
+                                          and sd.estado_reg = 'activo';
+                                            
+                                          v_resp_pre = pre.f_verificar_presupuesto_partida ( v_id_centro_costo,
+                                                                    v_registros.id_partida,
+                                                                    v_registros.id_moneda,
+                                                                    v_registros.precio_ga);
+                                                                    
+                                                                    
+                                          IF   v_resp_pre = 'false' THEN        
+                                               v_mensage_error = v_mensage_error||format('Presupuesto:  %s, partida (%s) %s <BR/>', v_registros.codigo_cc, v_registros.codigo,v_registros.nombre_partida);    
+                                               v_sw_error = true;
+                                          
+                                          END IF;                         
+                               
+                         
+                         
+                         END LOOP;
+                  
+                 
+          
+              END IF;
+          END IF;
+
+        -- breydi.vasquez control presupestario a nivel de centro de costo 31/01/2020
+        if v_pre_verificar_tipo_cc_control = 'si' then
+            
+                -- verificar si se aprobo el presupuesto a nivel centro de costo por presupuestos
+                select sol.presupuesto_aprobado
+                into v_llave_control_presupuesto
+                from adq.tsolicitud sol
+                where sol.id_solicitud = p_id_solicitud_compra;
+                    
+
+                if (v_llave_control_presupuesto in ('verificar', 'sin_presupuesto_cc') and v_sw_error = false )then 
+                    FOR v_registros in (SELECT
+                                                    sd.id_centro_costo,
+                                                    s.id_gestion,
+                                                    s.id_solicitud,
+                                                    sd.id_partida,
+                                                    sum(sd.precio_ga_mb) as precio_ga_mb,
+                                                    p.id_presupuesto,
+                                                    s.id_moneda,
+                                                    sum(sd.precio_ga) as precio_ga,
+                                                    par.codigo,
+                                                    par.nombre_partida,
+                                                    p.codigo_cc
+                                                                    
+                                            FROM  adq.tsolicitud s 
+                                            INNER JOIN adq.tsolicitud_det sd on s.id_solicitud = sd.id_solicitud
+                                            inner join pre.tpartida par on par.id_partida = sd.id_partida
+                                            inner join pre.vpresupuesto_cc   p  on p.id_centro_costo = sd.id_centro_costo and sd.estado_reg = 'activo'
+                                            WHERE  sd.id_solicitud = p_id_solicitud_compra
+                                                    and sd.estado_reg = 'activo' 
+                                                    and sd.cantidad > 0
+                                            
+                                            group by 
+                                            
+                                            sd.id_centro_costo,
+                                            s.id_gestion,
+                                            s.id_solicitud,
+                                            sd.id_partida,
+                                            p.id_presupuesto,
+                                            s.id_moneda,
+                                            par.codigo,
+                                            par.nombre_partida,
+                                            p.codigo_cc) 
+                                LOOP
+                                                
+                                            select  
+                                                    sd.id_centro_costo
+                                                INTO
+                                                    v_id_centro_costo
+                                            from  adq.tsolicitud_det sd
+                                            where  sd.id_solicitud = p_id_solicitud_compra
+                                            and sd.estado_reg = 'activo';
+                                                
+                                            v_resp_pre = pre.f_verificar_presupuesto_partida_centro_costo(v_id_centro_costo,
+                                                                        v_registros.id_partida,
+                                                                        v_registros.id_moneda,
+                                                                        v_registros.precio_ga);
+                                                                        
+                                                                        
+                                            IF   v_resp_pre = 'false' THEN        
+                                                v_mensage_error = v_mensage_error||format('Presupuesto:  %s, partida (%s) %s <BR/> Comuniquese con la unidad de presupuestos para solicitar una modificacion presupuestaria.', v_registros.codigo_cc, v_registros.codigo,v_registros.nombre_partida);
+                                                v_sw_error = true;
+                                                    
+                                            END IF;                         
+                                
+                            
+                            
+                            END LOOP; 
+                            v_mensage_error = 'EL centro de costo -> '||v_mensage_error;
+                end if;
+            end if;                    
              
              
              IF v_sw_error THEN
-                 raise exception 'No se tiene suficiente presupeusto para; <BR/>%', v_mensage_error;
+                 raise exception 'No se tiene suficiente presupuesto para; <BR/>%', v_mensage_error;
              END IF;
               
        

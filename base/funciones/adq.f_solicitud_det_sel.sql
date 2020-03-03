@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION adq.f_solicitud_det_sel (
   p_administrador integer,
   p_id_usuario integer,
@@ -14,13 +12,13 @@ $body$
  DESCRIPCION:   Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla 'adq.tsolicitud_det'
  AUTOR: 		 (admin)
  FECHA:	        05-03-2013 01:28:10
- COMENTARIOS:	
+ COMENTARIOS:
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
 
- DESCRIPCION:	
- AUTOR:			
- FECHA:		
+ DESCRIPCION:
+ AUTOR:
+ FECHA:
 ***************************************************************************/
 
 DECLARE
@@ -30,21 +28,21 @@ DECLARE
 	v_nombre_funcion   	text;
 	v_resp				varchar;
     v_registro			record;
-			    
+
 BEGIN
 
 	v_nombre_funcion = 'adq.f_solicitud_det_sel';
     v_parametros = pxp.f_get_record(p_tabla);
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'ADQ_SOLD_SEL'
  	#DESCRIPCION:	Consulta de datos
- 	#AUTOR:		admin	
+ 	#AUTOR:		admin
  	#FECHA:		05-03-2013 01:28:10
 	***********************************/
 
 	if(p_transaccion='ADQ_SOLD_SEL')then
-     				
+
        begin
     		--Sentencia de la consulta
 			v_consulta:='select
@@ -85,34 +83,39 @@ BEGIN
                             sold.revertido_mo,
                             pre.id_presupuesto,
                             pre.id_categoria_prog,
-                            c.codigo_categoria
-                        from adq.tsolicitud_det sold
-                        inner join param.tconcepto_ingas cig on cig.id_concepto_ingas = sold.id_concepto_ingas
+                            c.codigo_categoria,
+
+                            sold.id_activo_fijo,
+                            sold.fecha_ini_act,
+                            sold.fecha_fin_act,
+                            adq.ft_solicitud_det_lista(sold.id_activo_fijo)as lista
+
+            			from adq.tsolicitud_det sold
+                        left join param.tconcepto_ingas cig on cig.id_concepto_ingas = sold.id_concepto_ingas
 						inner join segu.tusuario usu1 on usu1.id_usuario = sold.id_usuario_reg
-                        inner join param.vcentro_costo cc on cc.id_centro_costo = sold.id_centro_costo
-                        inner join pre.tpartida par on par.id_partida = sold.id_partida
-                        inner join conta.tcuenta cta on cta.id_cuenta = sold.id_cuenta
-                        inner join conta.tauxiliar aux on aux.id_auxiliar = sold.id_auxiliar
-                        inner join pre.tpresupuesto pre on pre.id_centro_costo = cc.id_centro_costo 
+                        left join param.vcentro_costo cc on cc.id_centro_costo = sold.id_centro_costo
+                        left join pre.tpartida par on par.id_partida = sold.id_partida
+                        left join conta.tcuenta cta on cta.id_cuenta = sold.id_cuenta
+                        left join conta.tauxiliar aux on aux.id_auxiliar = sold.id_auxiliar
+                        left join pre.tpresupuesto pre on pre.id_centro_costo = cc.id_centro_costo
 						left join segu.tusuario usu2 on usu2.id_usuario = sold.id_usuario_mod
                         left join conta.torden_trabajo ot on ot.id_orden_trabajo = sold.id_orden_trabajo
                         left join pre.vcategoria_programatica c on c.id_categoria_programatica = pre.id_categoria_prog
-                        where sold.estado_reg= ''activo'' and  sold.id_solicitud='||v_parametros.id_solicitud||' and ';
-			
+                        where sold.estado_reg= ''activo'' and sold.id_solicitud ='||v_parametros.id_solicitud||' and ';
+
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
 			--Devuelve la respuesta
 			return v_consulta;
-						
+
 		end;
-		
-	
-	/*********************************    
+
+	/*********************************
  	#TRANSACCION:  'ADQ_SOLD_CONT'
  	#DESCRIPCION:	Conteo de registros
- 	#AUTOR:		admin	
+ 	#AUTOR:		admin
  	#FECHA:		05-03-2013 01:28:10
 	***********************************/
 
@@ -122,34 +125,34 @@ BEGIN
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='select count(id_solicitud_det) as total,
                         sum(sold.precio_total) as precio_total
-					    from adq.tsolicitud_det sold
-                        inner join param.tconcepto_ingas cig on cig.id_concepto_ingas = sold.id_concepto_ingas
+					     from adq.tsolicitud_det sold
+                        left join param.tconcepto_ingas cig on cig.id_concepto_ingas = sold.id_concepto_ingas
 						inner join segu.tusuario usu1 on usu1.id_usuario = sold.id_usuario_reg
-                        inner join param.vcentro_costo cc on cc.id_centro_costo = sold.id_centro_costo
-                        inner join pre.tpartida par on par.id_partida = sold.id_partida
-                        inner join conta.tcuenta cta on cta.id_cuenta = sold.id_cuenta
-                        inner join conta.tauxiliar aux on aux.id_auxiliar = sold.id_auxiliar
-                        inner join pre.tpresupuesto pre on pre.id_centro_costo = cc.id_centro_costo 
+                        left join param.vcentro_costo cc on cc.id_centro_costo = sold.id_centro_costo
+                        left join pre.tpartida par on par.id_partida = sold.id_partida
+                        left join conta.tcuenta cta on cta.id_cuenta = sold.id_cuenta
+                        left join conta.tauxiliar aux on aux.id_auxiliar = sold.id_auxiliar
+                        left join pre.tpresupuesto pre on pre.id_centro_costo = cc.id_centro_costo
 						left join segu.tusuario usu2 on usu2.id_usuario = sold.id_usuario_mod
                         left join conta.torden_trabajo ot on ot.id_orden_trabajo = sold.id_orden_trabajo
                         left join pre.vcategoria_programatica c on c.id_categoria_programatica = pre.id_categoria_prog
-                        where sold.estado_reg= ''activo'' and sold.id_solicitud='||v_parametros.id_solicitud||' and ';
-			
-			--Definicion de la respuesta		    
+                        where sold.estado_reg= ''activo'' and sold.id_solicitud ='||v_parametros.id_solicitud||' and ';
+
+			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 
 			--Devuelve la respuesta
 			return v_consulta;
 
 		end;
-        
-    /*********************************    
+
+    /*********************************
  	#TRANSACCION:  'ADQ_SOLDETCOT_SEL'
  	#DESCRIPCION:	Consulta de datos en base al id_cotizacion
  	#AUTOR:		Gonzalo Sarmiento Sejas
  	#FECHA:		05-03-2013 01:28:10
 	***********************************/
-        
+
     elsif(p_transaccion='ADQ_SOLDETCOT_SEL')then
     	begin
           v_consulta:='select
@@ -167,13 +170,13 @@ BEGIN
             v_consulta:=v_consulta||v_parametros.filtro;
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
-            return v_consulta;        	
-        end;    
-	
-    /*********************************    
+            return v_consulta;
+        end;
+
+    /*********************************
  	#TRANSACCION:  'ADQ_SOLDETCOT_CONT'
  	#DESCRIPCION:	Conteo de registros
- 	#AUTOR:		admin	
+ 	#AUTOR:		admin
  	#FECHA:		05-03-2013 01:28:10
 	***********************************/
 
@@ -188,23 +191,23 @@ BEGIN
                         inner join adq.tproceso_compra pc on pc.id_solicitud = sold.id_solicitud
                         inner join adq.tcotizacion cot on cot.id_proceso_compra = pc.id_proceso_compra
                         where cot.id_cotizacion='||v_parametros.id_cotizacion||' and ';
-			
-			--Definicion de la respuesta		    
+
+			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 
 			--Devuelve la respuesta
 			return v_consulta;
 
 		end;
-    				
+
 	else
-					     
+
 		raise exception 'Transaccion inexistente';
-					         
+
 	end if;
-					
+
 EXCEPTION
-					
+
 	WHEN OTHERS THEN
 			v_resp='';
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);

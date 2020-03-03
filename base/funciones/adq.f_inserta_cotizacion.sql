@@ -84,7 +84,7 @@ DECLARE
    v_requiere_contrato varchar;
    v_id_funcionario_aux integer;
    v_id_usuario_auxiliar     integer;
- 
+   v_tipo             varchar;
     
     
     
@@ -165,7 +165,8 @@ BEGIN
              sol.fecha_inicio,
              sol.dias_plazo_entrega,
              sol.lugar_entrega,
-             sol.instruc_rpc
+             sol.instruc_rpc,
+             sol.tipo
            into
             v_id_proveedor_precoti,
             v_id_proceso_wf_sol,
@@ -173,8 +174,8 @@ BEGIN
             v_fecha_inicio_sol,
             v_dias_plazo_entrega_sol,
             v_lugar_entrega_sol,
-            v_instruc_rpc
-                    
+            v_instruc_rpc,
+            v_tipo
            from  adq.tsolicitud sol where sol.id_solicitud = v_id_solicitud;
            
          
@@ -365,83 +366,80 @@ BEGIN
         
         	--Sentencia de la insercion
         	insert into adq.tcotizacion(
-			estado_reg,
-			estado,
-			lugar_entrega,
-			tipo_entrega,
-			fecha_coti,
-		
-			id_proveedor,
-			--porc_anticipo,
-			--precio_total,
-			fecha_entrega,
-			id_moneda,
-			id_proceso_compra,
-			fecha_venc,
-			obs,
-			fecha_adju,
-			nro_contrato,
-			--porc_retgar,
-			fecha_reg,
-			id_usuario_reg,
-			fecha_mod,
-			id_usuario_mod,
-            id_estado_wf,
-            id_proceso_wf,
-            tipo_cambio_conv,
-            num_tramite,
-            tiempo_entrega,
-            id_usuario_ai,
-            usuario_ai,
-            funcionario_contacto,
-            telefono_contacto,
-            correo_contacto,
-            prellenar_oferta,
-            forma_pago,
-            requiere_contrato
+                estado_reg,
+                estado,
+                lugar_entrega,
+                tipo_entrega,
+                fecha_coti,
+    		
+                id_proveedor,
+                --porc_anticipo,
+                --precio_total,
+                fecha_entrega,
+                id_moneda,
+                id_proceso_compra,
+                fecha_venc,
+                obs,
+                fecha_adju,
+                nro_contrato,
+                --porc_retgar,
+                fecha_reg,
+                id_usuario_reg,
+                fecha_mod,
+                id_usuario_mod,
+                id_estado_wf,
+                id_proceso_wf,
+                tipo_cambio_conv,
+                num_tramite,
+                tiempo_entrega,
+                id_usuario_ai,
+                usuario_ai,
+                funcionario_contacto,
+                telefono_contacto,
+                correo_contacto,
+                prellenar_oferta,
+                forma_pago,
+                requiere_contrato
           	) values(
-			'activo',
-			v_codigo_estado,
-			COALESCE(v_lugar_entrega_sol,'Almacen de Oficina Central'),
-			(p_hstore_cotizacion->'tipo_entrega')::varchar,
-			(p_hstore_cotizacion->'fecha_coti')::date,
-		
-			(p_hstore_cotizacion->'id_proveedor')::integer,
-			--v_parametros.porc_anticipo,
-			--v_parametros.precio_total,
-			v_fecha_inicio_sol,
-			(p_hstore_cotizacion->'id_moneda')::integer,
-			(p_hstore_cotizacion->'id_proceso_compra')::integer,
-			(p_hstore_cotizacion->'fecha_venc')::date,
-			(p_hstore_cotizacion->'obs')::text,
-			(p_hstore_cotizacion->'fecha_adju')::date,
-			(p_hstore_cotizacion->'nro_contrato')::varchar,
-			--v_parametros.porc_retgar,
-			now(),
-			p_id_usuario,
-			null,
-			null,
-            v_id_estado_wf,
-            v_id_proceso_wf,
-            (p_hstore_cotizacion->'tipo_cambio_conv')::numeric,
-            v_num_tramite,
-            v_tiempo_entrega,
-            (p_hstore_cotizacion->'_id_usuario_ai')::integer,
-            (p_hstore_cotizacion->'_nombre_usuario_ai')::varchar,
-            v_registros_fun.desc_funcionario1::varchar,
-            v_telefono::varchar,
-            COALESCE(v_registros_fun.email_empresa,'')::varchar,
-            COALESCE((p_hstore_cotizacion->'prellenar_oferta')::varchar,'no'),
-            COALESCE((p_hstore_cotizacion->'forma_pago')::varchar,''),
-            v_requiere_contrato
+                'activo',
+                v_codigo_estado,
+                COALESCE(v_lugar_entrega_sol,'Almacen de Oficina Central'),
+                (p_hstore_cotizacion->'tipo_entrega')::varchar,
+                (p_hstore_cotizacion->'fecha_coti')::date,
+    		
+                (p_hstore_cotizacion->'id_proveedor')::integer,
+                --v_parametros.porc_anticipo,
+                --v_parametros.precio_total,
+                v_fecha_inicio_sol,
+                (p_hstore_cotizacion->'id_moneda')::integer,
+                (p_hstore_cotizacion->'id_proceso_compra')::integer,
+                (p_hstore_cotizacion->'fecha_venc')::date,
+                (p_hstore_cotizacion->'obs')::text,
+                (p_hstore_cotizacion->'fecha_adju')::date,
+                (p_hstore_cotizacion->'nro_contrato')::varchar,
+                --v_parametros.porc_retgar,
+                now(),
+                p_id_usuario,
+                null,
+                null,
+                v_id_estado_wf,
+                v_id_proceso_wf,
+                (p_hstore_cotizacion->'tipo_cambio_conv')::numeric,
+                v_num_tramite,
+                v_tiempo_entrega,
+                (p_hstore_cotizacion->'_id_usuario_ai')::integer,
+                (p_hstore_cotizacion->'_nombre_usuario_ai')::varchar,
+                v_registros_fun.desc_funcionario1::varchar,
+                v_telefono::varchar,
+                COALESCE(v_registros_fun.email_empresa,'')::varchar,
+                COALESCE((p_hstore_cotizacion->'prellenar_oferta')::varchar,'no'),
+                COALESCE((p_hstore_cotizacion->'forma_pago')::varchar,''),
+                v_requiere_contrato
             
             
             )RETURNING id_cotizacion into v_id_cotizacion;
             
-            
-             
-            
-              --  si es la primera cotizacion (el proceso de compra esta en estado pendiente)
+             --  si es la primera cotizacion (el proceso de compra esta en estado pendiente)
             
              v_sw_precoti = FALSE;
              
@@ -469,13 +467,13 @@ BEGIN
                           inner join wf.ttipo_documento td on td.id_tipo_documento = dwf.id_tipo_documento and td.codigo = 'precotizacion'
                           where dwf.id_proceso_wf = v_id_proceso_wf_sol;
 
+                          IF v_tipo!='Boa' THEN
+                              IF v_id_documento_wf_pc is NULL THEN
 
-                          IF v_id_documento_wf_pc is NULL THEN
+                                 raise exception 'No existe un documento dcodigo=precotizacion para la solicitud de compra';
 
-                             raise exception 'No existe un documento dcodigo=precotizacion para la solicitud de compra';
-
+                              END IF;
                           END IF;
-
 
                           --capturamos el id  del documento escaneado de COTIZACION
                           select

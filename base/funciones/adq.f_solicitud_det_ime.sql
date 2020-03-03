@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION adq.f_solicitud_det_ime (
   p_administrador integer,
   p_id_usuario integer,
@@ -44,6 +42,17 @@ DECLARE
     v_id_gestion integer;
     v_registros_cig record;
     v_id_orden_trabajo		integer;
+
+    v_orden_trabajo			integer;
+    v_desc_orden_trabajo		varchar;
+    v_desc_centro_costo		varchar;
+    v_des_concepto_ingas		varchar;
+    v_id_centro_costo			integer;
+    v_id_concepto_ingas		integer;
+
+    v_des_con_ingas			varchar;
+    v_num_tramite			varchar;
+    v_orden_trabajo2		integer;
 
 
 BEGIN
@@ -109,8 +118,6 @@ BEGIN
         END IF;
 
 
-
-
             --obetener el precio en la moneda base del sistema
 
 
@@ -139,6 +146,12 @@ BEGIN
                             'O',-- tipo oficial, venta, compra
                              NULL);
 
+            --para que sea obligatorio el orden de trabajo
+            IF (v_parametros.id_orden_trabajo is Null ) THEN
+            	RAISE EXCEPTION 'Completar el campo de Orden de Trabajo';
+            end if;
+
+
 
         	--Sentencia de la insercion
         	insert into adq.tsolicitud_det(
@@ -163,7 +176,11 @@ BEGIN
 			id_usuario_mod,
             precio_ga_mb,
             precio_sg_mb,
-            precio_unitario_mb
+            precio_unitario_mb,
+
+            id_activo_fijo,
+            fecha_ini_act,
+            fecha_fin_act
 
 
           	) values(
@@ -188,11 +205,61 @@ BEGIN
 			null,
             v_monto_ga_mb,
             v_monto_sg_mb,
-            v_precio_unitario_mb
+            v_precio_unitario_mb,
+
+            v_parametros.id_activo_fijo,
+            v_parametros.fecha_ini_act,
+            v_parametros.fecha_fin_act
 
 			)RETURNING id_solicitud_det into v_id_solicitud_det;
 
-			--Definicion de la respuesta
+             --para que sea obligatorio el orden de trabajo
+            IF (v_parametros.id_orden_trabajo is Null ) THEN
+            	RAISE EXCEPTION 'Completar el campo de Orden de Trabajo';
+            end if;
+
+            --control del campo cantidad
+            IF (v_parametros.cantidad_sol is Null )THEN
+            	raise exception 'Completar el campo de Cantidad';
+            end if;
+
+            --control para el campo de activo fijo
+              select cin.desc_ingas
+             into v_des_concepto_ingas
+             from param.tconcepto_ingas cin
+             where cin.id_concepto_ingas = v_parametros.id_concepto_ingas;
+
+            if (v_parametros.id_activo_fijo is NULL) THEN
+            	raise exception 'Completar el campo de Activo Fijo para el Concepto %', v_des_concepto_ingas;
+            end if;
+
+            --control de fechas
+            IF (v_parametros.fecha_fin_act < v_parametros.fecha_ini_act) THEN
+            	raise exception 'La Fecha Inicio es menor a la Fecha Fin';
+             end if;
+
+           -----------------------------------------------
+          --para agrupar los conceptos de renovacion actualizacion y compra
+         IF (v_des_concepto_ingas = 'RENOVACION LICENCIAS DE SOFTWARE' or
+             v_des_concepto_ingas = 'ACTUALIZACION LICENCIAS DE SOFTWARE' or
+             v_des_concepto_ingas = 'COMPRA LICENCIAS DE SOFTWARE')THEN
+
+             select coin.desc_ingas, sol.num_tramite
+             into v_des_con_ingas, v_num_tramite
+             from adq.tsolicitud_det sold
+             join adq.tsolicitud sol on sol.id_solicitud = sold.id_solicitud
+             join param.tconcepto_ingas coin on coin.id_concepto_ingas = sold.id_concepto_ingas
+             where sol.id_solicitud = v_parametros.id_solicitud;
+      		 -- raise exception '%, %',v_des_concepto_ingas, v_des_con_ingas;
+
+           	/*IF (v_des_con_ingas <> v_des_concepto_ingas)THEN
+            	raise exception 'El Concepto % es distinto a los anteriores del Detalle de Solicitud del número de trámite %, agrupar los Conceptos de forma independiente',v_des_concepto_ingas,v_num_tramite;
+            end if;*/
+
+          END IF;
+          ---------------------------------------------------
+
+     	--Definicion de la respuesta
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle almacenado(a) con exito (id_solicitud_det'||v_id_solicitud_det||')');
             v_resp = pxp.f_agrega_clave(v_resp,'id_solicitud_det',v_id_solicitud_det::varchar);
 
@@ -201,7 +268,7 @@ BEGIN
 
 		end;
 
-	/*********************************
+/*********************************
  	#TRANSACCION:  'ADQ_DGSTSOL_INS'
  	#DESCRIPCION:	Insercion detalle gasto solicitud
  	#AUTOR:		Gonzalo Sarmiento
@@ -211,6 +278,8 @@ BEGIN
 	elsif(p_transaccion='ADQ_DGSTSOL_INS')then
 
         begin
+
+
 
            -- obtener parametros de solicitud
 
@@ -225,6 +294,13 @@ BEGIN
             from adq.tsolicitud s
             where  s.id_solicitud = v_parametros.id_solicitud;
 
+            --en el campo v_parametros.id_centro_costo llegara el codigo de centro de costo
+            SELECT cc.id_centro_costo
+            into v_id_centro_costo
+            from param.vcentro_costo cc
+            where cc.codigo_tcc::integer = v_parametros.id_centro_costo
+            and cc.id_gestion = v_id_gestion;
+
            --recupera el nombre del concepto de gasto
 
             select
@@ -232,7 +308,8 @@ BEGIN
             into
             v_registros_cig
             from param.tconcepto_ingas cig
-            where upper(cig.desc_ingas) =  upper(v_parametros.concepto_gasto);
+            where upper(trim(cig.desc_ingas)) =  upper(trim(v_parametros.concepto_gasto))
+            and 'adquisiciones' = ANY(cig.sw_autorizacion);
 
             IF v_registros_cig.id_concepto_ingas IS NULL THEN
             	raise exception 'No se encontro parametrizado el concepto de gasto %', v_parametros.concepto_gasto;
@@ -241,6 +318,7 @@ BEGIN
              --obtener partida, cuenta auxiliar del concepto de gasto
 
              v_id_partida = NULL;
+
 
             --recueprar la partida de la parametrizacion
 
@@ -252,7 +330,7 @@ BEGIN
               v_id_partida,
               v_id_cuenta,
               v_id_auxiliar
-           FROM conta.f_get_config_relacion_contable('CUECOMP', v_id_gestion, v_registros_cig.id_concepto_ingas, v_parametros.id_centro_costo,  'No se encontro relación contable para el conceto de gasto: '||v_registros_cig.desc_ingas||'. <br> Mensaje: ');
+           FROM conta.f_get_config_relacion_contable('CUECOMP', v_id_gestion, v_registros_cig.id_concepto_ingas, v_id_centro_costo,  'No se encontro relación contable para el conceto de gasto: '||v_registros_cig.desc_ingas||'. <br> Mensaje: ');
 
 
         IF  v_id_partida  is NULL  THEN
@@ -300,6 +378,52 @@ BEGIN
                              NULL);
 
 
+           --control orden de trabajo-concepto
+          select otrab.id_orden_trabajo
+           into v_orden_trabajo
+           from conta.torden_trabajo otrab
+           join conta.ttipo_cc_ot tccot on tccot.id_orden_trabajo = otrab.id_orden_trabajo
+           join param.ttipo_cc tcc on tcc.id_tipo_cc = tccot.id_tipo_cc
+           join param.tcentro_costo ccos on ccos.id_tipo_cc = tcc.id_tipo_cc
+           --join adq.tsolicitud_det sd on sd.id_centro_costo = ccos.id_centro_costo
+           --join param.tconcepto_ingas cin on cin.id_concepto_ingas = sd.id_concepto_ingas
+           where ccos.id_centro_costo = v_id_centro_costo
+           GROUP by otrab.id_orden_trabajo;
+
+
+           select otrab.desc_orden
+           into v_desc_orden_trabajo
+           from conta.torden_trabajo otrab
+           where otrab.id_orden_trabajo = v_id_orden_trabajo;
+
+           select (tcc.codigo||'-'||tcc.descripcion)
+           into  v_desc_centro_costo
+           from param.ttipo_cc tcc
+           join param.tcentro_costo ccos on ccos.id_tipo_cc = tcc.id_tipo_cc
+           where ccos.id_centro_costo = v_id_centro_costo;
+
+           select cin.desc_ingas
+           into v_des_concepto_ingas
+           from param.tconcepto_ingas cin
+           where cin.id_concepto_ingas = v_registros_cig.id_concepto_ingas;
+
+
+            /*select otr.id_orden_trabajo
+            into v_orden_trabajo2
+            from conta.torden_trabajo otr
+            where otr.id_orden_trabajo_fk = v_orden_trabajo
+            and ;*/
+          /*  select otr.id_orden_trabajo
+            into v_orden_trabajo2
+            from conta.torden_trabajo otr
+            where upper(otr.codigo)=upper(v_parametros.orden_trabajo);
+
+raise exception '%, %', v_orden_trabajo2, v_parametros.orden_trabajo;*/
+           /*if ( v_orden_trabajo <> v_id_orden_trabajo)THEN
+            	raise exception '-El Orden Trabajo % no pertece al Concepto % del Centro de Costo %',v_desc_orden_trabajo,v_des_concepto_ingas,v_desc_centro_costo  ;
+           end if;*/
+
+
         	--Sentencia de la insercion
         	insert into adq.tsolicitud_det(
 			id_centro_costo,
@@ -324,9 +448,8 @@ BEGIN
             precio_sg_mb,
             precio_unitario_mb
 
-
           	) values(
-			v_parametros.id_centro_costo,
+			v_id_centro_costo,
 			v_parametros.descripcion,
 			v_parametros.precio_unitario,
 			v_parametros.id_solicitud,
@@ -358,6 +481,7 @@ BEGIN
             return v_resp;
 
 		end;
+
 
     /*********************************
  	#TRANSACCION:  'ADQ_DGSTSOL_ELI'
@@ -410,6 +534,8 @@ BEGIN
             from param.tconcepto_ingas cig
             where cig.id_concepto_ingas =  v_parametros.id_concepto_ingas;
 
+
+
             --obtener partida, cuenta auxiliar del concepto de gasto
             SELECT
               ps_id_partida ,
@@ -419,7 +545,7 @@ BEGIN
               v_id_partida,
               v_id_cuenta,
               v_id_auxiliar
-          FROM conta.f_get_config_relacion_contable('CUECOMP', v_id_gestion, v_parametros.id_concepto_ingas, v_parametros.id_centro_costo,  'No se encontro relación contable para el conceto de gasto: '||v_registros_cig.desc_ingas||'. <br> Mensaje: ');
+          FROM conta.f_get_config_relacion_contable('CUECOMP', v_id_gestion, v_parametros.id_concepto_ingas, v_parametros.id_centro_costo,  'No se encontro relación contable para el concepto de gasto: '||v_registros_cig.desc_ingas||'. <br> Mensaje: ');
 
 
 
@@ -456,6 +582,7 @@ BEGIN
                             'O',-- tipo oficial, venta, compra
                              NULL);
 
+
 			--Sentencia de la modificacion
 			update adq.tsolicitud_det set
 			id_centro_costo = v_parametros.id_centro_costo,
@@ -475,8 +602,41 @@ BEGIN
 			id_auxiliar = v_id_auxiliar,
             precio_unitario_mb=v_precio_unitario_mb,
 			fecha_mod = now(),
-			id_usuario_mod = p_id_usuario
+			id_usuario_mod = p_id_usuario,
+            id_activo_fijo = v_parametros.id_activo_fijo,
+            fecha_ini_act = v_parametros.fecha_ini_act,
+            fecha_fin_act = v_parametros.fecha_fin_act
+
 			where id_solicitud_det=v_parametros.id_solicitud_det;
+
+          -----------------------------------------------
+
+             select cin.desc_ingas
+             into v_des_concepto_ingas
+             from param.tconcepto_ingas cin
+             where cin.id_concepto_ingas = v_parametros.id_concepto_ingas;
+
+          --para agrupar los conceptos de renovacion actualizacion y compra
+         IF (v_des_concepto_ingas = 'RENOVACION LICENCIAS DE SOFTWARE' or
+             v_des_concepto_ingas = 'ACTUALIZACION LICENCIAS DE SOFTWARE' or
+             v_des_concepto_ingas = 'COMPRA LICENCIAS DE SOFTWARE')THEN
+
+             select coin.desc_ingas, sol.num_tramite
+             into v_des_con_ingas, v_num_tramite
+             from adq.tsolicitud_det sold
+             join adq.tsolicitud sol on sol.id_solicitud = sold.id_solicitud
+             join param.tconcepto_ingas coin on coin.id_concepto_ingas = sold.id_concepto_ingas
+             where sol.id_solicitud = v_parametros.id_solicitud;
+      		 -- raise exception '%, %',v_des_concepto_ingas, v_des_con_ingas;
+
+           	/*IF (v_des_con_ingas <> v_des_concepto_ingas)THEN
+            	raise exception 'El Concepto % es distinto a los anteriores del Detalle de Solicitud del número de trámite %, agrupar los Conceptos de forma independiente',v_des_concepto_ingas,v_num_tramite;
+            end if;*/
+
+          END IF;
+          ---------------------------------------------------
+
+
 
 			--Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle modificado(a)');

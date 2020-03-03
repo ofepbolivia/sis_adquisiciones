@@ -71,14 +71,12 @@ class MODCotizacion extends MODbase{
 		$this->captura('total_adjudicado_mb','numeric');
 		$this->captura('tiene_form500','varchar');
 		$this->captura('correo_oc','varchar');
-		
-		
-		
-		 
-		
-		
-				
-		
+
+		$this->captura('id_gestion','int4');
+
+		$this->captura('cuce','varchar');
+		$this->captura('fecha_conclusion','date');
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -173,7 +171,9 @@ class MODCotizacion extends MODbase{
 		$this->captura('total_adjudicado','numeric');
 		$this->captura('total_cotizado','numeric');
 		$this->captura('total_adjudicado_mb','numeric');
-        
+
+		$this->captura('id_gestion','int4');
+
         
         //Ejecuta la instruccion
         $this->armarConsulta();
@@ -613,7 +613,7 @@ class MODCotizacion extends MODbase{
 
         //Ejecuta la instruccion
         $this->armarConsulta();
-		echo $this->consulta;exit;
+		//echo $this->consulta;exit;
 		
         $this->ejecutarConsulta();
 
@@ -670,6 +670,26 @@ class MODCotizacion extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+
+    function insertarCuce()
+    {
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento = 'adq.f_cotizacion_ime';
+        $this->transaccion = 'ADQ_RSOLCUCE_IME';
+        $this->tipo_procedimiento = 'IME';
+
+        //Define los parametros para la funcion
+        $this->setParametro('id_cotizacion', 'id_cotizacion', 'int4');
+        $this->setParametro('cuce', 'cuce', 'varchar');
+        $this->setParametro('fecha_conclusion', 'fecha_conclusion', 'date');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
     
 	
 
