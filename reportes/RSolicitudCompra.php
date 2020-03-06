@@ -680,11 +680,11 @@ Class RSolicitudCompra extends Report {
 
             $saldo_comprometer = (double) $row['captura_presupuesto'];
 
-            if($saldo_comprometer < 0){
+            /*if($saldo_comprometer < 0){
                 $dif = $saldo_comprometer +  $totalRef;
-            }else{
+            }else{*/
                 $dif = $saldo_comprometer -  $totalRef;
-            }
+            //}
 
             $table.='<tr>
                             <td colspan="3" align="center"><b>TOTAL</b></td>
