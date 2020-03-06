@@ -603,7 +603,7 @@ class ACTSolicitud extends ACTbase
                     $this->objParam->addParametro('id_moneda', $id_moneda);
                     $this->objParam->addParametro('monto_total', $total_pre);
                     $this->objParam->addParametro('id_solicitud', $value_det['id_solicitud']);
-
+                    $this->objParam->addParametro('sis_origen', 'ADQ');
                     $this->objFunc = $this->create('sis_presupuestos/MODPresupuesto');
                     $resultSolicitud = $this->objFunc->verificarPresupuesto();
 
