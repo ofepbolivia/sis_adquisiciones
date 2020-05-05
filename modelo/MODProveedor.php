@@ -59,7 +59,7 @@ class MODProveedor extends MODbase{
 
 		$this->captura('condicion','varchar');
 		$this->captura('actividad','varchar');
-		$this->captura('num_proveedor','int4');
+		$this->captura('num_proveedor','varchar');
 
 		$this->captura('nombre_persona','varchar');
 		$this->captura('apellido_paterno','varchar');
@@ -133,7 +133,7 @@ class MODProveedor extends MODbase{
 
 		$this->setParametro('condicion','condicion','varchar');
 		$this->setParametro('actividad','actividad','varchar');
-		$this->setParametro('num_proveedor','num_proveedor','int4');
+		$this->setParametro('num_proveedor','num_proveedor','varchar');
 		$this->setParametro('codigo_telf','codigo_telf','varchar');
 		$this->setParametro('codigo_telf_institucion','codigo_telf_institucion','varchar');
 
@@ -205,7 +205,7 @@ class MODProveedor extends MODbase{
 
 		$this->setParametro('condicion','condicion','varchar');
 		$this->setParametro('actividad','actividad','varchar');
-		$this->setParametro('num_proveedor','num_proveedor','int4');
+		$this->setParametro('num_proveedor','num_proveedor','varchar');
 		$this->setParametro('codigo_telf','codigo_telf','varchar');
 		$this->setParametro('codigo_telf_institucion','codigo_telf_institucion','varchar');
 
