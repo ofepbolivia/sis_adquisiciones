@@ -65,7 +65,6 @@ class ACTSolicitud extends ACTbase
         if ($this->objParam->getParametro('filtro_campo') != '') {
             $this->objParam->addFiltro($this->objParam->getParametro('filtro_campo') . " = " . $this->objParam->getParametro('filtro_valor'));
         }
-
         //var_dump($_SESSION["ss_id_funcionario"]);
 
         if ($this->objParam->getParametro('id_cargo') != '' && $this->objParam->getParametro('id_cargo_ai') != '') {

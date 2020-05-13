@@ -57,20 +57,20 @@ class MODProveedor extends MODbase{
         $this->captura('telf_instit','varchar');
 		$this->captura('id_beneficiario','varchar');
 
-		$this->captura('condicion','varchar');
-		$this->captura('actividad','varchar');
-		$this->captura('num_proveedor','int4');
+		// $this->captura('condicion','varchar');
+		// $this->captura('actividad','varchar');
+		// $this->captura('num_proveedor','int4');
 
-		$this->captura('nombre_persona','varchar');
-		$this->captura('apellido_paterno','varchar');
-		$this->captura('apellido_materno','varchar');
-		$this->captura('codigo_telf','varchar');
-		$this->captura('codigo_telf_institucion','varchar');
+		// $this->captura('nombre_persona','varchar');
+		// $this->captura('apellido_paterno','varchar');
+		// $this->captura('apellido_materno','varchar');
+		// $this->captura('codigo_telf','varchar');
+		// $this->captura('codigo_telf_institucion','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		//echo $this->consulta;exit;
-		$this->ejecutarConsulta();
+        $this->ejecutarConsulta();
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
