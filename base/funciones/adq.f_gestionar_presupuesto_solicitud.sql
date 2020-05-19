@@ -726,7 +726,7 @@ BEGIN
                                             where  sd.id_solicitud = p_id_solicitud_compra
                                             and sd.estado_reg = 'activo';
                                                 
-                                            v_resp_pre = pre.f_verificar_presupuesto_partida_centro_costo(v_id_centro_costo,
+                                            v_resp_pre = pre.f_verificar_presupuesto_partida_centro_costo(v_registros.id_centro_costo,
                                                                         v_registros.id_partida,
                                                                         v_registros.id_moneda,
                                                                         v_registros.precio_ga);
