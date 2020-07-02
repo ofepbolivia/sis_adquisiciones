@@ -1018,7 +1018,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     qtip: 'Justifique, ¿por que la necesidad de esta compra?',
                     allowBlank: false,
                     width: '92%',
-                    maxLength: 500,
+                    maxLength: 1000,
                     msgTarget: 'side'
                 },
                 type: 'TextArea',
