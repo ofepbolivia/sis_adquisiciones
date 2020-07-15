@@ -53,6 +53,7 @@ DECLARE
     v_des_con_ingas			varchar;
     v_num_tramite			varchar;
     v_orden_trabajo2		integer;
+    v_descripcion_cc		varchar;
 
 
 BEGIN
@@ -295,11 +296,12 @@ BEGIN
             where  s.id_solicitud = v_parametros.id_solicitud;
 
             --en el campo v_parametros.id_centro_costo llegara el codigo de centro de costo
-            SELECT cc.id_centro_costo
-            into v_id_centro_costo
+            SELECT cc.id_centro_costo, (cc.codigo_tcc||'-'||cc.descripcion_tcc)::varchar as descripcion_cc
+            into v_id_centro_costo, v_descripcion_cc
             from param.vcentro_costo cc
             where cc.codigo_tcc::integer = v_parametros.id_centro_costo
             and cc.id_gestion = v_id_gestion;
+
 
            --recupera el nombre del concepto de gasto
 
@@ -312,7 +314,7 @@ BEGIN
             and 'adquisiciones' = ANY(cig.sw_autorizacion);
 
             IF v_registros_cig.id_concepto_ingas IS NULL THEN
-            	raise exception 'No se encontro parametrizado el concepto de gasto %', v_parametros.concepto_gasto;
+            	raise exception 'Error al guardar la columna: No se encuentra parametrizado el Concepto de Gasto %.', v_parametros.concepto_gasto;
             END IF;
 
              --obtener partida, cuenta auxiliar del concepto de gasto
@@ -335,7 +337,7 @@ BEGIN
 
         IF  v_id_partida  is NULL  THEN
 
-        	raise exception 'No se encontro partida para el concepto de gasto y el centro de costos solicitados';
+        	raise exception 'Error al guardar la columna: No se encontro la Partida  para el Concepto de Gasto % y el Centro de Costos % solicitados.',v_parametros.concepto_gasto, v_descripcion_cc ;
 
         END IF;
 
