@@ -139,7 +139,6 @@ class ACTSolicitudDet extends ACTbase{
 		}*/
         if($this->res->getTipo()=='ERROR'){
 
-            $mensaje_completo = "Error al guardar la fila en tabla ";
             $this->res->imprimirRespuesta($this->res->generarJson());
             exit;
         } else if ($error == 'no') {

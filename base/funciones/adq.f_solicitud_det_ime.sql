@@ -299,7 +299,7 @@ BEGIN
             SELECT cc.id_centro_costo, (cc.codigo_tcc||'-'||cc.descripcion_tcc)::varchar as descripcion_cc
             into v_id_centro_costo, v_descripcion_cc
             from param.vcentro_costo cc
-            where cc.codigo_tcc::integer = v_parametros.id_centro_costo
+            where (trim(cc.codigo_tcc))::integer = (trim(v_parametros.id_centro_costo::varchar))::integer
             and cc.id_gestion = v_id_gestion;
 
 
@@ -332,7 +332,7 @@ BEGIN
               v_id_partida,
               v_id_cuenta,
               v_id_auxiliar
-           FROM conta.f_get_config_relacion_contable('CUECOMP', v_id_gestion, v_registros_cig.id_concepto_ingas, v_id_centro_costo,  'No se encontro relación contable para el conceto de gasto: '||v_registros_cig.desc_ingas||'. <br> Mensaje: ');
+           FROM conta.f_get_config_relacion_contable('CUECOMP', v_id_gestion, v_registros_cig.id_concepto_ingas, v_id_centro_costo,  'No se encontro relación contable para el concepto de gasto: '||v_registros_cig.desc_ingas||'. <br> Mensaje: ');
 
 
         IF  v_id_partida  is NULL  THEN
