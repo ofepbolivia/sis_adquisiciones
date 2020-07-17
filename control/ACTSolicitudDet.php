@@ -15,7 +15,7 @@ class ACTSolicitudDet extends ACTbase{
 		$this->objParam->defecto('ordenacion','id_solicitud_det');
 
 		$this->objParam->defecto('dir_ordenacion','asc');
-		
+
 		if($this->objParam->getParametro('id_solicitud')!=''){
             $this->objParam->addFiltro("sold.id_solicitud = ".$this->objParam->getParametro('id_solicitud'));    
         }
@@ -109,10 +109,11 @@ class ACTSolicitudDet extends ACTbase{
 				$this->objParam->addParametro('precio_ga', $fila['precio_unitario']*$fila['cantidad']);
 				$this->objFunc = $this->create('sis_adquisiciones/MODSolicitudDet');
 				$this->res = $this->objFunc->insertarDetalleGastoSolicitud($this->objParam);
-				/*if($this->res->getTipo()=='ERROR'){
+				if($this->res->getTipo()=='ERROR'){
 					$error = 'error';
-					$mensaje_completo = "Error al guardar la fila en tabla ". $this->res->getMensajeTec();
-				}*/
+					//var_dump('llega mensaje',$this->res->generarJson() );
+					$mensaje_completo = $this->res->getMensajeTec();
+				}
 			}
 			$file_path = $arregloFiles['archivo']['name'];
 
@@ -129,19 +130,13 @@ class ACTSolicitudDet extends ACTbase{
 			//si no es error fatal proceso el archivo
 		}
         //15-07-2020 (may) modificacion no mostraba el incidente desde la bd en producccion
-        //armar respuesta en caso de exito o error en algunas tuplas
-		/*if ($error == 'error') {
-			$this->mensajeRes=new Mensaje();
+        if ($error == 'error') {
+            $this->mensajeRes=new Mensaje();
 
-			//var_dump('llegaerror', $mensaje_completo);
-			$this->mensajeRes->setMensaje('ERROR','ACTSolicitudDet.php','Ocurrieron los siguientes errores : ' . $mensaje_completo,
-					$mensaje_completo,'control');
-		}*/
-        if($this->res->getTipo()=='ERROR'){
+            $this->mensajeRes->setMensaje('ERROR','ACTSolicitudDet.php','Ocurrieron los siguientes errores : ' . $mensaje_completo,
+                $mensaje_completo,'control');
 
-            $this->res->imprimirRespuesta($this->res->generarJson());
-            exit;
-        } else if ($error == 'no') {
+        }else if ($error == 'no') {
 			$this->mensajeRes=new Mensaje();
 			$this->mensajeRes->setMensaje('EXITO','ACTSolicitudDet.php','El archivo fue ejecutado con éxito',
 					'El archivo fue ejecutado con éxito','control');
