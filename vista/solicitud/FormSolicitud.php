@@ -393,7 +393,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
         bloqueaRequisitos: function (sw) {
             this.Cmp.id_depto.setDisabled(sw);
-            this.Cmp.id_moneda.setDisabled(sw);
+            //this.Cmp.id_moneda.setDisabled(sw);
 
             this.Cmp.tipo_concepto.setDisabled(sw);
             this.Cmp.fecha_soli.setDisabled(sw);
@@ -1334,7 +1334,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
             this.Cmp.tipo.disable();
             this.Cmp.tipo_concepto.disable();
-            this.Cmp.id_moneda.disable();
+            //this.Cmp.id_moneda.disable();
             this.Cmp.id_funcionario.store.baseParams.fecha = this.cmpFechaSoli.getValue().dateFormat(this.cmpFechaSoli.format);
             //this.Cmp.fecha_soli.fireEvent('change');
 
@@ -1366,7 +1366,7 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.fecha_soli.fireEvent('change');
             this.Cmp.tipo.enable();
             this.Cmp.tipo_concepto.enable();
-            this.Cmp.id_moneda.disable();
+            //this.Cmp.id_moneda.disable();
 
 
             this.Cmp.id_categoria_compra.store.load({
