@@ -856,3 +856,91 @@ ALTER TABLE adq.tsolicitud
 COMMENT ON COLUMN adq.tsolicitud.presupuesto_aprobado
 IS 'Usado para control de presupuesto.';
 /***********************************F-SCP-BVP-ADQ-0-31/01/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-29/09/2020****************************************/
+ALTER TABLE adq.tsolicitud
+  ADD COLUMN tipo_modalidad VARCHAR(300);
+
+
+CREATE TABLE adq.tmatriz_concepto (
+  id_matriz_concepto SERIAL,
+  id_matriz_modalidad INTEGER,
+  id_concepto_ingas INTEGER,
+  CONSTRAINT tmatriz_concepto_pkey PRIMARY KEY(id_matriz_concepto)
+) INHERITS (pxp.tbase)
+WITH (oids = false);
+
+
+ALTER TABLE adq.tmatriz_concepto
+  OWNER TO postgres;
+
+  CREATE TABLE adq.tmatriz_modalidad (
+  id_matriz_modalidad SERIAL,
+  referencia VARCHAR(300),
+  tipo_contratacion VARCHAR(500),
+  nacional VARCHAR(100),
+  internacional VARCHAR(100),
+  id_uo INTEGER,
+  nivel_importancia VARCHAR(50),
+  id_cargo INTEGER,
+  contrato_global VARCHAR(100),
+  modalidad_menor VARCHAR(100),
+  modalidad_anpe VARCHAR(50),
+  modalidad_licitacion VARCHAR(50),
+  modalidad_directa VARCHAR(50),
+  modalidad_excepcion VARCHAR(100),
+  modalidad_desastres VARCHAR(100),
+  punto_reorden VARCHAR(100),
+  observaciones VARCHAR(600),
+  CONSTRAINT tmatriz_conceptos_pkey PRIMARY KEY(id_matriz_modalidad)
+) INHERITS (pxp.tbase)
+WITH (oids = false);
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.referencia
+IS 'codigo de referencia del conjunto de conceptos';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.tipo_contratacion
+IS 'nombre del conjunto de conceptos';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.nacional
+IS 'si/no';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.internacional
+IS 'si/no';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.id_uo
+IS 'responsable unidad';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.nivel_importancia
+IS 'en catalogo los valores';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.id_cargo
+IS 'nivel de importamcia';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.contrato_global
+IS 'si/no';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.modalidad_menor
+IS 'si/no';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.modalidad_anpe
+IS 'si/no';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.modalidad_licitacion
+IS 'si/no';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.modalidad_directa
+IS 'si/no';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.modalidad_excepcion
+IS 'si/no';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.modalidad_desastres
+IS 'si/no';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.punto_reorden
+IS 'si/no';
+
+ALTER TABLE adq.tmatriz_modalidad
+  OWNER TO postgres;
+/***********************************F-SCP-MAY-ADQ-0-29/09/2020****************************************/
