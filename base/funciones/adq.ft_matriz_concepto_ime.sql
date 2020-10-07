@@ -125,7 +125,7 @@ BEGIN
 
             UPDATE adq.tmatriz_concepto SET
             estado_reg = 'inactivo'
-            WHERE v_parametros.id_matriz_concepto;
+            WHERE id_matriz_concepto = v_parametros.id_matriz_concepto;
 
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Matriz - conceptos de gasto eliminado(a)');

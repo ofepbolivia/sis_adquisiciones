@@ -72,7 +72,7 @@ BEGIN
 			fecha_mod
           	) values(
 			'activo',
-			v_parametros.referencia,
+			'',
 			v_parametros.tipo_contratacion,
 			v_parametros.nacional,
 			v_parametros.internacional,
@@ -99,6 +99,10 @@ BEGIN
 
 			)RETURNING id_matriz_modalidad into v_id_matriz_modalidad;
 
+			UPDATE adq.tmatriz_modalidad SET
+            referencia = v_id_matriz_modalidad::varchar
+            WHERE id_matriz_modalidad = v_id_matriz_modalidad;
+
 			--Definicion de la respuesta
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Matriz almacenado(a) con exito (id_matriz_modalidad'||v_id_matriz_modalidad||')');
             v_resp = pxp.f_agrega_clave(v_resp,'id_matriz_modalidad',v_id_matriz_modalidad::varchar);
@@ -120,7 +124,7 @@ BEGIN
 		begin
 			--Sentencia de la modificacion
 			update adq.tmatriz_modalidad set
-			referencia = v_parametros.referencia,
+			referencia = (v_parametros.id_matriz_modalidad)::varchar,
 			tipo_contratacion = v_parametros.tipo_contratacion,
 			nacional = v_parametros.nacional,
 			internacional = v_parametros.internacional,
@@ -167,7 +171,7 @@ BEGIN
 
             UPDATE adq.tmatriz_modalidad SET
             estado_reg = 'inactivo'
-            WHERE v_parametros.id_matriz_modalidad;
+            WHERE id_matriz_modalidad = v_parametros.id_matriz_modalidad;
 
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Matriz eliminado(a)');

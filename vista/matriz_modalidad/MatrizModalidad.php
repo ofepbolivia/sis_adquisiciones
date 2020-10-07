@@ -123,13 +123,13 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
 				filters:{pfiltro:'matriz.referencia',type:'string'},
 				id_grupo:0,
 				grid:true,
-				form:true
+				form:false
 		},
 		{
 			config:{
 				name: 'tipo_contratacion',
 				fieldLabel: 'Tipo Contratación',
-				allowBlank: true,
+				allowBlank: false,
                 anchor: '100%',
 				gwidth: 100,
 				maxLength:500
@@ -144,7 +144,7 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
 			config:{
 				name: 'nacional',
 				fieldLabel: 'Nacional',
-				allowBlank: true,
+				allowBlank: false,
                 anchor: '100%',
 				gwidth: 100,
 				maxLength:100,
@@ -164,7 +164,7 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
 			config:{
 				name: 'internacional',
 				fieldLabel: 'Internacional',
-				allowBlank: true,
+				allowBlank: false,
                 anchor: '100%',
 				gwidth: 100,
 				maxLength:100,
@@ -351,7 +351,7 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
             config: {
                 name: 'id_cargo',
                 fieldLabel: 'Titular',
-                allowBlank: false,
+                allowBlank: true,
                 emptyText: 'Elija una opción...',
                 store: new Ext.data.JsonStore({
                     url: '../../sis_organigrama/control/Cargo/listarCargo',
@@ -364,7 +364,7 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
                     totalProperty: 'total',
                     fields: ['id_cargo', 'nombre','codigo'],
                     remoteSort: true,
-                    baseParams: {par_filtro: 'cargo.nombre'}
+                    baseParams: {par_filtro: 'nombre'}
                 }),
                 tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b></p></div></tpl>',
                 valueField: 'id_cargo',
@@ -714,7 +714,7 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
 	],
 	sortInfo:{
 		field: 'id_matriz_modalidad',
-		direction: 'ASC'
+		direction: 'DESC'
 	},
 
     tabsouth : [{
