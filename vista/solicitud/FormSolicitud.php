@@ -937,8 +937,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     name: 'fecha_soli',
                     fieldLabel: 'Fecha Solicitud',
                     allowBlank: false,
-                    disabled: false,
-                    readOnly: false,
+                    //(maylee.perez) modificacion por la fecha debe ser la fecha actual de la solicitud
+                    disabled: true,
+                    readOnly: true,
                     width: 177,
                     format: 'd/m/Y',
                     msgTarget: 'side',

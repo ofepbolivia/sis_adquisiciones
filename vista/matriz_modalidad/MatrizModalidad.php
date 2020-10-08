@@ -164,7 +164,7 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
 			config:{
 				name: 'internacional',
 				fieldLabel: 'Internacional',
-				allowBlank: false,
+				allowBlank: true,
                 anchor: '100%',
 				gwidth: 100,
 				maxLength:100,

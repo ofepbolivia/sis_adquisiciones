@@ -77,8 +77,8 @@ BEGIN
 						from adq.tmatriz_modalidad matriz
 						inner join segu.tusuario usu1 on usu1.id_usuario = matriz.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = matriz.id_usuario_mod
-                        inner join orga.tuo uo on uo.id_uo = matriz.id_uo
-                        inner join orga.tcargo car on car.id_cargo = matriz.id_cargo
+                        left join orga.tuo uo on uo.id_uo = matriz.id_uo
+                        left join orga.tcargo car on car.id_cargo = matriz.id_cargo
 
 				        where matriz.estado_reg =''activo'' and  ';
 
@@ -106,6 +106,9 @@ BEGIN
 					    from adq.tmatriz_modalidad matriz
 					    inner join segu.tusuario usu1 on usu1.id_usuario = matriz.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = matriz.id_usuario_mod
+						left join orga.tuo uo on uo.id_uo = matriz.id_uo
+                        left join orga.tcargo car on car.id_cargo = matriz.id_cargo' ||
+                         '
 					    where matriz.estado_reg =''activo'' and  ';
 
 			--Definicion de la respuesta
