@@ -30,6 +30,9 @@ DECLARE
 	v_mensaje_error         text;
 	v_id_matriz_concepto	integer;
 
+    v_list_concepto_gasto	varchar;
+    v_id_matriz_modalidad	integer;
+
 BEGIN
 
     v_nombre_funcion = 'adq.ft_matriz_concepto_ime';
@@ -67,9 +70,20 @@ BEGIN
 			null,
 			null
 
-
-
 			)RETURNING id_matriz_concepto into v_id_matriz_concepto;
+
+            --modificar
+            select list(ci.desc_ingas)
+            into v_list_concepto_gasto
+            from adq.tmatriz_concepto mc
+            left join param.tconcepto_ingas ci on ci.id_concepto_ingas = mc.id_concepto_ingas
+            where  mc.estado_reg = 'activo'
+            and mc.id_matriz_modalidad = v_parametros.id_matriz_modalidad
+            GROUP by mc.id_matriz_modalidad;
+
+            update adq.tmatriz_modalidad set
+            list_concepto_gasto = v_list_concepto_gasto
+            where id_matriz_modalidad = v_parametros.id_matriz_modalidad;
 
 			--Definicion de la respuesta
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Matriz - conceptos de gasto almacenado(a) con exito (id_matriz_concepto'||v_id_matriz_concepto||')');
@@ -100,6 +114,19 @@ BEGIN
 			usuario_ai = v_parametros._nombre_usuario_ai
 			where id_matriz_concepto=v_parametros.id_matriz_concepto;
 
+            --modificar
+            select list(ci.desc_ingas)
+            into v_list_concepto_gasto
+            from adq.tmatriz_concepto mc
+            left join param.tconcepto_ingas ci on ci.id_concepto_ingas = mc.id_concepto_ingas
+            where  mc.estado_reg = 'activo'
+            and mc.id_matriz_modalidad = v_parametros.id_matriz_modalidad
+            GROUP by mc.id_matriz_modalidad;
+
+            update adq.tmatriz_modalidad set
+            list_concepto_gasto = v_list_concepto_gasto
+            where id_matriz_modalidad = v_parametros.id_matriz_modalidad;
+
 			--Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Matriz - conceptos de gasto modificado(a)');
             v_resp = pxp.f_agrega_clave(v_resp,'id_matriz_concepto',v_parametros.id_matriz_concepto::varchar);
@@ -124,8 +151,29 @@ BEGIN
             where id_matriz_concepto=v_parametros.id_matriz_concepto;*/
 
             UPDATE adq.tmatriz_concepto SET
-            estado_reg = 'inactivo'
+            estado_reg = 'inactivo',
+            fecha_mod = now(),
+            id_usuario_mod = p_id_usuario
             WHERE id_matriz_concepto = v_parametros.id_matriz_concepto;
+
+            select mod.id_matriz_modalidad
+            into v_id_matriz_modalidad
+            from adq.tmatriz_modalidad mod
+            left join adq.tmatriz_concepto mc on mc.id_matriz_modalidad = mod.id_matriz_modalidad
+            where mc.id_matriz_concepto = v_parametros.id_matriz_concepto;
+
+            --modificar
+            select list(ci.desc_ingas)
+            into v_list_concepto_gasto
+            from adq.tmatriz_concepto mc
+            left join param.tconcepto_ingas ci on ci.id_concepto_ingas = mc.id_concepto_ingas
+            where  mc.estado_reg = 'activo'
+            and mc.id_matriz_modalidad = v_id_matriz_modalidad
+            GROUP by mc.id_matriz_modalidad;
+
+            update adq.tmatriz_modalidad set
+            list_concepto_gasto = v_list_concepto_gasto
+            where id_matriz_modalidad = v_id_matriz_modalidad;
 
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Matriz - conceptos de gasto eliminado(a)');

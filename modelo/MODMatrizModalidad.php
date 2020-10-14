@@ -49,6 +49,9 @@ class MODMatrizModalidad extends MODbase{
 		$this->captura('nombre_uo','varchar');
 		$this->captura('codigo_uo','varchar');
 		$this->captura('nombre','varchar');
+		$this->captura('resp_proc_contratacion','varchar');
+
+		$this->captura('list_concepto_gasto','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

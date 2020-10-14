@@ -99,7 +99,8 @@ BEGIN
 
 			)RETURNING id_matriz_modalidad into v_id_matriz_modalidad;
 
-			UPDATE adq.tmatriz_modalidad SET
+
+            UPDATE adq.tmatriz_modalidad SET
             referencia = v_id_matriz_modalidad::varchar
             WHERE id_matriz_modalidad = v_id_matriz_modalidad;
 
@@ -170,7 +171,9 @@ BEGIN
             where id_matriz_modalidad=v_parametros.id_matriz_modalidad;*/
 
             UPDATE adq.tmatriz_modalidad SET
-            estado_reg = 'inactivo'
+            estado_reg = 'inactivo',
+            fecha_mod = now(),
+            id_usuario_mod = p_id_usuario
             WHERE id_matriz_modalidad = v_parametros.id_matriz_modalidad;
 
             --Definicion de la respuesta

@@ -116,11 +116,12 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
 				fieldLabel: 'Ref.',
 				allowBlank: true,
                 anchor: '100%',
-				gwidth: 100,
+				gwidth: 35,
 				maxLength:300
 			},
 				type:'TextField',
 				filters:{pfiltro:'matriz.referencia',type:'string'},
+                bottom_filter: true,
 				id_grupo:0,
 				grid:true,
 				form:false
@@ -131,11 +132,12 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
 				fieldLabel: 'Tipo Contratación',
 				allowBlank: false,
                 anchor: '100%',
-				gwidth: 100,
+				gwidth: 300,
 				maxLength:500
 			},
 				type:'TextField',
 				filters:{pfiltro:'matriz.tipo_contratacion',type:'string'},
+                bottom_filter: true,
 				id_grupo:0,
 				grid:true,
 				form:true
@@ -146,7 +148,7 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
 				fieldLabel: 'Nacional',
 				allowBlank: false,
                 anchor: '100%',
-				gwidth: 100,
+				gwidth: 50,
 				maxLength:100,
                 typeAhead: true,
                 triggerAction: 'all',
@@ -166,7 +168,7 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
 				fieldLabel: 'Internacional',
 				allowBlank: true,
                 anchor: '100%',
-				gwidth: 100,
+				gwidth: 50,
 				maxLength:100,
                 typeAhead: true,
                 triggerAction: 'all',
@@ -227,10 +229,10 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
             config:{
                 name:'id_uo',
                 origen:'UO',
-                fieldLabel:'Responsable',
+                fieldLabel:'Unidad Responsable',
                 allowBlank:false,
                 gdisplayField:'nombre_uo',//mapea al store del grid
-                gwidth:200,
+                gwidth:250,
                 anchor: '100%',
                 baseParams:{presupuesta:'si'},
                 renderer:function (value, p, record){return String.format('{0} {1}' , record.data['codigo_uo'], record.data['nombre_uo']);}
@@ -350,8 +352,9 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
         {
             config: {
                 name: 'id_cargo',
-                fieldLabel: 'Titular',
+                fieldLabel: 'Nivel Aprobación (Aprobador)',
                 allowBlank: true,
+                resizable: true,
                 emptyText: 'Elija una opción...',
                 store: new Ext.data.JsonStore({
                     url: '../../sis_organigrama/control/Cargo/listarCargo',
@@ -364,7 +367,7 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
                     totalProperty: 'total',
                     fields: ['id_cargo', 'nombre','codigo'],
                     remoteSort: true,
-                    baseParams: {par_filtro: 'nombre'}
+                    baseParams: {par_filtro: 'cargo.nombre'}
                 }),
                 tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b></p></div></tpl>',
                 valueField: 'id_cargo',
@@ -379,7 +382,8 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
                 pageSize: 15,
                 queryDelay: 1000,
                 anchor: '100%',
-                gwidth: 150,
+                listWidth: 350,
+                gwidth: 250,
                 minChars: 2,
                 renderer : function(value, p, record) {
                     return String.format('{0}', record.data['nombre']);
@@ -387,7 +391,8 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
             },
             type: 'ComboBox',
             id_grupo: 0,
-            filters: {pfiltro: 'tcargo.nombre',type: 'string'},
+            filters: {pfiltro: 'car.nombre',type: 'string'},
+            bottom_filter: true,
             grid: true,
             form: true
         },
@@ -551,6 +556,84 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
+        /*{
+            config:{
+                name: 'resp_proc_contratacion',
+                fieldLabel: 'Responsable Proceso de Contratación ',
+                allowBlank: false,
+                anchor: '100%',
+                gwidth: 100,
+                maxLength:500
+            },
+            type:'TextField',
+            filters:{pfiltro:'matriz.resp_proc_contratacion',type:'string'},
+            id_grupo:0,
+            grid:true,
+            form:true
+        },*/
+        /*{
+            config: {
+                name: 'resp_proc_contratacion',
+                fieldLabel: 'Responsable Proceso de Contratación',
+                allowBlank: true,
+                emptyText: 'Elija una opción...',
+                store: new Ext.data.JsonStore({
+                    url: '../../sis_organigrama/control/Cargo/listarCargo',
+                    id: 'id_cargo',
+                    root: 'datos',
+                    sortInfo: {
+                        field: 'nombre',
+                        direction: 'ASC'
+                    },
+                    totalProperty: 'total',
+                    fields: ['id_cargo', 'nombre','codigo'],
+                    remoteSort: true,
+                    baseParams: {par_filtro: 'nombre'}
+                }),
+                tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nombre}</b></p></div></tpl>',
+                valueField: 'id_cargo',
+                displayField: 'nombre',
+                gdisplayField: 'nombre',
+                hiddenName: 'id_cargo',
+                forceSelection: true,
+                typeAhead: false,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'remote',
+                pageSize: 15,
+                queryDelay: 1000,
+                anchor: '100%',
+                gwidth: 150,
+                minChars: 2,
+                renderer : function(value, p, record) {
+                    return String.format('{0}', record.data['nombre']);
+                }
+            },
+            type: 'ComboBox',
+            id_grupo: 0,
+            filters: {pfiltro: 'tcargo.nombre',type: 'string'},
+            grid: true,
+            form: true
+        },*/
+
+        {
+            config:{
+                name: 'list_concepto_gasto',
+                fieldLabel: 'List Conceptos de Gasto',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 200,
+                maxLength:100
+
+            },
+            type:'TextField',
+            filters:{pfiltro:'matriz.list_concepto_gasto',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:false,
+            bottom_filter:true
+        },
+
 		{
 			config:{
 				name: 'observaciones',
@@ -603,8 +686,10 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-							format: 'd/m/Y', 
-							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
+				format: 'd/m/Y',
+                renderer: function (value, p, record) {
+                    return value ? value.dateFormat('d/m/Y H:i:s') : ''
+                }
 			},
 				type:'DateField',
 				filters:{pfiltro:'matriz.fecha_reg',type:'date'},
@@ -612,6 +697,7 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:false
 		},
+   
 		{
 			config:{
 				name: 'id_usuario_ai',
@@ -639,7 +725,7 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
 				type:'TextField',
 				filters:{pfiltro:'matriz.usuario_ai',type:'string'},
 				id_grupo:1,
-				grid:true,
+				grid:false,
 				form:false
 		},
 		{
@@ -710,12 +796,17 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
 		{name:'nombre_uo', type: 'string'},
 		{name:'codigo_uo', type: 'string'},
 		{name:'nombre', type: 'string'},
+		{name:'resp_proc_contratacion', type: 'string'},
+		{name:'list_concepto_gasto', type: 'text'},
 
 	],
 	sortInfo:{
-		field: 'id_matriz_modalidad',
-		direction: 'DESC'
+		field: 'tipo_contratacion',
+		direction: 'ASC'
 	},
+
+    arrayDefaultColumHidden: ['list_concepto_gasto'],
+
 
     tabsouth : [{
         url : '../../../sis_adquisiciones/vista/matriz_concepto/MatrizConcepto.php',

@@ -120,7 +120,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         queryDelay: 1000,
                         width: 250,
                         gwidth: 350,
-                        minChars: 10,
+                        minChars: 1,
                         qtip: 'Si el concepto de gasto que necesita no existe por favor  comuniquese con el área de presupuestos para solicitar la creación.',
                         tpl: '<tpl for="."><div class="x-combo-list-item"><p><b>{desc_ingas}</b></p><strong>{tipo}</strong><p>PARTIDA: {desc_partida} - ({desc_gestion})</p></div></tpl>',
                         renderer: function (value, p, record) {
@@ -135,6 +135,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     grid: true,
                     form: true
                 },
+
                 {
                     config: {
                         name: 'estado_reg',
