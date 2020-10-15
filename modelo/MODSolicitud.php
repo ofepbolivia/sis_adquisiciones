@@ -102,7 +102,9 @@ class MODSolicitud extends MODbase
 
         $this->captura('cuce', 'varchar');
         $this->captura('fecha_conclusion', 'date');
-        $this->captura('presupuesto_aprobado', 'varchar');      
+        $this->captura('presupuesto_aprobado', 'varchar');
+
+        $this->captura('tipo_modalidad', 'varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();

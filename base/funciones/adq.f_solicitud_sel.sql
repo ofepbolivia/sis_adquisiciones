@@ -335,7 +335,7 @@ BEGIN
              fun.desc_funcionario1, funa.desc_funcionario1, uo.codigo, uo.nombre_unidad,
              ges.gestion, mon.codigo, dep.codigo, pm.nombre, cat.nombre, funrpc.desc_funcionario1,
              ew.obs, pro.desc_proveedor, funs.desc_funcionario1, ew.id_tipo_estado,
-             pwf.id_tipo_estado_wfs, tcat.codigo, tcat.id_catalogo order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+             pwf.id_tipo_estado_wfs, tcat.codigo, tcat.id_catalogo, tcat2.descripcion order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
 			--Devuelve la respuesta
 			return v_consulta;
