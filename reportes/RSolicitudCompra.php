@@ -175,8 +175,10 @@ Class RSolicitudCompra extends Report {
         $pdf->Cell($width3, $height, 'Fecha de Aprobación', 0, 0, 'C', false, '', 0, false, 'T', 'C');
         $pdf->Cell($width2+8, $height, 'Nro Trámite', 0, 0, 'C', false, '', 0, false, 'T', 'C');
         /*Aqui aumentando para el nuevo formato Ismael Valdivia (12/10/2020)*/
-        if ($fecha_solicitud  < $fechaFormatoRPCE) {
-		      $pdf->Cell($width2-3, $height, 'Tipo', 0, 0, 'C', false, '', 0, false, 'T', 'C');
+        if ($fecha_solicitud  >= $fechaFormatoRPCE && $codigoAquisicion == 'CNPD') {
+
+        } else {
+           $pdf->Cell($width2-3, $height, 'Tipo', 0, 0, 'C', false, '', 0, false, 'T', 'C');
         }
         /*********************************************************************/
         $pdf->Cell($width2-3, $height, 'Moneda', 0, 0, 'C', false, '', 0, false, 'T', 'C');
@@ -198,7 +200,9 @@ Class RSolicitudCompra extends Report {
         }
         $pdf->Cell($width2+8, $height, $this->getDataSource()->getParameter('num_tramite'), 0, 0, 'C', false, '', 0, false, 'T', 'C');
         /*Aqui aumentando para el nuevo formato Ismael Valdivia (12/10/2020)*/
-        if ($fecha_solicitud  < $fechaFormatoRPCE) {
+        if ($fecha_solicitud  >= $fechaFormatoRPCE && $codigoAquisicion == 'CNPD') {
+
+        }else{
           $pdf->Cell($width2-3, $height, $this->getDataSource()->getParameter('tipo'), 0, 0, 'C', false, '', 0, false, 'T', 'C');
         }
         /********************************************************************/
