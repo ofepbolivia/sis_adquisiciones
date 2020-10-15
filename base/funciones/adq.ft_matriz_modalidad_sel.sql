@@ -140,9 +140,6 @@ BEGIN
                         left join orga.tuo uo on uo.id_uo = matriz.id_uo
                         left join orga.tcargo car on car.id_cargo = matriz.id_cargo
 
-                        left join adq.tmatriz_concepto mc on mc.id_matriz_modalidad = matriz.id_matriz_modalidad
-                        left join param.tconcepto_ingas ci on ci.id_concepto_ingas = mc.id_concepto_ingas
-
 					    where matriz.estado_reg =''activo'' and  ';
 
 			--Definicion de la respuesta

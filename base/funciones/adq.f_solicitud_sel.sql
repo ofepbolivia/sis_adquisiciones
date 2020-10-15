@@ -301,7 +301,8 @@ BEGIN
                         sol.list_proceso,
                         sol.cuce,
                         sol.fecha_conclusion,
-                        sol.presupuesto_aprobado
+                        sol.presupuesto_aprobado,
+                        tcat2.descripcion
 
 						from adq.tsolicitud sol
 						inner join segu.tusuario usu1 on usu1.id_usuario = sol.id_usuario_reg
@@ -324,6 +325,7 @@ BEGIN
                         left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud and tsd.estado_reg = ''activo''
 
                         left join param.tcatalogo tcat on tcat.id_catalogo = sol.prioridad
+                         left join param.tcatalogo tcat2 on tcat2.codigo = sol.tipo_modalidad
                         '||v_inner||'
                         where  sol.estado_reg = ''activo'' and '||v_filtro;
 
@@ -504,6 +506,7 @@ BEGIN
                         left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud and tsd.estado_reg = ''activo''
 
                         left join param.tcatalogo tcat on tcat.id_catalogo = sol.prioridad
+                         left join param.tcatalogo tcat2 on tcat2.codigo = sol.tipo_modalidad
                         '||v_inner||'
                         where  sol.estado_reg = ''activo'' and '||v_filtro;
 

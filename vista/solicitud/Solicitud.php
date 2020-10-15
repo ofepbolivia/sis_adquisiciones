@@ -342,8 +342,9 @@ header("content-type: text/javascript; charset=UTF-8");
                 ],
                 'Servicio': [
                     ['servicio', 'Servicios'],
-                    ['consultoria_personal', 'Consultoria de Personas'],
-                    ['consultoria_empresa', 'Consultoria de Empresas'],
+                    ['consultoria_personal', 'Consultoria Individual de Línea'],
+                    ['consultoria_empresa', 'Consultoria por Producto'],
+                    ['obra', 'Obra'],
                     //['alquiler_inmueble','Alquiler Inmuebles']
                 ]
             },
@@ -462,8 +463,9 @@ header("content-type: text/javascript; charset=UTF-8");
                         renderer: function (value, p, record) {
                             var dato = '';
                             dato = (value == 'alquiler_inmueble') ? 'Alquiler Inmuebles' : dato;
-                            dato = (dato == '' && value == 'consultoria_empresa') ? 'Consultoria de Empresas' : dato;
-                            dato = (dato == '' && value == 'consultoria_personal') ? 'Consultoria de Personas' : dato;
+                            dato = (dato == '' && value == 'consultoria_empresa') ? 'Consultoria Individual de Línea' : dato;
+                            dato = (dato == '' && value == 'consultoria_personal') ? 'Consultoria por Producto' : dato;
+                            dato = (dato == '' && value == 'obra') ? 'Obra' : dato;
                             dato = (dato == '' && value == 'servicio') ? 'Servicios' : dato;
                             dato = (dato == '' && value == 'vehiculo') ? 'Vehiculos' : dato;
                             dato = (dato == '' && value == 'inmueble') ? 'Inmuebles' : dato;
@@ -608,6 +610,23 @@ header("content-type: text/javascript; charset=UTF-8");
                     grid: true,
                     form: false
                 },
+
+                {
+                    config: {
+                        name: 'tipo_modalidad',
+                        fieldLabel: 'Tipo Modalidad',
+                        allowBlank: true,
+                        width: 100,
+                        gwidth: 200,
+                        maxLength: 255
+                    },
+                    type: 'TextField',
+                    id_grupo: 0,
+                    filters: {pfiltro: 'tcat2.tipo_modalidad', type: 'string'},
+                    grid: true,
+                    form: false
+                },
+
                 {
                     config: {
                         name: 'id_uo',
@@ -863,12 +882,12 @@ header("content-type: text/javascript; charset=UTF-8");
                 {
                     config: {
                         name: 'justificacion',
-                        fieldLabel: 'Justificacion',
+                        fieldLabel: 'Necesidad de la Contratación',
                         qtip: 'Justifique, ¿por que la necesidad de esta compra?',
                         allowBlank: false,
                         anchor: '80%',
                         gwidth: 100,
-                        maxLength: 500,
+                        maxLength: 10000,
                         msgTarget: 'side',
                         anchor: '95%'
                     },
@@ -1282,6 +1301,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 'cuce',
                 {name: 'fecha_conclusion', type: 'date', dateFormat: 'Y-m-d'},
                 {name: 'presupuesto_aprobado', type: 'string'},
+                {name: 'tipo_modalidad', type: 'string'}
             ],
 
             arrayDefaultColumHidden: ['id_fecha_reg', 'id_fecha_mod',
