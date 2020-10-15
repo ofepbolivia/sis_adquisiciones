@@ -25,30 +25,30 @@ require_once dirname(__FILE__).'/../../pxp/pxpReport/Report.php';
 		$this->Cell(40, $height, '', 0, 0, 'C', false, '', 0, false, 'T', 'C');
         $this->SetFontSize(16);
         $this->SetFont('','B');
-		if($codigo_uo=='MM'){
-			$this->Cell(105, $height, 'SOLICITUD DE COMPRA/REPARACION', 0, 0, 'C', false, '', 0, false, 'T', 'C');
-		}else{
-      /**************Aqui ponemos los datos para obtener la fecha de la solicitud************************/
-      if(in_array(substr($this->getDataSource()->getParameter('num_tramite'),0, 2), $cigla_tramite)){
-          if ( $this->getDataSource()->getParameter('fecha_soli_material') >= '2019-09-01' ) {
-              $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli_material');
-          }else{
-              $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli');
-          }
-      }else{
-          if ( $this->getDataSource()->getParameter('fecha_soli_gant') >= '2019-09-01'){
-              $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli_gant');
-          }else{
-              $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli');
-          }
-      }
-      /***************************************************************************************************/
-        if ($fecha_solicitud  >= $fechaFormatoRPCE && $codigoAquisicion == 'CNPD') {
-          $this->Cell(105, $height, 'SOLICITUD DE CONTRATACIÓN', 0, 0, 'C', false, '', 0, false, 'T', 'C');
-        } else {
-          $this->Cell(105, $height, 'SOLICITUD DE COMPRA', 0, 0, 'C', false, '', 0, false, 'T', 'C');
+        /**************Aqui ponemos los datos para obtener la fecha de la solicitud************************/
+        if(in_array(substr($this->getDataSource()->getParameter('num_tramite'),0, 2), $cigla_tramite)){
+            if ( $this->getDataSource()->getParameter('fecha_soli_material') >= '2019-09-01' ) {
+                $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli_material');
+            }else{
+                $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli');
+            }
+        }else{
+            if ( $this->getDataSource()->getParameter('fecha_soli_gant') >= '2019-09-01'){
+                $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli_gant');
+            }else{
+                $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli');
+            }
         }
-		}
+        /***************************************************************************************************/
+          if ($fecha_solicitud  >= $fechaFormatoRPCE && $codigoAquisicion == 'CNPD') {
+            $this->Cell(105, $height, 'SOLICITUD DE CONTRATACIÓN', 0, 0, 'C', false, '', 0, false, 'T', 'C');
+          } else {
+            if($codigo_uo=='MM'){
+              $this->Cell(105, $height, 'SOLICITUD DE COMPRA/REPARACION', 0, 0, 'C', false, '', 0, false, 'T', 'C');
+            } else {
+              $this->Cell(105, $height, 'SOLICITUD DE COMPRA', 0, 0, 'C', false, '', 0, false, 'T', 'C');
+            }
+          }
 		$this->firmar();
 		/*jrr:cambio para firmas*/
         //$this->Image(dirname(__FILE__).'/../../pxp/lib'.$_SESSION['_DIR_LOGO'], $x, $y, 36);
