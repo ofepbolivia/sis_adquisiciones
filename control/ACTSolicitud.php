@@ -86,7 +86,7 @@ class ACTSolicitud extends ACTbase
 
         $this->objParam->addParametro('id_funcionario_usu', $_SESSION["ss_id_funcionario"]);
 
-        //filtro breydi.vasquez 07/01/2020 
+        //filtro breydi.vasquez 07/01/2020
         $this->objParam->getParametro('tramite_sin_presupuesto_centro_c') != '' && $this->objParam->addFiltro("sol.presupuesto_aprobado = ''sin_presupuesto_cc'' ");
 
         if ($this->objParam->getParametro('tipoReporte') == 'excel_grid' || $this->objParam->getParametro('tipoReporte') == 'pdf_grid') {
@@ -433,7 +433,20 @@ class ACTSolicitud extends ACTbase
         $dataSource->putParameter('prioridad', $datosSolicitud[0]['prioridad']);
         $dataSource->putParameter('dep_prioridad', $datosSolicitud[0]['dep_prioridad']);
         $dataSource->putParameter('cargo_desc_funcionario_apro', $datosSolicitud[0]['cargo_desc_funcionario_apro']);
-
+        /*Aumentando para recuperar la firma de aprobador*/
+        $dataSource->putParameter('funcionario_aprobador', $datosSolicitud[0]['funcionario_aprobador']);
+        $dataSource->putParameter('cargo_aprobador', $datosSolicitud[0]['cargo_aprobador']);
+        $dataSource->putParameter('fecha_aprobador', $datosSolicitud[0]['fecha_aprobador']);
+        $dataSource->putParameter('funcionario_rpc', $datosSolicitud[0]['funcionario_rpc']);
+        $dataSource->putParameter('cargo_rpc', $datosSolicitud[0]['cargo_rpc']);
+        $dataSource->putParameter('codigo_rpc', $datosSolicitud[0]['codigo_rpc']);
+        $dataSource->putParameter('funcionario_jefatura_adq', $datosSolicitud[0]['funcionario_jefatura_adq']);
+        $dataSource->putParameter('cargo_jefatura_adq', $datosSolicitud[0]['cargo_jefatura_adq']);
+        $dataSource->putParameter('codigo_adquisicion', $datosSolicitud[0]['codigo_adquisicion']);
+        $dataSource->putParameter('tipo_modalidad', $datosSolicitud[0]['tipo_modalidad']);
+        $dataSource->putParameter('tipo_solicitud', $datosSolicitud[0]['tipo_solicitud']);
+        $dataSource->putParameter('tipo_concepto', $datosSolicitud[0]['tipo_concepto']);
+        /************************************************/
         //get detalle
         //Reset all extra params:
         $this->objParam->defecto('ordenacion', 'id_solicitud_det');
@@ -448,6 +461,11 @@ class ACTSolicitud extends ACTbase
         $resultSolicitudDet = $modSolicitudDet->listarSolicitudDet();
 
         //agrupa el detalle de la solcitud por centros de costos y partidas
+        if ($datosSolicitud[0]['fecha_soli']>='2020-10-01' && $datosSolicitud[0]['codigo_adquisicion'] == 'CNPD') {
+          $titulo_archivo = 'SOLICITUD DE CONTRATACIÓN';
+        }else{
+          $titulo_archivo = 'SOLICITUD DE COMPRA';
+        }
 
         if( $datosSolicitud[0]['fecha_reg'] >= '2020-01-01') {
             $solicitudDetAgrupado = $this->groupArray($resultSolicitudDet->getDatos(), 'codigo_partida', 'desc_centro_costo', $datosSolicitud[0]['id_moneda'], $datosSolicitud[0]['estado'], $onlyData);
@@ -477,7 +495,7 @@ class ACTSolicitud extends ACTbase
         $nombreArchivo = uniqid(md5(session_id()) . 'SolicitudCompra') . '.pdf';
         $this->objParam->addParametro('orientacion', 'P');
         $this->objParam->addParametro('tamano', 'LETTER');
-        $this->objParam->addParametro('titulo_archivo', 'SOLICITUD DE COMPRA');
+        $this->objParam->addParametro('titulo_archivo', $titulo_archivo);
         $this->objParam->addParametro('nombre_archivo', $nombreArchivo);
         $this->objParam->addParametro('firmar', $firmar);
         $this->objParam->addParametro('fecha_firma', $fecha_firma);
@@ -578,7 +596,7 @@ class ACTSolicitud extends ACTbase
 
             if (in_array($estado_sol, $estado_sin_presupuesto) || $onlyData) {
 
-                $cont_grup = 0;                
+                $cont_grup = 0;
                 foreach ($arrayResp as $value2) {
                     $cc_array = array();
                     $total_pre = 0;
@@ -685,7 +703,7 @@ class ACTSolicitud extends ACTbase
 
                 $data_mail .= '<br>(' . $count_grupo . ')
 				             <br><b>Partida:</b>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; ' . $row['groupeddata'][0]['codigo_partida'] . ' - ' . $row['groupeddata'][0]['nombre_partida'] . '
-				             <br><b>Presupuestos:</b>&emsp;&emsp;&emsp; ' . $row['groupeddata'][0]['desc_centro_costo'] . ' 
+				             <br><b>Presupuestos:</b>&emsp;&emsp;&emsp; ' . $row['groupeddata'][0]['desc_centro_costo'] . '
 				             <br><b>Total Monto Partida:</b>&emsp; ' . $row['total_presu_verificado'] . ' ' . $dataSoruce->getParameter('desc_moneda') . '';
 
 
@@ -694,7 +712,7 @@ class ACTSolicitud extends ACTbase
                 foreach ($row['groupeddata'] as $solicitudDetalle) {
 
                     $data_mail .= '<br>&emsp; (' . $count_grupo . '.' . $count . ')
-	                 			  <br>&emsp;&emsp;<b>Concepto:</b>&emsp;' . $solicitudDetalle['desc_concepto_ingas'] . '  
+	                 			  <br>&emsp;&emsp;<b>Concepto:</b>&emsp;' . $solicitudDetalle['desc_concepto_ingas'] . '
 					              <br>&emsp;&emsp; <b>Detalle:</b>&emsp;' . $solicitudDetalle['descripcion'] . '
 					              <br>&emsp;&emsp; <b>Total Det:</b>&emsp;' . $solicitudDetalle['precio_total'] . ' ' . $dataSoruce->getParameter('desc_moneda') . '
 					              ';
@@ -951,7 +969,7 @@ class ACTSolicitud extends ACTbase
         $this->objFunc=$this->create('MODSolicitud');
         $this->res=$this->objFunc->aprobarPresupuestoSolicitud($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
-    }        
+    }
 
     /*
 

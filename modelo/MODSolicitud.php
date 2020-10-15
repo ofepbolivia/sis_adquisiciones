@@ -104,6 +104,8 @@ class MODSolicitud extends MODbase
         $this->captura('fecha_conclusion', 'date');
         $this->captura('presupuesto_aprobado', 'varchar');
 
+        $this->captura('tipo_modalidad', 'varchar');
+
         //Ejecuta la instruccion
         $this->armarConsulta();
         //echo($this->consulta);exit;
@@ -485,10 +487,24 @@ class MODSolicitud extends MODbase
         $this->captura('cargo_desc_funcionario_rpc', 'varchar');
         $this->captura('dep_prioridad', 'int4');
 
+        /*Aumentando para que la firma del aprobador se muestre despues de su estado*/
+        $this->captura('funcionario_aprobador', 'varchar');
+        $this->captura('cargo_aprobador', 'varchar');
+        $this->captura('fecha_aprobador', 'varchar');
+        $this->captura('funcionario_rpc', 'varchar');
+        $this->captura('cargo_rpc', 'varchar');
+        $this->captura('codigo_rpc', 'varchar');
+        $this->captura('funcionario_jefatura_adq', 'varchar');
+        $this->captura('cargo_jefatura_adq', 'varchar');
+        $this->captura('codigo_adquisicion', 'varchar');
+        $this->captura('tipo_modalidad', 'varchar');
+        $this->captura('tipo_solicitud', 'varchar');
+        $this->captura('tipo_concepto', 'varchar');
+        /****************************************************************************/
+
         $this->armarConsulta();
         //echo($this->consulta);exit;
         $this->ejecutarConsulta();
-
         return $this->respuesta;
     }
 
@@ -972,7 +988,7 @@ class MODSolicitud extends MODbase
 
         //Devuelve la respuesta
         return $this->respuesta;
-    }     
+    }
 
 }
 

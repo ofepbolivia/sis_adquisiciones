@@ -66,7 +66,20 @@ DECLARE
     v_id_estado_wf		integer;
 
    v_id_uo				integer;
+   /*Aumentando Varibales para el reporte Solicitud de compra (Ismael Valdivia 13/10/2020)*/
+   v_nombre_funcionario_aprobador varchar;
+   v_cargo_aprobador	varchar;
+   v_estado_tramite		varchar;
+   v_fecha_aprobador	varchar;
+   v_nombre_funcionario_rpc		varchar;
+   v_cargo_rpc			varchar;
+   v_fecha_rpc			varchar;
 
+   v_nombre_funcionario_jefatura_adq varchar;
+   v_cargo_jefatura_adq				 varchar;
+   v_fecha_jefatura_adq				 varchar;
+   v_codigo_rpc			varchar;
+   /***************************************************************************************/
 BEGIN
 
 	v_nombre_funcion = 'adq.f_solicitud_sel';
@@ -505,7 +518,7 @@ BEGIN
 		end;
 
 
-    /*********************************
+     /*********************************
  	#TRANSACCION:  'ADQ_SOLREP_SEL'
  	#DESCRIPCION:	Consulta de datos
  	#AUTOR:		Gonzalo Sarmiento Sejas
@@ -526,8 +539,12 @@ BEGIN
                     from adq.tsolicitud sol
                     where sol.id_solicitud = v_parametros.id_solicitud;
 
-               		select sol.num_tramite
-                     into v_nro_tramite
+               		select sol.num_tramite,
+                          /*Recuperando el estado para la condicion de la firma*/
+                     	   sol.estado
+                          /****************************************************/
+                     into v_nro_tramite,
+                          v_estado_tramite
                     from adq.tsolicitud sol
                     where sol.id_solicitud = v_parametros.id_solicitud;
 
@@ -536,8 +553,12 @@ BEGIN
 
                   v_proces_wf = v_parametros.id_proceso_wf;
 
-               		select sol.num_tramite
-                     into v_nro_tramite
+               		select sol.num_tramite,
+                          /*Recuperando el estado para la condicion de la firma*/
+                     	   sol.estado
+                          /****************************************************/
+                     into v_nro_tramite,
+                          v_estado_tramite
                     from adq.tsolicitud sol
                     where sol.id_proceso_wf = v_parametros.id_proceso_wf;
 
@@ -553,7 +574,7 @@ BEGIN
             else
 
                 select es.id_estado_wf
-                	into v_id_estado_wf 
+                	into v_id_estado_wf
                 from wf.testado_wf es
                 where es.fecha_reg = (
                 select
@@ -568,13 +589,110 @@ BEGIN
                     and te.codigo = 'borrador'
                     and te.etapa = 'Solicitante');
 
-              select  
+              select
                      ew.fecha_reg::date
                      into v_fecha_sol
                    FROM  wf.testado_wf ew
                    where ew.id_estado_anterior = v_id_estado_wf;
-                                   
+
           	end if;
+
+            /*Aqui Recuperamos la firma del aprobador cuando pase su estado (Ismael Valdivia 13/10/2020)*/
+            if (v_estado_tramite != 'vbaprobador' and v_estado_tramite != 'vbgerencia' and v_estado_tramite != 'borrador' and v_estado_tramite != 'vbuti') then
+            		SELECT 	vf.desc_funcionario1,
+                    		vf.nombre_cargo,
+                            max(twf.fecha_reg::date)::varchar
+                    INTO
+                            v_nombre_funcionario_aprobador,
+                            v_cargo_aprobador,
+                            v_fecha_aprobador
+                    FROM wf.testado_wf twf
+                        INNER JOIN wf.ttipo_estado te ON te.id_tipo_estado = twf.id_tipo_estado
+                        INNER JOIN wf.tproceso_wf pro ON twf.id_proceso_wf = pro.id_proceso_wf
+                        INNER JOIN orga.vfuncionario_cargo vf ON vf.id_funcionario = twf.id_funcionario
+                        WHERE twf.id_proceso_wf = v_proces_wf AND (te.codigo = 'vbaprobador' or te.codigo = 'vbgerencia') and ( vf.fecha_finalizacion is null or vf.fecha_finalizacion >= now())
+                        GROUP BY twf.id_funcionario, vf.desc_funcionario1,te.codigo,vf.nombre_cargo,pro.nro_tramite;
+    		end if;
+
+            if (v_nombre_funcionario_aprobador is null) then
+            	v_nombre_funcionario_aprobador = '';
+            end if;
+
+            if (v_cargo_aprobador is null) then
+            	v_cargo_aprobador = '';
+            end if;
+
+            if (v_fecha_aprobador is null) then
+            	v_fecha_aprobador = '';
+            end if;
+            /********************************************************************************************/
+
+
+            /*Aqui Recuperamos la firma del RPC cuando pase su estado (Ismael Valdivia 13/10/2020)*/
+            if (v_estado_tramite != 'vbrpc' and v_estado_tramite != 'vbrpa' and v_estado_tramite != 'vbpresupuestos' and v_estado_tramite != 'suppresu'
+            	and v_estado_tramite != 'vbpoa' and v_estado_tramite != 'vbaprobador' and v_estado_tramite != 'vbgerencia'
+                and v_estado_tramite != 'vbuti' and v_estado_tramite != 'borrador' and v_estado_tramite != 'vbactif'
+                and v_estado_tramite != 'pendiente') then
+            		SELECT 	vf.desc_funcionario1,
+                    		vf.nombre_cargo,
+                            max(twf.fecha_reg::date),
+                            te.codigo
+                    INTO
+                            v_nombre_funcionario_rpc,
+                            v_cargo_rpc,
+                            v_fecha_rpc,
+                            v_codigo_rpc
+                    FROM wf.testado_wf twf
+                        INNER JOIN wf.ttipo_estado te ON te.id_tipo_estado = twf.id_tipo_estado
+                        INNER JOIN wf.tproceso_wf pro ON twf.id_proceso_wf = pro.id_proceso_wf
+                        INNER JOIN orga.vfuncionario_cargo vf ON vf.id_funcionario = twf.id_funcionario
+                        WHERE twf.id_proceso_wf = v_proces_wf AND (te.codigo = 'vbrpa' or te.codigo = 'vbrpc') and ( vf.fecha_finalizacion is null or vf.fecha_finalizacion >= now())
+                        GROUP BY twf.id_funcionario, vf.desc_funcionario1,te.codigo,vf.nombre_cargo,pro.nro_tramite;
+    		end if;
+
+            if (v_nombre_funcionario_rpc is null) then
+            	v_nombre_funcionario_rpc = '';
+            end if;
+
+            if (v_cargo_rpc is null) then
+            	v_cargo_rpc = '';
+            end if;
+
+            if (v_codigo_rpc is null) then
+            	v_codigo_rpc = '';
+            end if;
+            /********************************************************************************************/
+
+            /*Aqui Recuperamos la firma del RPC cuando pase su estado (Ismael Valdivia 13/10/2020)*/
+            if (v_estado_tramite != 'aprobado' and v_estado_tramite != 'vbrpc' and v_estado_tramite != 'vbrpa' and v_estado_tramite != 'vbpresupuestos' and v_estado_tramite != 'suppresu'
+            	and v_estado_tramite != 'vbpoa' and v_estado_tramite != 'vbaprobador' and v_estado_tramite != 'vbgerencia'
+                and v_estado_tramite != 'vbuti' and v_estado_tramite != 'borrador' and v_estado_tramite != 'vbactif'
+                and v_estado_tramite != 'pendiente') then
+                    SELECT 	vf.desc_funcionario1,
+                            vf.nombre_cargo,
+                            max(twf.fecha_reg::date)
+                    INTO
+                            v_nombre_funcionario_jefatura_adq,
+                            v_cargo_jefatura_adq,
+                            v_fecha_jefatura_adq
+                    FROM wf.testado_wf twf
+                    INNER JOIN wf.ttipo_estado te ON te.id_tipo_estado = twf.id_tipo_estado
+                    INNER JOIN wf.tproceso_wf pro ON twf.id_proceso_wf = pro.id_proceso_wf
+                    INNER JOIN wf.tfuncionario_tipo_estado funci on funci.id_tipo_estado = te.id_tipo_estado
+                    INNER JOIN orga.vfuncionario_cargo vf ON vf.id_funcionario = funci.id_funcionario
+                    WHERE twf.id_proceso_wf = v_proces_wf AND te.codigo = 'aprobado' and ( vf.fecha_finalizacion is null or vf.fecha_finalizacion >= now())
+                    GROUP BY twf.id_funcionario, vf.desc_funcionario1,te.codigo,vf.nombre_cargo,pro.nro_tramite,te.id_tipo_estado;
+			end if;
+
+            if (v_nombre_funcionario_jefatura_adq is null) then
+            	v_nombre_funcionario_jefatura_adq = '';
+            end if;
+
+            if (v_cargo_jefatura_adq is null) then
+            	v_cargo_jefatura_adq = '';
+            end if;
+            /********************************************************************************************/
+
 
             --Sentencia de la consulta
 			v_consulta:='select
@@ -627,8 +745,40 @@ BEGIN
 						fca.descripcion_cargo::varchar as cargo_desc_funcionario,
                         fcap.descripcion_cargo::varchar as cargo_desc_funcionario_apro,
                         sol.prioridad,
-                        frpc.descripcion_cargo::varchar as cargo_desc_funcionario_rpc,                       
-                        dep.prioridad as dep_prioridad
+                        frpc.descripcion_cargo::varchar as cargo_desc_funcionario_rpc,
+                        dep.prioridad as dep_prioridad,
+
+
+                        /*Aumentando Para la firma del aprobador (Ismael Valdivia 13/10/2020)*/
+                        '''||v_nombre_funcionario_aprobador||'''::varchar as funcionario_aprobador,
+                        '''||v_cargo_aprobador||'''::varchar as cargo_aprobador,
+                        '''||v_fecha_aprobador||'''::varchar as fecha_aprobador,
+
+                        '''||v_nombre_funcionario_rpc||'''::varchar as funcionario_rpc,
+                        '''||v_cargo_rpc||'''::varchar as cargo_rpc,
+                        '''||v_codigo_rpc||'''::varchar as codigo_rpc,
+
+                        '''||v_nombre_funcionario_jefatura_adq||'''::varchar as funcionario_jefatura_adq,
+                        '''||v_cargo_jefatura_adq||'''::varchar as cargo_jefatura_adq,
+                        cat.codigo::varchar as codigo_adquisicion,
+                        /****************************************/
+
+                        /*Aumentando el tipo de la modalidad (Ismael Valdivia 13/10/2020)*/
+                        (select cata.descripcion
+                        from param.tcatalogo cata
+                        inner join param.tcatalogo_tipo catip on catip.id_catalogo_tipo = cata.id_catalogo_tipo
+                        where catip.nombre = ''tmatriz_modalidad'' and cata.codigo = sol.tipo_modalidad)::varchar as tipo_modalidad,
+                        /*****************************************************************/
+
+                        /*Aumnetando el tipo de solicitud (Ismael Valdivia 14/10/2020)*/
+                        (select cata.descripcion
+                        from param.tcatalogo cata
+                        inner join param.tcatalogo_tipo catip on catip.id_catalogo_tipo = cata.id_catalogo_tipo
+                        where catip.nombre = ''codigo_tipo_concepto'' and cata.codigo = sol.tipo_concepto)::varchar as tipo_solicitud,
+
+                        sol.tipo_concepto
+                        /**************************************************************/
+
 						from adq.tsolicitud sol
 						inner join segu.tusuario usu1 on usu1.id_usuario = sol.id_usuario_reg
 
@@ -647,8 +797,8 @@ BEGIN
 
                         inner join wf.testado_wf ew on ew.id_estado_wf = sol.id_estado_wf
                     	inner join orga.vfuncionario_ultimo_cargo fca on fca.id_funcionario = fun.id_funcionario
-					    inner join orga.vfuncionario_ultimo_cargo fcap on fcap.id_funcionario = sol.id_funcionario_aprobador 
-                        left join orga.vfuncionario_ultimo_cargo frpc on frpc.id_funcionario = sol.id_funcionario_rpc                       
+					    inner join orga.vfuncionario_ultimo_cargo fcap on fcap.id_funcionario = sol.id_funcionario_aprobador
+                        left join orga.vfuncionario_ultimo_cargo frpc on frpc.id_funcionario = sol.id_funcionario_rpc
 
 				        where '||v_filtro;
 
@@ -1034,3 +1184,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION adq.f_solicitud_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;
