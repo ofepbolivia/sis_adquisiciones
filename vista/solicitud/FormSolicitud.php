@@ -775,8 +775,9 @@ header("content-type: text/javascript; charset=UTF-8");
             ],
             'Servicio': [
                 ['servicio', 'Servicios'],
-                ['consultoria_personal', 'Consultoria de Personas'],
-                ['consultoria_empresa', 'Consultoria de Empresas'],
+                ['consultoria_personal', 'Consultoria Individual de Línea'],
+                ['consultoria_empresa', 'Consultoria por Producto'],
+                ['obra', 'Obra'],
                 //['alquiler_inmueble','Alquiler Inmuebles']
             ]
         },
@@ -1015,11 +1016,11 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config: {
                     name: 'justificacion',
-                    fieldLabel: 'Justificación Compra',
+                    fieldLabel: 'Necesidad de la Contratación',
                     qtip: 'Justifique, ¿por que la necesidad de esta compra?',
                     allowBlank: false,
                     width: '92%',
-                    maxLength: 1000,
+                    maxLength: 10000,
                     msgTarget: 'side'
                 },
                 type: 'TextArea',
@@ -1189,15 +1190,18 @@ header("content-type: text/javascript; charset=UTF-8");
                 if (this.Cmp.tipo.getValue() == 'Bien') {
                     this.Cmp.lugar_entrega.setValue('Almacenes de Oficina Cochabamba');
                     this.ocultarComponente(this.Cmp.fecha_inicio);
+                    this.mostrarComponente(this.Cmp.dias_plazo_entrega);
                     this.Cmp.dias_plazo_entrega.allowBlank = false;
 
                 }
                 else {
                     this.Cmp.lugar_entrega.setValue('');
                     this.mostrarComponente(this.Cmp.fecha_inicio);
+                    this.ocultarComponente(this.Cmp.dias_plazo_entrega);
                     this.Cmp.dias_plazo_entrega.allowBlank = true;
                 }
-                this.mostrarComponente(this.Cmp.dias_plazo_entrega);
+                //(maylee.perez) 09/10/2020 se comenta porq no debe mostrar para de tipo srvicio los dias de entrega
+                //this.mostrarComponente(this.Cmp.dias_plazo_entrega);
 
 
             }, this);

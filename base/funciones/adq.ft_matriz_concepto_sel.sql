@@ -94,6 +94,7 @@ BEGIN
 					    from adq.tmatriz_concepto maconcep
 					    inner join segu.tusuario usu1 on usu1.id_usuario = maconcep.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = maconcep.id_usuario_mod
+						inner join param.tconcepto_ingas ci on ci.id_concepto_ingas = maconcep.id_concepto_ingas
 					    where maconcep.estado_reg =''activo'' and  ';
 
 			--Definicion de la respuesta

@@ -949,3 +949,8 @@ ALTER TABLE adq.tmatriz_modalidad
 ALTER TABLE adq.tmatriz_modalidad
   ADD COLUMN list_concepto_gasto TEXT;
 /***********************************F-SCP-MAY-ADQ-0-14/10/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-14/10/2020****************************************/
+ALTER TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion VARCHAR(500);
+/***********************************F-SCP-MAY-ADQ-0-14/10/2020****************************************/
