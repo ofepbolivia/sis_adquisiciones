@@ -364,9 +364,6 @@ Class RSolicitudCompra extends Report {
         $pdf->SetFont('', '');
 
         /*Aumentando esta condicion para que el reporte muestre al RPC (Ismael Valdivia 12/10/2020)*/
-        if ($fecha_solicitud  < $fechaFormatoRPCE) {
-          $pdf->MultiCell($width4*2, $height, $this->getDataSource()->getParameter('justificacion'), 0,'L', false ,0);
-        }
 
         if ($fecha_solicitud  >= $fechaFormatoRPCE && $codigoAquisicion == 'CNPD') {
           $pdf->Ln();
@@ -379,6 +376,7 @@ Class RSolicitudCompra extends Report {
                     ';
             $pdf->writeHTML($tbldesc, true, false, false, false, '');
         } else {
+          $pdf->MultiCell($width4*2, $height, $this->getDataSource()->getParameter('justificacion'), 0,'L', false ,0);
           $pdf->Ln();
           $pdf->SetFont('', 'B');
           $pdf->Cell($width3, $height, 'Comité Calificación:', 0, 0, 'L', false, '', 1, false, 'T', 'C');
