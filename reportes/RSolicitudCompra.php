@@ -1001,7 +1001,7 @@ Class RSolicitudCompra extends Report {
     }
 
     function ReporteJefaturaAdquisiciones(TCPDF $pdf,$firma_jefatura,$cargo_jefatura,$nro_tramite_qr,$conteo_texto,$tipoConcepto,$conteo_texto_rpc,$totalDetalle){
-      if (($conteo_texto <= '155') && ($conteo_texto_rpc < '35') && ($totalDetalle < '2')) {        
+      if (($conteo_texto <= '155') && ($conteo_texto_rpc < '35') && ($totalDetalle < '2')) {
         $pdf->AddPage();
       }
       /*Aqui poner la condicion para el texto*/
@@ -1038,7 +1038,7 @@ Class RSolicitudCompra extends Report {
                      <tr>
                          <td align="center" >
                              <br><br>
-                             <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_jefatura.' ', $cargo_jefatura, $nro_tramite_qr) . '" alt="Logo">
+                             <img  style="width: 110px; height: 110px;" src="' . $this->generarImagenJefatura($firma_jefatura, $cargo_jefatura, $nro_tramite_qr) . '" alt="Jefatura">
                          </td>
                      </tr>
                  </table>
@@ -1341,6 +1341,24 @@ Class RSolicitudCompra extends Report {
             echo 'A ocurrido un Error.';
         }
         $url_archivo = dirname(__FILE__) . "/../../reportes_generados/" . $nom . ".png";
+
+        return $url_archivo;
+    }
+
+    function generarImagenJefatura($nom, $car, $ntra){
+        $cadena_qr = 'Nombre: '.$nom. "\n". "Cargo: ".$car. "\n"."N° Tramite: ". $ntra;
+        $barcodeobj = new TCPDF2DBarcode($cadena_qr, 'QRCODE,M');
+        $png = $barcodeobj->getBarcodePngData($w = 8, $h = 8, $color = array(0, 0, 0));        
+        $im = imagecreatefromstring($png);
+        if ($im !== false) {
+            header('Content-Type: image/png');
+            imagepng($im, dirname(__FILE__) . "/../../reportes_generados/" . $nom.'_'.$car . "jefatura.png");
+            imagedestroy($im);
+
+        } else {
+            echo 'A ocurrido un Error.';
+        }
+        $url_archivo = dirname(__FILE__) . "/../../reportes_generados/" . $nom.'_'.$car . "jefatura.png";
 
         return $url_archivo;
     }
