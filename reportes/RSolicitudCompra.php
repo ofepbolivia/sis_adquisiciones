@@ -134,7 +134,7 @@ Class RSolicitudCompra extends Report {
         } else {
           $codigoRpc = '';
         }
-
+        $totalDetalle = $this->getDataSource()->getParameter('total_detalle');
 
         if(in_array(substr($this->getDataSource()->getParameter('num_tramite'),0, 2), $cigla_tramite)){
             if ( $this->getDataSource()->getParameter('fecha_soli_material') >= '2019-09-01' ) {
@@ -980,7 +980,7 @@ Class RSolicitudCompra extends Report {
               if ($firma_rpc_flujo != '') {
                 $conteo_texto = strlen($necesidad_contratacion_desc);
                 $conteo_texto_rpc = strlen($firma_rpc_flujo);
-                $this->ReporteJefaturaAdquisiciones($pdf,$firma_jefatura_adquisiciones,$cargo_jefatura_adquisiciones,$nro_tramite_qr,$conteo_texto,$tipoConcepto,$conteo_texto_rpc);
+                $this->ReporteJefaturaAdquisiciones($pdf,$firma_jefatura_adquisiciones,$cargo_jefatura_adquisiciones,$nro_tramite_qr,$conteo_texto,$tipoConcepto,$conteo_texto_rpc,$totalDetalle);
               }
             }
         }
@@ -1000,9 +1000,9 @@ Class RSolicitudCompra extends Report {
 		return $res;
     }
 
-    function ReporteJefaturaAdquisiciones(TCPDF $pdf,$firma_jefatura,$cargo_jefatura,$nro_tramite_qr,$conteo_texto,$tipoConcepto,$conteo_texto_rpc){
-      //var_dump("aqui los tamaños",$conteo_texto,$conteo_texto_rpc);
-      if ($conteo_texto <= '155' || $conteo_texto_rpc < '35') {
+    function ReporteJefaturaAdquisiciones(TCPDF $pdf,$firma_jefatura,$cargo_jefatura,$nro_tramite_qr,$conteo_texto,$tipoConcepto,$conteo_texto_rpc,$totalDetalle){
+      if (($conteo_texto <= '155') && ($conteo_texto_rpc < '35') && ($totalDetalle < '2')) {
+        var_dump("aqui entra detalle",$totalDetalle);
         $pdf->AddPage();
       }
       /*Aqui poner la condicion para el texto*/
@@ -1016,7 +1016,6 @@ Class RSolicitudCompra extends Report {
         $texto_detalle_mayuscula = 'Los';
       }
       /***************************************/
-
         $tb2 = '<table cellspacing="0" cellpadding="5" nobr="true">
                   <tr>
                     <td align="center"><h1>VERIFICACIÓN DE LA DOCUMENTACIÓN DE LA SOLICITUD</h1></td>
@@ -1040,7 +1039,7 @@ Class RSolicitudCompra extends Report {
                      <tr>
                          <td align="center" >
                              <br><br>
-                             <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_jefatura, $cargo_jefatura, $nro_tramite_qr) . '" alt="Logo">
+                             <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_jefatura.' ', $cargo_jefatura, $nro_tramite_qr) . '" alt="Logo">
                          </td>
                      </tr>
                  </table>

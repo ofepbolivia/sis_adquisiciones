@@ -302,7 +302,7 @@ BEGIN
                         sol.cuce,
                         sol.fecha_conclusion,
                         sol.presupuesto_aprobado,
-                        tcat2.descripcion
+                        tcat2.descripcion as tipo_modalidad
 
 						from adq.tsolicitud sol
 						inner join segu.tusuario usu1 on usu1.id_usuario = sol.id_usuario_reg
@@ -679,10 +679,9 @@ BEGIN
                             v_cargo_jefatura_adq,
                             v_fecha_jefatura_adq
                     FROM wf.testado_wf twf
-                    INNER JOIN wf.ttipo_estado te ON te.id_tipo_estado = twf.id_tipo_estado
-                    INNER JOIN wf.tproceso_wf pro ON twf.id_proceso_wf = pro.id_proceso_wf
-                    INNER JOIN wf.tfuncionario_tipo_estado funci on funci.id_tipo_estado = te.id_tipo_estado
-                    INNER JOIN orga.vfuncionario_cargo vf ON vf.id_funcionario = funci.id_funcionario
+                        INNER JOIN wf.ttipo_estado te ON te.id_tipo_estado = twf.id_tipo_estado
+                        INNER JOIN wf.tproceso_wf pro ON twf.id_proceso_wf = pro.id_proceso_wf
+                        INNER JOIN orga.vfuncionario_cargo vf ON vf.id_funcionario = twf.id_funcionario
                     WHERE twf.id_proceso_wf = v_proces_wf AND te.codigo = 'aprobado' and ( vf.fecha_finalizacion is null or vf.fecha_finalizacion >= now())
                     GROUP BY twf.id_funcionario, vf.desc_funcionario1,te.codigo,vf.nombre_cargo,pro.nro_tramite,te.id_tipo_estado;
 			end if;
@@ -695,7 +694,6 @@ BEGIN
             	v_cargo_jefatura_adq = '';
             end if;
             /********************************************************************************************/
-
 
             --Sentencia de la consulta
 			v_consulta:='select
@@ -764,6 +762,11 @@ BEGIN
                         '''||v_nombre_funcionario_jefatura_adq||'''::varchar as funcionario_jefatura_adq,
                         '''||v_cargo_jefatura_adq||'''::varchar as cargo_jefatura_adq,
                         cat.codigo::varchar as codigo_adquisicion,
+
+                        (SELECT count(det.id_solicitud)
+                        from adq.tsolicitud_det det
+                        where det.id_solicitud = sol.id_solicitud
+                        group by det.id_solicitud)::varchar as total_detalle,
                         /****************************************/
 
                         /*Aumentando el tipo de la modalidad (Ismael Valdivia 13/10/2020)*/

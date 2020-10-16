@@ -497,6 +497,7 @@ class MODSolicitud extends MODbase
         $this->captura('funcionario_jefatura_adq', 'varchar');
         $this->captura('cargo_jefatura_adq', 'varchar');
         $this->captura('codigo_adquisicion', 'varchar');
+        $this->captura('total_detalle', 'varchar');
         $this->captura('tipo_modalidad', 'varchar');
         $this->captura('tipo_solicitud', 'varchar');
         $this->captura('tipo_concepto', 'varchar');

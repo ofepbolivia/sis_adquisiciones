@@ -443,6 +443,7 @@ class ACTSolicitud extends ACTbase
         $dataSource->putParameter('funcionario_jefatura_adq', $datosSolicitud[0]['funcionario_jefatura_adq']);
         $dataSource->putParameter('cargo_jefatura_adq', $datosSolicitud[0]['cargo_jefatura_adq']);
         $dataSource->putParameter('codigo_adquisicion', $datosSolicitud[0]['codigo_adquisicion']);
+        $dataSource->putParameter('total_detalle', $datosSolicitud[0]['total_detalle']);
         $dataSource->putParameter('tipo_modalidad', $datosSolicitud[0]['tipo_modalidad']);
         $dataSource->putParameter('tipo_solicitud', $datosSolicitud[0]['tipo_solicitud']);
         $dataSource->putParameter('tipo_concepto', $datosSolicitud[0]['tipo_concepto']);
