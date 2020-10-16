@@ -1001,8 +1001,7 @@ Class RSolicitudCompra extends Report {
     }
 
     function ReporteJefaturaAdquisiciones(TCPDF $pdf,$firma_jefatura,$cargo_jefatura,$nro_tramite_qr,$conteo_texto,$tipoConcepto,$conteo_texto_rpc,$totalDetalle){
-      if (($conteo_texto <= '155') && ($conteo_texto_rpc < '35') && ($totalDetalle < '2')) {
-        var_dump("aqui entra detalle",$totalDetalle);
+      if (($conteo_texto <= '155') && ($conteo_texto_rpc < '35') && ($totalDetalle < '2')) {        
         $pdf->AddPage();
       }
       /*Aqui poner la condicion para el texto*/
