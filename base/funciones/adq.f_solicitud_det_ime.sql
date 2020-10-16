@@ -55,6 +55,9 @@ DECLARE
     v_orden_trabajo2		integer;
     v_descripcion_cc		varchar;
 
+     v_fecha_solicitud		date;
+     v_id_funcionario_sol	integer;
+     v_id_categoria_compra	integer;
 
 BEGIN
 
@@ -213,6 +216,27 @@ BEGIN
             v_parametros.fecha_fin_act
 
 			)RETURNING id_solicitud_det into v_id_solicitud_det;
+
+			---
+            --(may) 05-10-2020
+            --CONTROL PARA QUE NO INGRESEN LOS TRAMITES PASADOS A LA SECCION DE INICIO DE LAS MODALIDADES
+            SELECT sol.fecha_soli, sol.id_funcionario, sol.id_categoria_compra
+            into v_fecha_solicitud, v_id_funcionario_sol, v_id_categoria_compra
+            FROM adq.tsolicitud sol
+            WHERE sol.id_solicitud = v_parametros.id_solicitud;
+
+
+            --SOLO PARA tramites nacionales CNAPD
+            IF v_id_categoria_compra = 1 THEN
+
+                IF (v_fecha_solicitud >= '2020-10-1') THEN
+
+                     v_resp = adq.ft_solicitud_modalidad(v_parametros.id_solicitud);
+
+                END IF;
+            END IF;
+
+            ---
 
              --para que sea obligatorio el orden de trabajo
             IF (v_parametros.id_orden_trabajo is Null ) THEN

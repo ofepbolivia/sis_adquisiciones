@@ -954,3 +954,44 @@ ALTER TABLE adq.tmatriz_modalidad
 ALTER TABLE adq.tmatriz_modalidad
 ADD COLUMN resp_proc_contratacion VARCHAR(500);
 /***********************************F-SCP-MAY-ADQ-0-14/10/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-16/10/2020****************************************/
+CREATE TABLE adq.tmodalidad_solicitud (
+  id_modalidad_solicitud SERIAL,
+  id_concepto_ingas INTEGER,
+  modalidad VARCHAR(300),
+  id_solicitud INTEGER,
+  id_matriz_modalidad INTEGER,
+  modalidad_menor VARCHAR(100),
+  modalidad_anpe VARCHAR(100),
+  modalidad_licitacion VARCHAR(100),
+  modalidad_directa VARCHAR(100),
+  modalidad_excepcion VARCHAR(100),
+  modalidad_desastres VARCHAR(100),
+  calificacion VARCHAR(100),
+  id_funcionario_aprobador INTEGER,
+  CONSTRAINT tmodalidad_solicitud_pkey PRIMARY KEY(id_modalidad_solicitud)
+) INHERITS (pxp.tbase)
+WITH (oids = false);
+
+COMMENT ON COLUMN adq.tmodalidad_solicitud.id_funcionario_aprobador
+IS 'id_funcionario supervisor de la tabla solicitud';
+
+ALTER TABLE adq.tmodalidad_solicitud
+  OWNER TO postgres;
+
+
+  CREATE TABLE adq.tmodalidades (
+  id_modalidad SERIAL,
+  codigo VARCHAR(300),
+  nombre_modalidad VARCHAR(400),
+  condicion_menor NUMERIC(19,2),
+  condicion_mayor NUMERIC(19,2),
+  observaciones VARCHAR(600),
+  CONSTRAINT tmodalidades_pkey PRIMARY KEY(id_modalidad)
+) INHERITS (pxp.tbase)
+WITH (oids = false);
+
+ALTER TABLE adq.tmodalidades
+  OWNER TO postgres;
+/***********************************F-SCP-MAY-ADQ-0-16/10/2020****************************************/
