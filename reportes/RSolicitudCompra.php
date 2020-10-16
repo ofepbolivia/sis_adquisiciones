@@ -1358,7 +1358,7 @@ Class RSolicitudCompra extends Report {
         } else {
             echo 'A ocurrido un Error.';
         }
-        $url_archivo = dirname(__FILE__) . "/../../reportes_generados/" . $nom.'_'.$car . "jefatura.png";
+        $url_archivo = dirname(__FILE__) . "/../../reportes_generados/" . $nom.'_'.$car . ".png";
 
         return $url_archivo;
     }
@@ -1370,13 +1370,13 @@ Class RSolicitudCompra extends Report {
         $im = imagecreatefromstring($png);
         if ($im !== false) {
             header('Content-Type: image/png');
-            imagepng($im, dirname(__FILE__) . "/../../reportes_generados/" . $nom . "_aprobador.png");
+            imagepng($im, dirname(__FILE__) . "/../../reportes_generados/" . $nom. "_aprobador.png");
             imagedestroy($im);
 
         } else {
             echo 'A ocurrido un Error.';
         }
-        $url_archivo = dirname(__FILE__) . "/../../reportes_generados/" . $nom.'_'.$car . "jefatura.png";
+        $url_archivo = dirname(__FILE__) . "/../../reportes_generados/" . $nom. "_aprobador.png";
 
         return $url_archivo;
     }
