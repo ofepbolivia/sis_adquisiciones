@@ -234,7 +234,7 @@ Phx.vista.MatrizModalidad=Ext.extend(Phx.gridInterfaz,{
                 gdisplayField:'nombre_uo',//mapea al store del grid
                 gwidth:250,
                 anchor: '100%',
-                baseParams:{presupuesta:'si'},
+                //baseParams:{presupuesta:'si'},
                 renderer:function (value, p, record){return String.format('{0} {1}' , record.data['codigo_uo'], record.data['nombre_uo']);}
             },
             type:'ComboRec',

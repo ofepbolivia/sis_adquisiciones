@@ -1,5 +1,6 @@
 CREATE OR REPLACE FUNCTION adq.ft_solicitud_modalidad (
-  v_id_solicitud integer
+  v_id_solicitud integer,
+  v_id_usuario integer
 )
 RETURNS SETOF record AS
 $body$
@@ -50,7 +51,9 @@ DECLARE
      v_solicitud_modalidad	varchar;
      v_solu_modalidades		record;
      v_respuesta_modalidad	varchar;
-
+     v_depto_prioridad		integer;
+     v_nom_tipo_contratacion	varchar;
+     v_nombre_modalidad		varchar;
 
 BEGIN
 
@@ -58,6 +61,21 @@ BEGIN
 
 
   	v_nombre_funcion = 'adq.f_solicitud_modalidad';
+
+
+      --informacion de la solicitud
+      SELECT sol.fecha_soli, sol.id_funcionario, sol.prioridad, sol.id_uo
+      into v_solicitud
+      FROM adq.tsolicitud sol
+      WHERE sol.id_solicitud = v_id_solicitud;
+     --raise exception 'llega %', v_solicitud.id_uo;
+
+      --prioridad segun el depto del proceso
+      SELECT depto.prioridad
+      into v_depto_prioridad
+      FROM param.tdepto depto
+      join adq.tsolicitud sol on sol.id_depto = depto.id_depto
+      WHERE sol.id_solicitud = v_id_solicitud;
 
 
        --RECORRE PARA VERIFICAR EL DETALLLE DE LA SOLICITUD con cada concepto de gasto a que modalidad corresponde o no
@@ -68,72 +86,153 @@ BEGIN
                               GROUP BY sd.id_concepto_ingas
                              )LOOP
 
-                          --control para que no tenga mas de un concepto de gasto
+                            --nombre del concepto de gasto
+                            SELECT cin.desc_ingas
+                            into v_desc_ingas
+                            FROM param.tconcepto_ingas cin
+                            WHERE cin.id_concepto_ingas = v_solicitud_det.id_concepto_ingas;
 
-                          SELECT count(mc.id_concepto_ingas)
-                          into v_count_concepto_ingas
-                          FROM adq.tmatriz_concepto mc
-                          WHERE mc.id_concepto_ingas = v_solicitud_det.id_concepto_ingas
-                          and mc.estado_reg = 'activo';
+                           --para diferenciar de las regionales y de la central que si pueden elegir una de ellas
+                           IF (v_depto_prioridad = 1) THEN
 
-
-                          IF (v_count_concepto_ingas = 2) THEN
-                          	RAISE EXCEPTION 'En la Matriz Tipo Contratación(Aprobador) existe mas de un Concepto de Gasto en un agrupador. Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).';
-                          END IF;
-
-
-                          --
-                          SELECT mc.id_matriz_modalidad
-                          into v_id_matriz_modalidad
-                          FROM adq.tmatriz_concepto mc
-                          left join adq.tmatriz_modalidad mm on mm.id_matriz_modalidad = mc.id_matriz_modalidad
-                          WHERE mc.id_concepto_ingas = v_solicitud_det.id_concepto_ingas
-                          and mc.estado_reg = 'activo';
-
-                          --nombre del concepto de gasto
-                          SELECT cin.desc_ingas
-                          into v_desc_ingas
-                          FROM param.tconcepto_ingas cin
-                          WHERE cin.id_concepto_ingas = v_solicitud_det.id_concepto_ingas;
-
-                          IF (v_id_matriz_modalidad is null) THEN
-                              RAISE EXCEPTION 'No se encuentra parametrizado el Concepto de Gasto % en la Matriz Tipo Contratación(Aprobador). Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).', v_desc_ingas;
-                          END IF;
+                                	--control para que no tenga mas de un concepto de gasto
+                                    SELECT count(mc.id_concepto_ingas)
+                                    into v_count_concepto_ingas
+                                    FROM adq.tmatriz_concepto mc
+                                    left join adq.tmatriz_modalidad mm on mm.id_matriz_modalidad = mc.id_matriz_modalidad
+                                    WHERE mc.id_concepto_ingas = v_solicitud_det.id_concepto_ingas
+                                    and mc.estado_reg = 'activo'
+                                    and mm.id_uo != 10094
+                                    and mm.id_uo = v_solicitud.id_uo; --nombre de parametrizacion en la matriz Gerencias Regionales
 
 
-
-                         --verificar si ya existe en agrupador de la matriz(cabecera)en esta tabla  si existe q ya no registre
-
-                         IF NOT EXISTS( SELECT 1
-                         				 FROM adq.tmodalidad_solicitud ms
-                                         WHERE ms.id_matriz_modalidad =  v_id_matriz_modalidad
-                                         and ms.id_solicitud = v_id_solicitud
-                         				) THEN
-
-				--raise exception 'kkea21 % - % - %', v_solicitud_det.id_concepto_ingas,v_id_matriz_modalidad, v_id_solicitud ;
-                               --insertanto tabla
-                               insert into adq.tmodalidad_solicitud (   id_concepto_ingas,
-                                                                        id_solicitud,
-                                                                        id_matriz_modalidad
-
-                                                                     )values(
-                                                                        v_solicitud_det.id_concepto_ingas,
-                                                                        v_id_solicitud,
-                                                                        v_id_matriz_modalidad
+                                    IF (v_count_concepto_ingas > 1) THEN
+                                      RAISE EXCEPTION 'En la Matriz Tipo Contratación(Aprobador) existe mas de un Concepto de Gasto % en un agrupador. Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).', v_desc_ingas;
+                                    END IF;
 
 
-                                                                     );
+                                    --
+                                    SELECT mc.id_matriz_modalidad
+                                    into v_id_matriz_modalidad
+                                    FROM adq.tmatriz_concepto mc
+                                    left join adq.tmatriz_modalidad mm on mm.id_matriz_modalidad = mc.id_matriz_modalidad
+                                    WHERE mc.id_concepto_ingas = v_solicitud_det.id_concepto_ingas
+                                    and mc.estado_reg = 'activo'
+                                    and mm.id_uo != 10094
+                                    and mm.id_uo = v_solicitud.id_uo; --nombre de parametrizacion en la matriz Gerencias Regionales
 
 
 
+                                    IF (v_id_matriz_modalidad is null) THEN
+                                        RAISE EXCEPTION 'No se encuentra parametrizado el Concepto de Gasto % en la Matriz Tipo Contratación(Aprobador). Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).', v_desc_ingas;
+                                    END IF;
 
 
-                         END IF;
+
+                                   --verificar si ya existe en agrupador de la matriz(cabecera)en esta tabla  si existe q ya no registre
+
+                                   IF NOT EXISTS( SELECT 1
+                                                   FROM adq.tmodalidad_solicitud ms
+                                                   WHERE ms.id_matriz_modalidad =  v_id_matriz_modalidad
+                                                   and ms.id_solicitud = v_id_solicitud
+                                                  ) THEN
+
+                          			--raise exception 'kkea21 % - % - %', v_solicitud_det.id_concepto_ingas,v_id_matriz_modalidad, v_id_solicitud ;
+                                         --insertanto tabla
+                                         insert into adq.tmodalidad_solicitud (   id_concepto_ingas,
+                                                                                  id_solicitud,
+                                                                                  id_matriz_modalidad,
+
+                                                                                  id_usuario_reg,
+                                                                                  fecha_reg
+
+                                                                               )values(
+                                                                                  v_solicitud_det.id_concepto_ingas,
+                                                                                  v_id_solicitud,
+                                                                                  v_id_matriz_modalidad,
+
+                                                                                  v_id_usuario,
+                                                                                  now()
+
+                                                                               );
 
 
 
 
-                         --
+
+                                   END IF;
+                                   --
+
+                          ELSE
+                                  --prioridad 2 para regionales nacionales
+
+                                  --control para que no tenga mas de un concepto de gasto
+                                  SELECT count(mc.id_concepto_ingas)
+                                  into v_count_concepto_ingas
+                                  FROM adq.tmatriz_concepto mc
+                                  left join adq.tmatriz_modalidad mm on mm.id_matriz_modalidad = mc.id_matriz_modalidad
+                                  WHERE mc.id_concepto_ingas = v_solicitud_det.id_concepto_ingas
+                                  and mc.estado_reg = 'activo'
+                                  and mm.id_uo in (10094, v_solicitud.id_uo); --nombre de parametrizacion en la matriz Gerencias Regionales
+
+                                  IF (v_count_concepto_ingas > 1) THEN
+                                    RAISE EXCEPTION 'En la Matriz Tipo Contratación(Aprobador) existe mas de un Concepto de Gasto % en un agrupador. Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).', v_desc_ingas;
+                                  END IF;
+
+                                  --
+                                  SELECT mc.id_matriz_modalidad
+                                  into v_id_matriz_modalidad
+                                  FROM adq.tmatriz_concepto mc
+                                  left join adq.tmatriz_modalidad mm on mm.id_matriz_modalidad = mc.id_matriz_modalidad
+                                  WHERE mc.id_concepto_ingas = v_solicitud_det.id_concepto_ingas
+                                  and mc.estado_reg = 'activo'
+                                  and mm.id_uo in (10094, v_solicitud.id_uo) ; --nombre de parametrizacion en la matriz Gerencias Regionales
+
+
+
+                                  IF (v_id_matriz_modalidad is null) THEN
+                                      RAISE EXCEPTION 'No se encuentra parametrizado el Concepto de Gasto % en la Matriz Tipo Contratación(Aprobador). Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).', v_desc_ingas;
+                                  END IF;
+
+
+
+                                 --verificar si ya existe en agrupador de la matriz(cabecera)en esta tabla  si existe q ya no registre
+
+                                 IF NOT EXISTS( SELECT 1
+                                                 FROM adq.tmodalidad_solicitud ms
+                                                 WHERE ms.id_matriz_modalidad =  v_id_matriz_modalidad
+                                                 and ms.id_solicitud = v_id_solicitud
+                                                ) THEN
+
+                        			--raise exception 'kkea21 % - % - %', v_solicitud_det.id_concepto_ingas,v_id_matriz_modalidad, v_id_solicitud ;
+                                       --insertanto tabla
+                                       insert into adq.tmodalidad_solicitud (   id_concepto_ingas,
+                                                                                id_solicitud,
+                                                                                id_matriz_modalidad,
+
+                                                                                id_usuario_reg,
+                                                                                fecha_reg
+
+                                                                             )values(
+                                                                                v_solicitud_det.id_concepto_ingas,
+                                                                                v_id_solicitud,
+                                                                                v_id_matriz_modalidad,
+
+                                                                                v_id_usuario,
+                                                                                now()
+
+                                                                             );
+
+
+
+
+
+                                 END IF;
+                                 --
+
+						  END IF;
+
+
 
       END LOOP;
 
@@ -142,7 +241,8 @@ BEGIN
       SELECT sum(sd.precio_total)
       into v_total_det
       FROM adq.tsolicitud_det sd
-      WHERE sd.id_solicitud = v_id_solicitud;
+      WHERE sd.id_solicitud = v_id_solicitud
+      and sd.estado_reg = 'activo' ;
 
       --COMPARACION CON LA TABLA DE MODALIDAD
       SELECT mod.codigo
@@ -151,16 +251,12 @@ BEGIN
       WHERE mod.condicion_menor <= v_total_det
       and mod.condicion_mayor >= v_total_det;
 
-      --informacion de la solicitud
-      SELECT sol.fecha_soli, sol.id_funcionario
-      into v_solicitud
-      FROM adq.tsolicitud sol
-      WHERE sol.id_solicitud = v_id_solicitud;
 
       ----
       FOR v_id_matriz_mod in( SELECT ms.id_matriz_modalidad
                                     FROM adq.tmodalidad_solicitud ms
                                     WHERE ms.id_solicitud = v_id_solicitud
+                                    and ms.estado_reg = 'activo'
                                   )LOOP
 
       		--informacion para sacar de la matriz_modalidad
@@ -182,30 +278,49 @@ BEGIN
 
             --PARA LOS TIPO DE UNIDADES DE GERENCIAS REGIONALES
              IF ( v_modalidades_matriz.id_uo =  10094) THEN
-                -- recupera la uo gerencia del funcionario
-                v_id_uo =   orga.f_get_uo_gerencia_ope(NULL, v_solicitud.id_funcionario, v_solicitud.fecha_soli::Date);
 
-                  IF exists(select 1 from orga.tuo_funcionario uof
-                             inner join orga.tuo uo on uo.id_uo = uof.id_uo and uo.estado_reg = 'activo'
-                             inner join orga.tnivel_organizacional no on no.id_nivel_organizacional = uo.id_nivel_organizacional and no.numero_nivel in (1,2)
-                             where  uof.estado_reg = 'activo' and  uof.id_funcionario = v_solicitud.id_funcionario ) THEN
+                -- PARA VER QUE SI SON GERENCIAS REGIONALES SI EL APROBADOR VA SER GERENTE GENERAL O EL GERENTE DE LA REGIONAL
+             	IF (v_modalidades_matriz.id_cargo != 15738  AND v_modalidades_matriz.id_cargo IS NULL) THEN
 
-                        va_id_funcionario_gerente[1] = v_solicitud.id_funcionario;
+                        -- recupera la uo gerencia del funcionario
+                        v_id_uo =   orga.f_get_uo_gerencia_ope(NULL, v_solicitud.id_funcionario, v_solicitud.fecha_soli::Date);
 
-                  ELSE
-                      --si tiene funcionario identificar el gerente correspondientes
-                      IF v_solicitud.id_funcionario is not NULL THEN
+                        IF exists(select 1 from orga.tuo_funcionario uof
+                                   inner join orga.tuo uo on uo.id_uo = uof.id_uo and uo.estado_reg = 'activo'
+                                   inner join orga.tnivel_organizacional no on no.id_nivel_organizacional = uo.id_nivel_organizacional and no.numero_nivel in (1,2)
+                                   where  uof.estado_reg = 'activo' and  uof.id_funcionario = v_solicitud.id_funcionario ) THEN
 
-                          SELECT
-                             pxp.aggarray(id_funcionario)
-                           into
-                             va_id_funcionario_gerente
-                           FROM orga.f_get_aprobadores_x_funcionario(v_solicitud.fecha_soli,v_solicitud.id_funcionario , 'todos', 'si', 'todos', 'ninguno') AS (id_funcionario integer);
+                              va_id_funcionario_gerente[1] = v_solicitud.id_funcionario;
 
-                       END IF;
-                  END IF;
+                        ELSE
+                            --si tiene funcionario identificar el gerente correspondientes
+                            IF v_solicitud.id_funcionario is not NULL THEN
 
-                    v_idfun_modalidad = va_id_funcionario_gerente[1] ;
+                                SELECT
+                                   pxp.aggarray(id_funcionario)
+                                 into
+                                   va_id_funcionario_gerente
+                                 FROM orga.f_get_aprobadores_x_funcionario(v_solicitud.fecha_soli,v_solicitud.id_funcionario , 'todos', 'si', 'todos', 'ninguno') AS (id_funcionario integer);
+
+                             END IF;
+                        END IF;
+
+                          v_idfun_modalidad = va_id_funcionario_gerente[1] ;
+
+                 ELSE	--15738 Gerente comercial
+                		 IF (v_modalidades_matriz.id_cargo is null) THEN
+                            RAISE EXCEPTION 'No se encuentra parametrizado el Responsable de Nivel Aprobación  en la Matriz Tipo Contratación - Aprobador. Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).';
+                         END IF;
+
+                         --CONDICION PARA RESCATAR DE LA MATRIZ EL FUNCIONARIO RESPONSABLE
+                         SELECT vc.id_funcionario
+                         INTO v_idfun_modalidad
+                         FROM orga.vfuncionario_cargo vc
+                         WHERE vc.id_cargo = v_modalidades_matriz.id_cargo
+                         and vc.fecha_asignacion  <=  now()
+                         and (vc.fecha_finalizacion is null or vc.fecha_finalizacion >= now() );
+
+                END IF;
 
              ELSE
 
@@ -262,11 +377,37 @@ BEGIN
                                     and ms.estado_reg = 'activo'
                                       )LOOP
 
-                    SELECT ms.modalidad_menor, ms.modalidad_anpe, ms.modalidad_directa, ms.modalidad_licitacion, ms.modalidad_desastres, ms.modalidad_excepcion
+                    SELECT ms.modalidad_menor,
+                    	   ms.modalidad_anpe,
+                           ms.modalidad_directa,
+                            ms.modalidad_licitacion,
+                            ms.modalidad_desastres,
+                            ms.modalidad_excepcion,
+                            ms.id_concepto_ingas,
+                            ms.id_matriz_modalidad
+
                     INTO v_modalidades_solicitud
                     FROM adq.tmodalidad_solicitud ms
                     WHERE ms.id_modalidad_solicitud = v_modalidad_solicitud.id_modalidad_solicitud
                     and ms.estado_reg = 'activo';
+
+                    --nombre del concepto de gasto
+                    SELECT cin.desc_ingas
+                    into v_desc_ingas
+                    FROM param.tconcepto_ingas cin
+                    WHERE cin.id_concepto_ingas = v_modalidades_solicitud.id_concepto_ingas;
+
+                    --nombre de la matriz modalidad
+                    SELECT mm.referencia ||'-'||mm.tipo_contratacion
+                    into v_nom_tipo_contratacion
+                    FROM adq.tmatriz_modalidad mm
+                    WHERE mm.id_matriz_modalidad = v_modalidades_solicitud.id_matriz_modalidad;
+
+                    --nombre de la matriz modalidad
+                    SELECT mod.nombre_modalidad
+                    into v_nombre_modalidad
+                    FROM adq.tmodalidades mod
+                    WHERE mod.codigo = v_codigo_modalidad;
 
                     	IF (v_codigo_modalidad ='mod_menor') THEN
                         	v_modalidad = v_modalidades_solicitud.modalidad_menor;
@@ -279,7 +420,9 @@ BEGIN
                             	UPDATE adq.tmodalidad_solicitud set
                                 calificacion = 'NO'
                                 WHERE id_modalidad_solicitud = v_modalidad_solicitud.id_modalidad_solicitud;
-                            	raise exception 'no se encuentra parametrizado para la modalidad %',v_codigo_modalidad;
+
+                            	raise exception 'Este proceso pertenece al Tipo Contratación: %, y no esta habilitado para la %  en la Matriz Tipo Contratación-Aprobador. Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre). ',v_nom_tipo_contratacion, upper(v_nombre_modalidad);
+
                             END IF;
 
                         ELSIF (v_codigo_modalidad ='mod_anpe') THEN
@@ -293,7 +436,9 @@ BEGIN
                             	UPDATE adq.tmodalidad_solicitud set
                                 calificacion = 'NO'
                                 WHERE id_modalidad_solicitud = v_modalidad_solicitud.id_modalidad_solicitud;
-                            	raise exception 'no se encuentra parametrizado para la modalidad %',v_codigo_modalidad;
+
+                            	raise exception 'Este proceso pertenece al Tipo Contratación: %, y no esta habilitado para la %  en la Matriz Tipo Contratación-Aprobador. Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre). ',v_nom_tipo_contratacion, upper(v_nombre_modalidad);
+
                             END IF;
 
                         ELSIF (v_codigo_modalidad ='mod_licitacion') THEN
@@ -307,7 +452,9 @@ BEGIN
                             	UPDATE adq.tmodalidad_solicitud set
                                 calificacion = 'NO'
                                 WHERE id_modalidad_solicitud = v_modalidad_solicitud.id_modalidad_solicitud;
-                            	raise exception 'no se encuentra parametrizado para la modalidad %',v_codigo_modalidad;
+
+                            	raise exception 'Este proceso pertenece al Tipo Contratación: %, y no esta habilitado para la %  en la Matriz Tipo Contratación-Aprobador. Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre). ',v_nom_tipo_contratacion, upper(v_nombre_modalidad);
+
                             END IF;
 
                         /*ELSIF (v_modalidades_solicitud.modalidad_licitacion ='si') THEN

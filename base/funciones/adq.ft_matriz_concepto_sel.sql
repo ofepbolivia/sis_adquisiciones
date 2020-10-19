@@ -100,6 +100,10 @@ BEGIN
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 
+			if (pxp.f_existe_parametro(p_tabla,'id_matriz_modalidad')) then
+                v_consulta:= v_consulta || ' and maconcep.id_matriz_modalidad='||v_parametros.id_matriz_modalidad;
+            end if;
+
 			--Devuelve la respuesta
 			return v_consulta;
 
