@@ -55,6 +55,14 @@ DECLARE
      v_nom_tipo_contratacion	varchar;
      v_nombre_modalidad		varchar;
 
+     v_funcionario			integer;
+     v_id_matriz			record;
+     v_id_uo_matriz  		integer;
+     v_id_uo_sol			integer;
+     v_funcionario_sol		integer;
+     v_matriz_id_modalidad	integer;
+
+
 BEGIN
 
 
@@ -95,6 +103,7 @@ BEGIN
                            --para diferenciar de las regionales y de la central que si pueden elegir una de ellas
                            IF (v_depto_prioridad = 1) THEN
 
+
                                 	--control para que no tenga mas de un concepto de gasto
                                     SELECT count(mc.id_concepto_ingas)
                                     into v_count_concepto_ingas
@@ -112,14 +121,74 @@ BEGIN
 
 
                                     --
-                                    SELECT mc.id_matriz_modalidad
+                                    /*SELECT mc.id_matriz_modalidad
                                     into v_id_matriz_modalidad
                                     FROM adq.tmatriz_concepto mc
                                     left join adq.tmatriz_modalidad mm on mm.id_matriz_modalidad = mc.id_matriz_modalidad
                                     WHERE mc.id_concepto_ingas = v_solicitud_det.id_concepto_ingas
                                     and mc.estado_reg = 'activo'
                                     and mm.id_uo != 10094
-                                    and mm.id_uo = v_solicitud.id_uo; --nombre de parametrizacion en la matriz Gerencias Regionales
+                                    and mm.id_uo = v_solicitud.id_uo; --nombre de parametrizacion en la matriz Gerencias Regionales*/
+
+
+                                    FOR v_id_matriz IN(SELECT mc.id_matriz_modalidad, mm.id_uo
+                                                                FROM adq.tmatriz_concepto mc
+                                                                left join adq.tmatriz_modalidad mm on mm.id_matriz_modalidad = mc.id_matriz_modalidad
+                                                                WHERE mc.id_concepto_ingas = v_solicitud_det.id_concepto_ingas
+                                                                and mc.estado_reg = 'activo'
+                                                                and mm.id_uo != 10094
+                                                         		 )LOOP
+
+                                            --RAISE EXCEPTION 'MATRIZ % - %',v_id_matriz.id_matriz_modalidad, v_id_matriz.id_uo;
+                                                SELECT fc.id_funcionario
+                                                into v_funcionario
+                                                FROM orga.vfuncionario_cargo fc
+                                                WHERE (fc.id_uo = v_id_matriz.id_uo
+                                                or fc.id_uo =  v_solicitud.id_uo )
+                                                and fc.fecha_asignacion  <=  now()
+                         						and (fc.fecha_finalizacion is null or fc.fecha_finalizacion >= now() );
+
+
+                                                SELECT fc.id_funcionario
+                                                into v_funcionario_sol
+                                                FROM orga.vfuncionario_cargo fc
+                                                WHERE fc.id_uo = v_solicitud.id_uo
+                                                and fc.fecha_asignacion  <=  now()
+                         						and (fc.fecha_finalizacion is null or fc.fecha_finalizacion >= now() );
+
+                                    END LOOP;
+                                    --RAISE EXCEPTION 'MATRIZ % - %',v_funcionario, v_funcionario_sol;
+                                     -- recupera la uo gerencia del funcionario
+                                    v_id_uo_matriz =   orga.f_get_uo_gerencia_area_ope(NULL, v_funcionario, v_solicitud.fecha_soli::Date);
+
+                                    v_id_uo_sol =   orga.f_get_uo_gerencia_area_ope(NULL, v_funcionario_sol, v_solicitud.fecha_soli::Date);
+                                  	--RAISE EXCEPTION 'MATRIZ % - %',v_id_uo_matriz, v_id_uo_sol;
+
+
+                                    --9420 GAF , 9438  Jefe Departamento Administración
+                                    --IF ((v_id_uo_matriz = v_solicitud.id_uo) or (v_id_uo_matriz=9420 and v_solicitud.id_uo = 9438 ) ) THEN
+                                    IF (v_id_uo_matriz = v_id_uo_sol ) THEN
+
+                                    --RAISE EXCEPTION 'MATRIZ1 % - %',v_solicitud_det.id_concepto_ingas, v_id_uo_sol;
+
+                                    	SELECT mc.id_matriz_modalidad
+                                        INTO v_matriz_id_modalidad
+                                        FROM adq.tmatriz_concepto mc
+                                        left join adq.tmatriz_modalidad mm on mm.id_matriz_modalidad = mc.id_matriz_modalidad
+                                        WHERE mc.id_concepto_ingas = v_solicitud_det.id_concepto_ingas
+                                        and mc.estado_reg = 'activo'
+                                        and (mm.id_uo = v_solicitud.id_uo or mm.id_uo = v_id_uo_sol);
+
+                                       --RAISE EXCEPTION 'MATRIZ %',v_matriz_id_modalidad;
+
+                                        v_id_matriz_modalidad =   v_matriz_id_modalidad;
+                                    ELSE
+
+                                         RAISE EXCEPTION 'No se encuentra parametrizado el Concepto de Gasto % en la Matriz Tipo Contratación(Aprobador). Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).', v_desc_ingas;
+
+                                    END IF;
+
+                                    ---
 
 
 
@@ -160,7 +229,7 @@ BEGIN
 
 
 
-                                   END IF;
+                                   	END IF;
                                    --
 
                           ELSE
@@ -191,7 +260,7 @@ BEGIN
 
 
                                   IF (v_id_matriz_modalidad is null) THEN
-                                      RAISE EXCEPTION 'No se encuentra parametrizado el Concepto de Gasto % en la Matriz Tipo Contratación(Aprobador). Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).', v_desc_ingas;
+                                      RAISE EXCEPTION 'No se encuentra parametrizado el Concepto de Gasto % para una Regional, en la Matriz Tipo Contratación(Aprobador). Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).', v_desc_ingas;
                                   END IF;
 
 
@@ -280,10 +349,10 @@ BEGIN
              IF ( v_modalidades_matriz.id_uo =  10094) THEN
 
                 -- PARA VER QUE SI SON GERENCIAS REGIONALES SI EL APROBADOR VA SER GERENTE GENERAL O EL GERENTE DE LA REGIONAL
-             	IF (v_modalidades_matriz.id_cargo != 15738  AND v_modalidades_matriz.id_cargo IS NULL) THEN
+             	IF (v_modalidades_matriz.id_cargo = 18594  or v_modalidades_matriz.id_cargo IS NULL) THEN
 
                         -- recupera la uo gerencia del funcionario
-                        v_id_uo =   orga.f_get_uo_gerencia_ope(NULL, v_solicitud.id_funcionario, v_solicitud.fecha_soli::Date);
+                        v_id_uo =   orga.f_get_uo_gerencia_area_ope(NULL, v_solicitud.id_funcionario, v_solicitud.fecha_soli::Date);
 
                         IF exists(select 1 from orga.tuo_funcionario uof
                                    inner join orga.tuo uo on uo.id_uo = uof.id_uo and uo.estado_reg = 'activo'
@@ -307,7 +376,9 @@ BEGIN
 
                           v_idfun_modalidad = va_id_funcionario_gerente[1] ;
 
-                 ELSE	--15738 Gerente comercial
+                 ELSE
+
+                 		--18594 Gerente comercial
                 		 IF (v_modalidades_matriz.id_cargo is null) THEN
                             RAISE EXCEPTION 'No se encuentra parametrizado el Responsable de Nivel Aprobación  en la Matriz Tipo Contratación - Aprobador. Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).';
                          END IF;

@@ -995,3 +995,48 @@ WITH (oids = false);
 ALTER TABLE adq.tmodalidades
   OWNER TO postgres;
 /***********************************F-SCP-MAY-ADQ-0-16/10/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-22/10/2020****************************************/
+ALTER TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion_menor VARCHAR(300);
+
+ TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion_anpe VARCHAR(300);
+
+ TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion_directa VARCHAR(300);
+
+ TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion_excepcion VARCHAR(300);
+
+ TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion_desastres VARCHAR(300);
+
+TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion_licitacion VARCHAR(300);
+
+TABLE adq.tmatriz_modalidad
+ADD COLUMN flujo_mod_directa VARCHAR(500);
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_menor
+IS 'RPC/RPA';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_anpe
+IS 'RPC/RPA';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_directa
+IS 'RPC/RPA';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_excepcion
+IS 'RPC/RPA';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_desastres
+IS 'RPC/RPA';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_licitacion
+IS 'RPC/RPA';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.flujo_mod_directa
+IS 'codigo del flujo';
+
+/***********************************F-SCP-MAY-ADQ-0-22/10/2020****************************************/

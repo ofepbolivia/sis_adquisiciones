@@ -69,7 +69,17 @@ BEGIN
 			id_usuario_ai,
 			usuario_ai,
 			id_usuario_mod,
-			fecha_mod
+			fecha_mod,
+
+            resp_proc_contratacion_menor,
+            resp_proc_contratacion_anpe,
+            resp_proc_contratacion_directa,
+            resp_proc_contratacion_licitacion,
+            resp_proc_contratacion_excepcion,
+            resp_proc_contratacion_desastres,
+
+            flujo_mod_directa
+
           	) values(
 			'activo',
 			'',
@@ -93,9 +103,16 @@ BEGIN
 			v_parametros._id_usuario_ai,
 			v_parametros._nombre_usuario_ai,
 			null,
-			null
+			null,
 
+			v_parametros.resp_proc_contratacion_menor,
+            v_parametros.resp_proc_contratacion_anpe,
+            v_parametros.resp_proc_contratacion_directa,
+            v_parametros.resp_proc_contratacion_licitacion,
+            v_parametros.resp_proc_contratacion_excepcion,
+            v_parametros.resp_proc_contratacion_desastres,
 
+            v_parametros.flujo_mod_directa
 
 			)RETURNING id_matriz_modalidad into v_id_matriz_modalidad;
 
@@ -144,7 +161,17 @@ BEGIN
 			id_usuario_mod = p_id_usuario,
 			fecha_mod = now(),
 			id_usuario_ai = v_parametros._id_usuario_ai,
-			usuario_ai = v_parametros._nombre_usuario_ai
+			usuario_ai = v_parametros._nombre_usuario_ai,
+
+            resp_proc_contratacion_menor = v_parametros.resp_proc_contratacion_menor,
+            resp_proc_contratacion_anpe = v_parametros.resp_proc_contratacion_anpe,
+            resp_proc_contratacion_directa = v_parametros.resp_proc_contratacion_directa,
+            resp_proc_contratacion_licitacion = v_parametros.resp_proc_contratacion_licitacion,
+            resp_proc_contratacion_excepcion = v_parametros.resp_proc_contratacion_excepcion,
+            resp_proc_contratacion_desastres = v_parametros.resp_proc_contratacion_desastres,
+
+            flujo_mod_directa = v_parametros.flujo_mod_directa
+
 			where id_matriz_modalidad=v_parametros.id_matriz_modalidad;
 
 			--Definicion de la respuesta

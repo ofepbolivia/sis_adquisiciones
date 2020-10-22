@@ -49,9 +49,15 @@ class MODMatrizModalidad extends MODbase{
 		$this->captura('nombre_uo','varchar');
 		$this->captura('codigo_uo','varchar');
 		$this->captura('nombre','varchar');
-		$this->captura('resp_proc_contratacion','varchar');
-
 		$this->captura('list_concepto_gasto','varchar');
+
+		$this->captura('resp_proc_contratacion_menor','varchar');
+		$this->captura('resp_proc_contratacion_anpe','varchar');
+		$this->captura('resp_proc_contratacion_directa','varchar');
+		$this->captura('resp_proc_contratacion_licitacion','varchar');
+		$this->captura('resp_proc_contratacion_excepcion','varchar');
+		$this->captura('resp_proc_contratacion_desastres','varchar');
+		$this->captura('flujo_mod_directa','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -85,6 +91,15 @@ class MODMatrizModalidad extends MODbase{
 		$this->setParametro('modalidad_desastres','modalidad_desastres','varchar');
 		$this->setParametro('punto_reorden','punto_reorden','varchar');
 		$this->setParametro('observaciones','observaciones','varchar');
+
+		$this->setParametro('resp_proc_contratacion_menor','resp_proc_contratacion_menor','varchar');
+		$this->setParametro('resp_proc_contratacion_anpe','resp_proc_contratacion_anpe','varchar');
+		$this->setParametro('resp_proc_contratacion_directa','resp_proc_contratacion_directa','varchar');
+		$this->setParametro('resp_proc_contratacion_licitacion','resp_proc_contratacion_licitacion','varchar');
+		$this->setParametro('resp_proc_contratacion_excepcion','resp_proc_contratacion_excepcion','varchar');
+		$this->setParametro('resp_proc_contratacion_desastres','resp_proc_contratacion_desastres','varchar');
+		$this->setParametro('flujo_mod_directa','flujo_mod_directa','varchar');
+
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -120,7 +135,17 @@ class MODMatrizModalidad extends MODbase{
 		$this->setParametro('punto_reorden','punto_reorden','varchar');
 		$this->setParametro('observaciones','observaciones','varchar');
 
-		//Ejecuta la instruccion
+        $this->setParametro('resp_proc_contratacion_menor','resp_proc_contratacion_menor','varchar');
+        $this->setParametro('resp_proc_contratacion_anpe','resp_proc_contratacion_anpe','varchar');
+        $this->setParametro('resp_proc_contratacion_directa','resp_proc_contratacion_directa','varchar');
+        $this->setParametro('resp_proc_contratacion_licitacion','resp_proc_contratacion_licitacion','varchar');
+        $this->setParametro('resp_proc_contratacion_excepcion','resp_proc_contratacion_excepcion','varchar');
+        $this->setParametro('resp_proc_contratacion_desastres','resp_proc_contratacion_desastres','varchar');
+        $this->setParametro('flujo_mod_directa','flujo_mod_directa','varchar');
+
+        
+
+        //Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
 

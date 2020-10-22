@@ -73,8 +73,15 @@ BEGIN
                         uo.nombre_unidad as nombre_uo,
                         uo.codigo as codigo_uo,
                         car.nombre,
-                        matriz.resp_proc_contratacion,
-                        (matriz.list_concepto_gasto)::varchar
+                        (matriz.list_concepto_gasto)::varchar,
+
+                        matriz.resp_proc_contratacion_menor,
+                        matriz.resp_proc_contratacion_anpe,
+                        matriz.resp_proc_contratacion_directa,
+                        matriz.resp_proc_contratacion_licitacion,
+                        matriz.resp_proc_contratacion_excepcion,
+                        matriz.resp_proc_contratacion_desastres,
+                        matriz.flujo_mod_directa
 
 						from adq.tmatriz_modalidad matriz
 						inner join segu.tusuario usu1 on usu1.id_usuario = matriz.id_usuario_reg
@@ -115,7 +122,13 @@ BEGIN
                         uo.nombre_unidad,
                         uo.codigo,
                         car.nombre,
-                        matriz.resp_proc_contratacion '||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+                        matriz.resp_proc_contratacion_menor,
+                        matriz.resp_proc_contratacion_anpe,
+                        matriz.resp_proc_contratacion_directa,
+                        matriz.resp_proc_contratacion_licitacion,
+                        matriz.resp_proc_contratacion_excepcion,
+                        matriz.resp_proc_contratacion_desastres,
+                        matriz.flujo_mod_directa '||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
 			--Devuelve la respuesta
 			return v_consulta;
