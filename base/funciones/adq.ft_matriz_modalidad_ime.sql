@@ -30,6 +30,9 @@ DECLARE
 	v_mensaje_error         text;
 	v_id_matriz_modalidad	integer;
 
+    v_id_uo_gerencia		integer;
+    v_funcionario			integer;
+
 BEGIN
 
     v_nombre_funcion = 'adq.ft_matriz_modalidad_ime';
@@ -45,6 +48,30 @@ BEGIN
 	if(p_transaccion='ADQ_MATRIZ_INS')then
 
         begin
+
+        	IF v_parametros.id_uo = 10094 THEN
+
+            	v_id_uo_gerencia = v_parametros.id_uo;
+
+            ELSE
+
+            	SELECT fc.id_funcionario
+                into v_funcionario
+                FROM orga.vfuncionario_cargo fc
+                WHERE fc.id_uo = v_parametros.id_uo
+                and fc.fecha_asignacion  <=  now()
+                and (fc.fecha_finalizacion is null or fc.fecha_finalizacion >= now() );
+
+                -- recupera la uo gerencia del funcionario
+                v_id_uo_gerencia =   orga.f_get_uo_gerencia_area_ope(NULL, v_funcionario, now()::Date);
+
+                IF v_id_uo_gerencia = -1 THEN
+                	raise exception 'No se excuentra su Gerencia correspondiente de la Unidad';
+                END IF;
+
+
+            END IF;
+
         	--Sentencia de la insercion
         	insert into adq.tmatriz_modalidad(
 			estado_reg,
@@ -78,7 +105,9 @@ BEGIN
             resp_proc_contratacion_excepcion,
             resp_proc_contratacion_desastres,
 
-            flujo_mod_directa
+            flujo_mod_directa,
+
+            id_uo_gerencia
 
           	) values(
 			'activo',
@@ -112,7 +141,9 @@ BEGIN
             v_parametros.resp_proc_contratacion_excepcion,
             v_parametros.resp_proc_contratacion_desastres,
 
-            v_parametros.flujo_mod_directa
+            v_parametros.flujo_mod_directa,
+
+            v_id_uo_gerencia
 
 			)RETURNING id_matriz_modalidad into v_id_matriz_modalidad;
 
@@ -140,6 +171,31 @@ BEGIN
 	elsif(p_transaccion='ADQ_MATRIZ_MOD')then
 
 		begin
+
+        	IF v_parametros.id_uo = 10094 THEN
+
+            	v_id_uo_gerencia = v_parametros.id_uo;
+
+            ELSE
+
+            	SELECT fc.id_funcionario
+                into v_funcionario
+                FROM orga.vfuncionario_cargo fc
+                WHERE fc.id_uo = v_parametros.id_uo
+                and fc.fecha_asignacion  <=  now()
+                and (fc.fecha_finalizacion is null or fc.fecha_finalizacion >= now() );
+
+                -- recupera la uo gerencia del funcionario
+                v_id_uo_gerencia =   orga.f_get_uo_gerencia_area_ope(NULL, v_funcionario, now()::Date);
+
+                IF v_id_uo_gerencia = -1 THEN
+                	raise exception 'No se excuentra su Gerencia correspondiente de la Unidad';
+                END IF;
+
+
+            END IF;
+
+
 			--Sentencia de la modificacion
 			update adq.tmatriz_modalidad set
 			referencia = (v_parametros.id_matriz_modalidad)::varchar,
@@ -170,7 +226,9 @@ BEGIN
             resp_proc_contratacion_excepcion = v_parametros.resp_proc_contratacion_excepcion,
             resp_proc_contratacion_desastres = v_parametros.resp_proc_contratacion_desastres,
 
-            flujo_mod_directa = v_parametros.flujo_mod_directa
+            flujo_mod_directa = v_parametros.flujo_mod_directa,
+
+            id_uo_gerencia = v_id_uo_gerencia
 
 			where id_matriz_modalidad=v_parametros.id_matriz_modalidad;
 

@@ -81,13 +81,17 @@ BEGIN
                         matriz.resp_proc_contratacion_licitacion,
                         matriz.resp_proc_contratacion_excepcion,
                         matriz.resp_proc_contratacion_desastres,
-                        matriz.flujo_mod_directa
+                        matriz.flujo_mod_directa,
+
+                        uogeren.nombre_unidad as nombre_gerencia
 
 						from adq.tmatriz_modalidad matriz
 						inner join segu.tusuario usu1 on usu1.id_usuario = matriz.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = matriz.id_usuario_mod
                         left join orga.tuo uo on uo.id_uo = matriz.id_uo
                         left join orga.tcargo car on car.id_cargo = matriz.id_cargo
+
+                        left join orga.tuo uogeren on uogeren.id_uo = matriz.id_uo_gerencia
 
 				        where matriz.estado_reg =''activo'' and  ';
 
@@ -128,7 +132,8 @@ BEGIN
                         matriz.resp_proc_contratacion_licitacion,
                         matriz.resp_proc_contratacion_excepcion,
                         matriz.resp_proc_contratacion_desastres,
-                        matriz.flujo_mod_directa '||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+                        matriz.flujo_mod_directa,
+                        uogeren.nombre_unidad  '||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
 			--Devuelve la respuesta
 			return v_consulta;
@@ -152,6 +157,9 @@ BEGIN
 						left join segu.tusuario usu2 on usu2.id_usuario = matriz.id_usuario_mod
                         left join orga.tuo uo on uo.id_uo = matriz.id_uo
                         left join orga.tcargo car on car.id_cargo = matriz.id_cargo
+
+                        left join orga.tuo uogeren on uogeren.id_uo = matriz.id_uo_gerencia
+
 
 					    where matriz.estado_reg =''activo'' and  ';
 

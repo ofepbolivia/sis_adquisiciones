@@ -1084,3 +1084,8 @@ IS 'RPC/RPA';
 COMMENT ON COLUMN adq.tmatriz_modalidad.flujo_mod_directa
 IS 'codigo del flujo';
 /***********************************F-SCP-MAY-ADQ-1-22/10/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-27/10/2020****************************************/
+ALTER TABLE adq.tmatriz_modalidad
+ADD COLUMN id_uo_gerencia INTEGER;
+/***********************************F-SCP-MAY-ADQ-0-27/10/2020****************************************/

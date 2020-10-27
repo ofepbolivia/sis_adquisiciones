@@ -61,6 +61,7 @@ DECLARE
      v_id_uo_sol			integer;
      v_funcionario_sol		integer;
      v_matriz_id_modalidad	integer;
+     v_nom_uo				varchar;
 
 
 BEGIN
@@ -85,6 +86,12 @@ BEGIN
       join adq.tsolicitud sol on sol.id_depto = depto.id_depto
       WHERE sol.id_solicitud = v_id_solicitud;
 
+      --nombre unidad
+      SELECT uo.nombre_unidad
+      into v_nom_uo
+      FROM orga.tuo uo
+      WHERE uo.id_uo = v_solicitud.id_uo;
+
 
        --RECORRE PARA VERIFICAR EL DETALLLE DE LA SOLICITUD con cada concepto de gasto a que modalidad corresponde o no
 
@@ -102,33 +109,6 @@ BEGIN
 
                            --para diferenciar de las regionales y de la central que si pueden elegir una de ellas
                            IF (v_depto_prioridad = 1) THEN
-
-
-                                	--control para que no tenga mas de un concepto de gasto
-                                    SELECT count(mc.id_concepto_ingas)
-                                    into v_count_concepto_ingas
-                                    FROM adq.tmatriz_concepto mc
-                                    left join adq.tmatriz_modalidad mm on mm.id_matriz_modalidad = mc.id_matriz_modalidad
-                                    WHERE mc.id_concepto_ingas = v_solicitud_det.id_concepto_ingas
-                                    and mc.estado_reg = 'activo'
-                                    and mm.id_uo != 10094
-                                    and mm.id_uo = v_solicitud.id_uo; --nombre de parametrizacion en la matriz Gerencias Regionales
-
-
-                                    IF (v_count_concepto_ingas > 1) THEN
-                                      RAISE EXCEPTION 'En la Matriz Tipo Contratación(Aprobador) existe mas de un Concepto de Gasto % en un agrupador. Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).', v_desc_ingas;
-                                    END IF;
-
-
-                                    --
-                                    /*SELECT mc.id_matriz_modalidad
-                                    into v_id_matriz_modalidad
-                                    FROM adq.tmatriz_concepto mc
-                                    left join adq.tmatriz_modalidad mm on mm.id_matriz_modalidad = mc.id_matriz_modalidad
-                                    WHERE mc.id_concepto_ingas = v_solicitud_det.id_concepto_ingas
-                                    and mc.estado_reg = 'activo'
-                                    and mm.id_uo != 10094
-                                    and mm.id_uo = v_solicitud.id_uo; --nombre de parametrizacion en la matriz Gerencias Regionales*/
 
 
                                     FOR v_id_matriz IN(SELECT mc.id_matriz_modalidad, mm.id_uo
@@ -162,29 +142,48 @@ BEGIN
                                     v_id_uo_matriz =   orga.f_get_uo_gerencia_area_ope(NULL, v_funcionario, v_solicitud.fecha_soli::Date);
 
                                     v_id_uo_sol =   orga.f_get_uo_gerencia_area_ope(NULL, v_funcionario_sol, v_solicitud.fecha_soli::Date);
-                                  	--RAISE EXCEPTION 'MATRIZ % - %',v_id_uo_matriz, v_id_uo_sol;
+
+                                    --RAISE EXCEPTION 'MATRIZ1 % - %', v_id_uo_matriz,v_id_uo_sol;
 
 
-                                    --9420 GAF , 9438  Jefe Departamento Administración
-                                    --IF ((v_id_uo_matriz = v_solicitud.id_uo) or (v_id_uo_matriz=9420 and v_solicitud.id_uo = 9438 ) ) THEN
                                     IF (v_id_uo_matriz = v_id_uo_sol ) THEN
 
-                                    --RAISE EXCEPTION 'MATRIZ1 % - %',v_solicitud_det.id_concepto_ingas, v_id_uo_sol;
+                                    --RAISE EXCEPTION 'MATRIZ1 % - %', v_id_uo_matriz,v_solicitud.id_uo;
 
-                                    	SELECT mc.id_matriz_modalidad
+                                        SELECT mc.id_matriz_modalidad
                                         INTO v_matriz_id_modalidad
                                         FROM adq.tmatriz_concepto mc
                                         left join adq.tmatriz_modalidad mm on mm.id_matriz_modalidad = mc.id_matriz_modalidad
                                         WHERE mc.id_concepto_ingas = v_solicitud_det.id_concepto_ingas
                                         and mc.estado_reg = 'activo'
-                                        and (mm.id_uo = v_solicitud.id_uo or mm.id_uo = v_id_uo_sol);
+                                        AND mm.id_uo_gerencia = v_id_uo_sol ;
 
-                                       --RAISE EXCEPTION 'MATRIZ %',v_matriz_id_modalidad;
+
+                                        --control para que no tenga mas de un concepto de gasto
+                                        SELECT count(mc.id_concepto_ingas)
+                                        into v_count_concepto_ingas
+                                        FROM adq.tmatriz_concepto mc
+                                        left join adq.tmatriz_modalidad mm on mm.id_matriz_modalidad = mc.id_matriz_modalidad
+                                        WHERE mc.id_concepto_ingas = v_solicitud_det.id_concepto_ingas
+                                        and mc.estado_reg = 'activo'
+                                        and mm.id_uo_gerencia != 10094
+                                        and  mm.id_uo_gerencia = v_id_uo_sol; --nombre de parametrizacion en la matriz Gerencias Regionales
+
+
+                                        IF (v_count_concepto_ingas > 1) THEN
+                                          RAISE EXCEPTION 'En la Matriz Tipo Contratación(Aprobador) existe mas de un Concepto de Gasto % en un agrupador. Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).', v_desc_ingas;
+                                        END IF;
+
+                                          --and (mm.id_uo = v_solicitud.id_uo or mm.id_uo = v_id_uo_sol);
+
+                                         --RAISE EXCEPTION 'MATRIZ %',v_matriz_id_modalidad;
 
                                         v_id_matriz_modalidad =   v_matriz_id_modalidad;
+
+
                                     ELSE
 
-                                         RAISE EXCEPTION 'No se encuentra parametrizado el Concepto de Gasto % en la Matriz Tipo Contratación(Aprobador). Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).', v_desc_ingas;
+                                         RAISE EXCEPTION 'No se encuentra parametrizado el Concepto de Gasto % en la Matriz Tipo Contratación(Aprobador) para la %. Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).', v_desc_ingas, v_nom_uo;
 
                                     END IF;
 

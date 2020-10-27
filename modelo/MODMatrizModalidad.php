@@ -59,6 +59,8 @@ class MODMatrizModalidad extends MODbase{
 		$this->captura('resp_proc_contratacion_desastres','varchar');
 		$this->captura('flujo_mod_directa','varchar');
 
+		$this->captura('nombre_gerencia','varchar');
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -143,7 +145,7 @@ class MODMatrizModalidad extends MODbase{
         $this->setParametro('resp_proc_contratacion_desastres','resp_proc_contratacion_desastres','varchar');
         $this->setParametro('flujo_mod_directa','flujo_mod_directa','varchar');
 
-        
+
 
         //Ejecuta la instruccion
 		$this->armarConsulta();

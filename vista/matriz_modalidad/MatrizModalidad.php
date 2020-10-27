@@ -230,7 +230,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         gdisplayField: 'nombre_uo',//mapea al store del grid
                         gwidth: 250,
                         anchor: '100%',
-                        //baseParams:{presupuesta:'si'},
+                        baseParams:{presupuesta:'si'},
                         renderer: function (value, p, record) {
                             return String.format('{0} {1}', record.data['codigo_uo'], record.data['nombre_uo']);
                         }
@@ -240,6 +240,23 @@ header("content-type: text/javascript; charset=UTF-8");
                     filters: {pfiltro: 'nombre_uo', type: 'string'},
                     grid: true,
                     form: true
+                },
+                {
+                    config: {
+                        name: 'nombre_gerencia',
+                        fieldLabel: 'Gerencia',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 400,
+                        gdisplayField: 'nombre_gerencia',//mapea al store del grid
+                        maxLength: 100
+
+                    },
+                    type: 'TextField',
+                    filters: {pfiltro: 'nombre_gerencia', type: 'string'},
+                    id_grupo: 1,
+                    grid: true,
+                    form: false
                 },
                 {
                     config: {
@@ -524,7 +541,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     },
                     type: 'ComboBox',
                     filters: {pfiltro: 'matriz.resp_proc_contratacion_menor', type: 'string'},
-                    //valorInicial: 'RPA',
+                    valorInicial: 'RPA',
                     id_grupo: 2,
                     grid: true,
                     form: true
@@ -544,7 +561,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     },
                     type: 'ComboBox',
                     filters: {pfiltro: 'matriz.resp_proc_contratacion_anpe', type: 'string'},
-                    //valorInicial: 'RPA',
+                    valorInicial: 'RPA',
                     id_grupo: 2,
                     grid: true,
                     form: true
@@ -822,6 +839,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 {name: 'resp_proc_contratacion_desastres', type: 'string'},
                 {name: 'flujo_mod_directa', type: 'string'},
 
+                {name: 'nombre_gerencia', type: 'string'},
+
             ],
             sortInfo: {
                 field: 'tipo_contratacion',
@@ -829,7 +848,7 @@ header("content-type: text/javascript; charset=UTF-8");
             },
 
             arrayDefaultColumHidden: ['list_concepto_gasto', 'resp_proc_contratacion_menor', 'resp_proc_contratacion_anpe', 'resp_proc_contratacion_directa',
-                'resp_proc_contratacion_licitacion', 'resp_proc_contratacion_excepcion', 'resp_proc_contratacion_desastres'],
+                'resp_proc_contratacion_licitacion', 'resp_proc_contratacion_excepcion', 'resp_proc_contratacion_desastres', 'nombre_gerencia'],
 
 
             tabsouth: [{
