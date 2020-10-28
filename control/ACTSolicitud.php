@@ -434,6 +434,7 @@ class ACTSolicitud extends ACTbase
         $dataSource->putParameter('dep_prioridad', $datosSolicitud[0]['dep_prioridad']);
         $dataSource->putParameter('cargo_desc_funcionario_apro', $datosSolicitud[0]['cargo_desc_funcionario_apro']);
         /*Aumentando para recuperar la firma de aprobador*/
+        $dataSource->putParameter('funcionario_aprobador_inicial', $datosSolicitud[0]['funcionario_aprobador_inicial']);
         $dataSource->putParameter('funcionario_aprobador', $datosSolicitud[0]['funcionario_aprobador']);
         $dataSource->putParameter('cargo_aprobador', $datosSolicitud[0]['cargo_aprobador']);
         $dataSource->putParameter('fecha_aprobador', $datosSolicitud[0]['fecha_aprobador']);

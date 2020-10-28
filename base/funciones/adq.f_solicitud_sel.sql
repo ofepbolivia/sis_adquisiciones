@@ -79,6 +79,7 @@ DECLARE
    v_cargo_jefatura_adq				 varchar;
    v_fecha_jefatura_adq				 varchar;
    v_codigo_rpc			varchar;
+   v_nombre_aprobador	varchar;
    /***************************************************************************************/
 BEGIN
 
@@ -600,6 +601,23 @@ BEGIN
 
           	end if;
 
+			/*Aqui para mostrar el aprobador*/
+            SELECT
+            		vf.desc_funcionario1
+            INTO
+                    v_nombre_aprobador
+            FROM wf.testado_wf twf
+                INNER JOIN wf.ttipo_estado te ON te.id_tipo_estado = twf.id_tipo_estado
+                INNER JOIN wf.tproceso_wf pro ON twf.id_proceso_wf = pro.id_proceso_wf
+                INNER JOIN orga.vfuncionario_cargo vf ON vf.id_funcionario = twf.id_funcionario
+                WHERE twf.id_proceso_wf = v_proces_wf AND (te.codigo = 'vbaprobador' or te.codigo = 'vbgerencia') and ( vf.fecha_finalizacion is null or vf.fecha_finalizacion >= now())
+                GROUP BY twf.id_funcionario, vf.desc_funcionario1,te.codigo,vf.nombre_cargo,pro.nro_tramite;
+
+             if (v_nombre_aprobador is null) then
+            	v_nombre_aprobador = '';
+             end if;
+            /********************************/
+
             /*Aqui Recuperamos la firma del aprobador cuando pase su estado (Ismael Valdivia 13/10/2020)*/
             if (v_estado_tramite != 'vbaprobador' and v_estado_tramite != 'vbgerencia' and v_estado_tramite != 'borrador' and v_estado_tramite != 'vbuti') then
             		SELECT 	vf.desc_funcionario1,
@@ -751,6 +769,7 @@ BEGIN
 
 
                         /*Aumentando Para la firma del aprobador (Ismael Valdivia 13/10/2020)*/
+                        '''||v_nombre_aprobador||'''::varchar as funcionario_aprobador_inicial,
                         '''||v_nombre_funcionario_aprobador||'''::varchar as funcionario_aprobador,
                         '''||v_cargo_aprobador||'''::varchar as cargo_aprobador,
                         '''||v_fecha_aprobador||'''::varchar as fecha_aprobador,

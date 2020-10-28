@@ -488,6 +488,7 @@ class MODSolicitud extends MODbase
         $this->captura('dep_prioridad', 'int4');
 
         /*Aumentando para que la firma del aprobador se muestre despues de su estado*/
+        $this->captura('funcionario_aprobador_inicial', 'varchar');
         $this->captura('funcionario_aprobador', 'varchar');
         $this->captura('cargo_aprobador', 'varchar');
         $this->captura('fecha_aprobador', 'varchar');
