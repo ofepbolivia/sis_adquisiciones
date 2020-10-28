@@ -290,12 +290,12 @@ Class RSolicitudCompra extends Report {
         /*******************************************************************************************/
         $pdf->Ln();
 
-        if ($fecha_solicitud  >= $fechaFormatoRPCE && $codigoAquisicion == 'CNPD') {
+        if ($fecha_solicitud  >= $fechaFormatoRPCE && $codigoAquisicion == 'CNPD') {          
           $pdf->SetFont('', 'B');
           $pdf->Cell($width3, $height, 'Aprobador:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
           $pdf->SetFont('', '');
           $pdf->SetFillColor(192,192,192, true);
-          $pdf->MultiCell($width3+$width2, $height, $this->getDataSource()->getParameter('desc_funcionario_apro'), 0,'L', true ,0);
+          $pdf->MultiCell($width3+$width2, $height, $this->getDataSource()->getParameter('funcionario_aprobador'), 0,'L', true ,0);
         } else {
           $pdf->SetFont('', 'B');
           $pdf->Cell($width3, $height, 'Unidad Solicitante:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
