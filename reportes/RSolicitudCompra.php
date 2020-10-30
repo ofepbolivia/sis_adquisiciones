@@ -220,7 +220,7 @@ Class RSolicitudCompra extends Report {
         $pdf->SetFont('', 'B');
         /*Aumentando esta condicion para que el reporte muestre al RPC (Ismael Valdivia 12/10/2020)*/
         if ($fecha_solicitud  >= $fechaFormatoRPCE && $codigoAquisicion == 'CNPD') {
-          $pdf->Cell($width3, $height, 'Unidad Solicitante:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+          $pdf->Cell($width3-5, $height, 'Unidad Solicitante:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
           $pdf->SetFont('', '');
           $pdf->SetFillColor(192,192,192, true);
           $pdf->MultiCell($width3+$width2, $height, $this->getDataSource()->getParameter('desc_uo'), 0,'L', true ,0);
@@ -236,15 +236,14 @@ Class RSolicitudCompra extends Report {
 
         $pdf->SetFont('', 'B');
         if ($fecha_solicitud  >= $fechaFormatoRPCE && $codigoAquisicion == 'CNPD') {
-          $pdf->Cell(5, $height, '', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-          $pdf->Cell($width3, $height, 'Modalidad:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+          $pdf->Cell($width3-8, $height, 'Modalidad:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
           $pdf->SetFont('', '');
           $pdf->SetFillColor(192,192,192, true);
-          $pdf->Cell($width3+$width2, $height, $tipo_modalidad, $white, 0, 'L', true, '', 0, false, 'T', 'C');
+          $pdf->Cell($width3+$width2+20, $height, $tipo_modalidad, $white, 0, 'L', true, '', 0, false, 'T', 'C');
           $pdf->Ln();
         } else {
           $pdf->Cell(5, $height, '', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-          $pdf->Cell($width3, $height, 'Categoria de Compra:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+          $pdf->Cell($width3-5, $height, 'Categoria de Compra:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
           $pdf->SetFont('', '');
           $pdf->SetFillColor(192,192,192, true);
           $pdf->Cell($width3+$width2, $height, $this->getDataSource()->getParameter('desc_categoria_compra'), $white, 0, 'L', true, '', 0, false, 'T', 'C');
@@ -255,7 +254,7 @@ Class RSolicitudCompra extends Report {
 
         /*Aumentando esta condicion para que el reporte muestre al RPC (Ismael Valdivia 12/10/2020)*/
         if ($fecha_solicitud  >= $fechaFormatoRPCE && $codigoAquisicion == 'CNPD') {
-          $pdf->Cell($width3, $height, 'Funcionario Solicitante:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+          $pdf->Cell($width3-5, $height, 'Funcionario Solicitante:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
           $pdf->SetFont('', '');
           $pdf->SetFillColor(192,192,192, true);
           //$pdf->MultiCell($width3+$width2, $height, $this->getDataSource()->getParameter('desc_funcionario_apro'), 0,'L', true ,0);
@@ -272,16 +271,17 @@ Class RSolicitudCompra extends Report {
         /********************************************************************************************/
 
 
-        $pdf->Cell(5, $height, '', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+
         $pdf->SetFont('', 'B');
 
         /*Aumentando esta condicion para que el reporte muestre al RPC (Ismael Valdivia 12/10/2020)*/
         if ($fecha_solicitud  >= $fechaFormatoRPCE && $codigoAquisicion == 'CNPD') {
-          $pdf->Cell($width3, $height, 'Categoria de Compra:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+          $pdf->Cell($width3-8, $height, 'Categoria de Compra:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
           $pdf->SetFont('', '');
           $pdf->SetFillColor(192,192,192, true);
-          $pdf->Cell($width3+$width2, $height, $this->getDataSource()->getParameter('desc_categoria_compra'), $white, 0, 'L', true, '', 0, false, 'T', 'C');
+          $pdf->Cell($width3+$width2+20, $height, $this->getDataSource()->getParameter('desc_categoria_compra'), $white, 0, 'L', true, '', 0, false, 'T', 'C');
         } else {
+          $pdf->Cell(5, $height, '', 0, 0, 'L', false, '', 0, false, 'T', 'C');
           $pdf->Cell($width3, $height, 'RPC:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
           $pdf->SetFont('', '');
           $pdf->SetFillColor(192,192,192, true);
@@ -292,7 +292,7 @@ Class RSolicitudCompra extends Report {
 
         if ($fecha_solicitud  >= $fechaFormatoRPCE && $codigoAquisicion == 'CNPD') {
           $pdf->SetFont('', 'B');
-          $pdf->Cell($width3, $height, 'Aprobador:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+          $pdf->Cell($width3-5, $height, 'Aprobador:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
           $pdf->SetFont('', '');
           $pdf->SetFillColor(192,192,192, true);
           $pdf->MultiCell($width3+$width2, $height, $this->getDataSource()->getParameter('funcionario_aprobador_inicial'), 0,'L', true ,0);
@@ -304,16 +304,17 @@ Class RSolicitudCompra extends Report {
           $pdf->MultiCell($width3+$width2, $height, $this->getDataSource()->getParameter('desc_uo'), 0,'L', true ,0);
         }
         //$pdf->Cell($width3+$width2, $height, $this->getDataSource()->getParameter('desc_uo'), $white, 0, 'L', true, '', 1, false, 'T', 'C');
-        $pdf->Cell(5, $height, '', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+
         $pdf->SetFont('', 'B');
 
         /*Aumentando esta condicion para que el reporte muestre al RPC (Ismael Valdivia 12/10/2020)*/
         if ($fecha_solicitud  >= $fechaFormatoRPCE && $codigoAquisicion == 'CNPD') {
-          $pdf->Cell($width3, $height, 'Tipo:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+          $pdf->Cell($width3-8, $height, 'Tipo:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
           $pdf->SetFont('', '');
           $pdf->SetFillColor(192,192,192, true);
-          $pdf->MultiCell($width3+$width2, $height, $this->getDataSource()->getParameter('tipo_solicitud'), 1,'L', true ,1);
+          $pdf->MultiCell($width3+$width2+20, $height, $this->getDataSource()->getParameter('tipo_solicitud'), 1,'L', true ,1);
         } else {
+          $pdf->Cell(5, $height, '', 0, 0, 'L', false, '', 0, false, 'T', 'C');
           $pdf->Cell($width3, $height, 'Funcionario:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
           $pdf->SetFont('', '');
           $pdf->SetFillColor(192,192,192, true);
