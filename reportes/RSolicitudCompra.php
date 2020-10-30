@@ -243,7 +243,7 @@ Class RSolicitudCompra extends Report {
           $pdf->Ln();
         } else {
           $pdf->Cell(5, $height, '', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-          $pdf->Cell($width3-5, $height, 'Categoria de Compra:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+          $pdf->Cell($width3, $height, 'Categoria de Compra:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
           $pdf->SetFont('', '');
           $pdf->SetFillColor(192,192,192, true);
           $pdf->Cell($width3+$width2, $height, $this->getDataSource()->getParameter('desc_categoria_compra'), $white, 0, 'L', true, '', 0, false, 'T', 'C');
