@@ -63,6 +63,10 @@ DECLARE
      v_matriz_id_modalidad	integer;
      v_nom_uo				varchar;
 
+     v_proceso_contratacion	varchar;
+     v_count_codigo_modalidad	integer;
+
+
 
 BEGIN
 
@@ -73,7 +77,7 @@ BEGIN
 
 
       --informacion de la solicitud
-      SELECT sol.fecha_soli, sol.id_funcionario, sol.prioridad, sol.id_uo
+      SELECT sol.fecha_soli, sol.id_funcionario, sol.prioridad, sol.id_uo, sol.contratacion_directa
       into v_solicitud
       FROM adq.tsolicitud sol
       WHERE sol.id_solicitud = v_id_solicitud;
@@ -143,7 +147,7 @@ BEGIN
 
                                     v_id_uo_sol =   orga.f_get_uo_gerencia_area_ope(NULL, v_funcionario_sol, v_solicitud.fecha_soli::Date);
 
-                                    --RAISE EXCEPTION 'MATRIZ1 % - %', v_id_uo_matriz,v_id_uo_sol;
+
 
 
                                     IF (v_id_uo_matriz = v_id_uo_sol ) THEN
@@ -159,7 +163,7 @@ BEGIN
                                         AND mm.id_uo_gerencia = v_id_uo_sol ;
 
 
-                                        --control para que no tenga mas de un concepto de gasto
+                                        /*--control para que no tenga mas de un concepto de gasto
                                         SELECT count(mc.id_concepto_ingas)
                                         into v_count_concepto_ingas
                                         FROM adq.tmatriz_concepto mc
@@ -172,7 +176,7 @@ BEGIN
 
                                         IF (v_count_concepto_ingas > 1) THEN
                                           RAISE EXCEPTION 'En la Matriz Tipo Contratación(Aprobador) existe mas de un Concepto de Gasto % en un agrupador. Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).', v_desc_ingas;
-                                        END IF;
+                                        END IF;*/
 
                                           --and (mm.id_uo = v_solicitud.id_uo or mm.id_uo = v_id_uo_sol);
 
@@ -234,7 +238,7 @@ BEGIN
                           ELSE
                                   --prioridad 2 para regionales nacionales
 
-                                  --control para que no tenga mas de un concepto de gasto
+                                  /*--control para que no tenga mas de un concepto de gasto
                                   SELECT count(mc.id_concepto_ingas)
                                   into v_count_concepto_ingas
                                   FROM adq.tmatriz_concepto mc
@@ -245,7 +249,7 @@ BEGIN
 
                                   IF (v_count_concepto_ingas > 1) THEN
                                     RAISE EXCEPTION 'En la Matriz Tipo Contratación(Aprobador) existe mas de un Concepto de Gasto % en un agrupador. Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).', v_desc_ingas;
-                                  END IF;
+                                  END IF; */
 
                                   --
                                   SELECT mc.id_matriz_modalidad
@@ -312,12 +316,8 @@ BEGIN
       WHERE sd.id_solicitud = v_id_solicitud
       and sd.estado_reg = 'activo' ;
 
-      --COMPARACION CON LA TABLA DE MODALIDAD
-      SELECT mod.codigo
-      into v_codigo_modalidad
-      FROM adq.tmodalidades mod
-      WHERE mod.condicion_menor <= v_total_det
-      and mod.condicion_mayor >= v_total_det;
+
+
 
 
       ----
@@ -331,15 +331,28 @@ BEGIN
             SELECT mm.modalidad_menor,
             	   mm.modalidad_anpe,
                    mm.modalidad_directa,
+                   mm.flujo_mod_directa,
                    mm.modalidad_licitacion,
                    mm.modalidad_desastres,
                    mm.modalidad_excepcion,
                    mm.id_uo,
-                   mm.id_cargo
+                   mm.id_cargo,
+                   mm.resp_proc_contratacion_menor,
+                   mm.resp_proc_contratacion_anpe,
+                   mm.resp_proc_contratacion_directa,
+                   mm.resp_proc_contratacion_licitacion,
+                   mm.resp_proc_contratacion_desastres,
+                   mm.resp_proc_contratacion_excepcion
+
             into v_modalidades_matriz
             FROM  adq.tmatriz_modalidad mm
             WHERE mm.id_matriz_modalidad = v_id_matriz_mod.id_matriz_modalidad
             and mm.estado_reg = 'activo';
+
+			--
+            IF (v_modalidades_matriz.modalidad_directa = 'si' and v_modalidades_matriz.flujo_mod_directa is null) THEN
+            	raise exception 'No existe un Flujo parametrizado para la Contratación Directa';
+            END IF;
 
             ---
             --informacion para sacar el funcionario aprobador
@@ -377,7 +390,7 @@ BEGIN
 
                  ELSE
 
-                 		--18594 Gerente comercial
+
                 		 IF (v_modalidades_matriz.id_cargo is null) THEN
                             RAISE EXCEPTION 'No se encuentra parametrizado el Responsable de Nivel Aprobación  en la Matriz Tipo Contratación - Aprobador. Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).';
                          END IF;
@@ -428,12 +441,20 @@ BEGIN
             UPDATE adq.tmodalidad_solicitud SET
             modalidad_menor = v_modalidades_matriz.modalidad_menor,
             modalidad_anpe = v_modalidades_matriz.modalidad_anpe,
-            modalidad_licitacion = v_modalidades_matriz.modalidad_directa,
-            modalidad_directa = v_modalidades_matriz.modalidad_licitacion,
-            modalidad_excepcion = v_modalidades_matriz.modalidad_desastres,
-            modalidad_desastres = v_modalidades_matriz.modalidad_excepcion,
+            modalidad_directa = v_modalidades_matriz.modalidad_directa,
+            modalidad_licitacion = v_modalidades_matriz.modalidad_licitacion,
+            modalidad_excepcion = v_modalidades_matriz.modalidad_excepcion,
+            modalidad_desastres = v_modalidades_matriz.modalidad_desastres,
 
-            id_funcionario_aprobador = v_idfun_modalidad
+            id_funcionario_aprobador = v_idfun_modalidad,
+            flujo_mod_directa = v_modalidades_matriz.flujo_mod_directa,
+
+            resp_proc_contratacion_menor = v_modalidades_matriz.resp_proc_contratacion_menor,
+            resp_proc_contratacion_anpe = v_modalidades_matriz.resp_proc_contratacion_anpe,
+            resp_proc_contratacion_directa = v_modalidades_matriz.resp_proc_contratacion_directa,
+            resp_proc_contratacion_licitacion = v_modalidades_matriz.resp_proc_contratacion_licitacion,
+            resp_proc_contratacion_desastres = v_modalidades_matriz.resp_proc_contratacion_desastres,
+            resp_proc_contratacion_excepcion = v_modalidades_matriz.resp_proc_contratacion_excepcion
 
             WHERE id_matriz_modalidad = v_id_matriz_mod.id_matriz_modalidad;
 
@@ -447,19 +468,54 @@ BEGIN
                                     and ms.estado_reg = 'activo'
                                       )LOOP
 
-                    SELECT ms.modalidad_menor,
-                    	   ms.modalidad_anpe,
-                           ms.modalidad_directa,
+                    SELECT  ms.modalidad_menor,
+                    	    ms.modalidad_anpe,
+                            ms.modalidad_directa,
                             ms.modalidad_licitacion,
                             ms.modalidad_desastres,
                             ms.modalidad_excepcion,
                             ms.id_concepto_ingas,
-                            ms.id_matriz_modalidad
+                            ms.id_matriz_modalidad,
+                            ms.flujo_mod_directa,
+
+                            ms.resp_proc_contratacion_menor,
+                            ms.resp_proc_contratacion_anpe,
+                            ms.resp_proc_contratacion_directa,
+                            ms.resp_proc_contratacion_licitacion,
+                            ms.resp_proc_contratacion_desastres,
+                            ms.resp_proc_contratacion_excepcion
 
                     INTO v_modalidades_solicitud
                     FROM adq.tmodalidad_solicitud ms
                     WHERE ms.id_modalidad_solicitud = v_modalidad_solicitud.id_modalidad_solicitud
                     and ms.estado_reg = 'activo';
+
+                    --------
+                    --VERIFICACION DE MODALIDADES
+                    --par los que entran en la condicion con menores y directas
+                    IF v_modalidades_solicitud.modalidad_directa = 'si' THEN
+
+                          --COMPARACION CON LA TABLA DE MODALIDAD que ingrese los que se parametricen con conceptos de gasto
+                          SELECT mod.codigo
+                          into v_codigo_modalidad
+                          FROM adq.tmodalidades mod
+                          WHERE mod.condicion_menor <= v_total_det
+                          and mod.condicion_mayor >= v_total_det
+                          and mod.con_concepto = 'si';
+
+                    ELSE
+
+                          --COMPARACION CON LA TABLA DE MODALIDAD que no ingrese los que se parametricen con concepto de gasto
+                          SELECT mod.codigo
+                          into v_codigo_modalidad
+                          FROM adq.tmodalidades mod
+                          WHERE mod.condicion_menor <= v_total_det
+                          and mod.condicion_mayor >= v_total_det
+                          and mod.con_concepto = 'no';
+
+                    END IF;
+
+                    ------------
 
                     --nombre del concepto de gasto
                     SELECT cin.desc_ingas
@@ -527,9 +583,23 @@ BEGIN
 
                             END IF;
 
-                        /*ELSIF (v_modalidades_solicitud.modalidad_licitacion ='si') THEN
-                        	v_modalidad = 'mod_';
+                        ELSIF (v_codigo_modalidad ='mod_directa') THEN
+                        	v_modalidad = v_modalidades_solicitud.modalidad_directa;
 
+                            IF v_modalidad = 'si' THEN
+                                UPDATE adq.tmodalidad_solicitud set
+                                calificacion = 'SI'
+                                WHERE id_modalidad_solicitud = v_modalidad_solicitud.id_modalidad_solicitud;
+                            ELSE
+                            	UPDATE adq.tmodalidad_solicitud set
+                                calificacion = 'NO'
+                                WHERE id_modalidad_solicitud = v_modalidad_solicitud.id_modalidad_solicitud;
+
+                            	raise exception 'Este proceso pertenece al Tipo Contratación: %, y no esta habilitado para la %  en la Matriz Tipo Contratación-Aprobador. Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre). ',v_nom_tipo_contratacion, upper(v_nombre_modalidad);
+
+                            END IF;
+
+                        /*
                         ELSIF (v_modalidades_solicitud.modalidad_desastres ='si') THEN
                         	v_modalidad = 'mod_';
 
@@ -558,7 +628,14 @@ BEGIN
                                 ms.modalidad_directa,
                                 ms.modalidad_licitacion,
                                 ms.modalidad_desastres,
-                                ms.modalidad_excepcion
+                                ms.modalidad_excepcion,
+
+                                ms.resp_proc_contratacion_menor,
+                                ms.resp_proc_contratacion_anpe,
+                                ms.resp_proc_contratacion_directa,
+                                ms.resp_proc_contratacion_licitacion,
+                                ms.resp_proc_contratacion_desastres,
+                                ms.resp_proc_contratacion_excepcion
 
                         INTO v_solu_modalidades
                         FROM adq.tmodalidad_solicitud ms
@@ -568,15 +645,26 @@ BEGIN
 
                         IF (v_solu_modalidades.modalidad_menor = 'si' and v_codigo_modalidad = 'mod_menor') THEN
                         	v_respuesta_modalidad = 'mod_menor';
+                            v_proceso_contratacion = 'RPA';
+
                         ELSIF (v_solu_modalidades.modalidad_anpe = 'si' and v_codigo_modalidad = 'mod_anpe') THEN
                         	v_respuesta_modalidad = 'mod_anpe';
+                            v_proceso_contratacion = 'RPA';
+
                         ELSIF (v_solu_modalidades.modalidad_licitacion = 'si' and v_codigo_modalidad = 'mod_licitacion') THEN
                         	v_respuesta_modalidad = 'mod_licitacion';
+                            v_proceso_contratacion = v_solu_modalidades.resp_proc_contratacion_licitacion;
+
+                        ELSIF (v_solu_modalidades.modalidad_directa = 'si' and v_codigo_modalidad = 'mod_directa') THEN
+                        	v_respuesta_modalidad = v_modalidades_solicitud.flujo_mod_directa;
+                            v_proceso_contratacion = v_solu_modalidades.resp_proc_contratacion_directa;
+
                         END IF;
 
                     	UPDATE adq.tsolicitud SET
                         id_funcionario_supervisor = v_solu_modalidades.id_funcionario_aprobador,
-                        tipo_modalidad = v_respuesta_modalidad
+                        tipo_modalidad = v_respuesta_modalidad,
+                        proceso_contratacion = v_proceso_contratacion
                         WHERE id_solicitud = v_id_solicitud;
 
                     END IF;

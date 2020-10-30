@@ -1089,3 +1089,34 @@ IS 'codigo del flujo';
 ALTER TABLE adq.tmatriz_modalidad
 ADD COLUMN id_uo_gerencia INTEGER;
 /***********************************F-SCP-MAY-ADQ-0-27/10/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-30/10/2020****************************************/
+ALTER TABLE adq.tmodalidades
+ADD COLUMN con_concepto VARCHAR(30);
+
+
+ALTER TABLE adq.tmodalidad_solicitud
+ADD COLUMN flujo_mod_directa VARCHAR(500);
+
+ALTER TABLE adq.tmodalidad_solicitud
+ADD COLUMN resp_proc_contratacion_menor VARCHAR(300);
+
+ALTER TABLE adq.tmodalidad_solicitud
+ADD COLUMN resp_proc_contratacion_anpe VARCHAR(300);
+
+ALTER TABLE adq.tmodalidad_solicitud
+ADD COLUMN resp_proc_contratacion_directa VARCHAR(300);
+
+ALTER TABLE adq.tmodalidad_solicitud
+ADD COLUMN resp_proc_contratacion_licitacion VARCHAR(300);
+
+ALTER TABLE adq.tmodalidad_solicitud
+ADD COLUMN resp_proc_contratacion_desastres VARCHAR(300);
+
+ALTER TABLE adq.tmodalidad_solicitud
+ADD COLUMN resp_proc_contratacion_excepcion VARCHAR(300);
+
+COMMENT ON COLUMN adq.tmodalidad_solicitud.flujo_mod_directa
+IS 'codigo del flujo de modalidad directa';
+
+/***********************************F-SCP-MAY-ADQ-0-30/10/2020****************************************/
