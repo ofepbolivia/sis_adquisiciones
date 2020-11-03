@@ -185,7 +185,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     config: {
                         name: 'nacional',
                         fieldLabel: 'Nacional',
-                        allowBlank: false,
+                        allowBlank: true,
                         anchor: '100%',
                         gwidth: 50,
                         maxLength: 100,
@@ -282,7 +282,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     config: {
                         name: 'id_cargo',
                         fieldLabel: 'Nivel Aprobación (Aprobador)',
-                        allowBlank: true,
+                        allowBlank: false,
                         resizable: true,
                         emptyText: 'Elija una opción...',
                         store: new Ext.data.JsonStore({
@@ -530,7 +530,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     config: {
                         name: 'resp_proc_contratacion_menor',
                         fieldLabel: 'Resp. Mod. Menor',
-                        allowBlank: true,
+                        allowBlank: false,
                         width: 60,
                         gwidth: 100,
                         maxLength: 100,
@@ -550,7 +550,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     config: {
                         name: 'resp_proc_contratacion_anpe',
                         fieldLabel: 'Resp. Mod. ANPE',
-                        allowBlank: true,
+                        allowBlank: false,
                         width: 60,
                         gwidth: 100,
                         maxLength: 100,
@@ -570,7 +570,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     config: {
                         name: 'resp_proc_contratacion_licitacion',
                         fieldLabel: 'Resp. Mod. Licitación',
-                        allowBlank: true,
+                        allowBlank: false,
                         width: 60,
                         gwidth: 100,
                         maxLength: 100,
@@ -590,7 +590,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     config: {
                         name: 'resp_proc_contratacion_directa',
                         fieldLabel: 'Resp. Mod. Directa',
-                        allowBlank: true,
+                        allowBlank: false,
                         width: 60,
                         gwidth: 100,
                         maxLength: 100,
@@ -610,7 +610,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     config: {
                         name: 'resp_proc_contratacion_excepcion',
                         fieldLabel: 'Resp. Mod. Excepción',
-                        allowBlank: true,
+                        allowBlank: false,
                         width: 60,
                         gwidth: 100,
                         maxLength: 100,
@@ -630,7 +630,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     config: {
                         name: 'resp_proc_contratacion_desastres',
                         fieldLabel: 'Resp. Mod. Desastres',
-                        allowBlank: true,
+                        allowBlank: false,
                         width: 60,
                         gwidth: 100,
                         maxLength: 100,
@@ -860,6 +860,7 @@ header("content-type: text/javascript; charset=UTF-8");
             }],
 
             iniciarEventos: function () {
+
                 this.ocultarComponente(this.Cmp.flujo_mod_directa);
                 this.ocultarComponente(this.Cmp.resp_proc_contratacion_directa);
                 this.ocultarComponente(this.Cmp.resp_proc_contratacion_menor);
@@ -872,11 +873,40 @@ header("content-type: text/javascript; charset=UTF-8");
                     if (this.Cmp.modalidad_directa.getValue() == 'si') {
                         this.mostrarComponente(this.Cmp.flujo_mod_directa);
                         this.mostrarComponente(this.Cmp.resp_proc_contratacion_directa);
-                    }else {
+
                         this.Cmp.modalidad_menor.reset();
+                        this.Cmp.resp_proc_contratacion_menor.reset();
+                        this.Cmp.modalidad_anpe.reset();
+                        this.Cmp.resp_proc_contratacion_anpe.reset();
+                        this.Cmp.modalidad_licitacion.reset();
+                        this.Cmp.resp_proc_contratacion_licitacion.reset();
+                        this.Cmp.modalidad_excepcion.reset();
+                        this.Cmp.resp_proc_contratacion_excepcion.reset();
+                        this.Cmp.modalidad_desastres.reset();
+                        this.Cmp.resp_proc_contratacion_desastres.reset();
+                        this.ocultarComponente(this.Cmp.modalidad_menor);
+                        this.ocultarComponente(this.Cmp.resp_proc_contratacion_menor);
+                        this.ocultarComponente(this.Cmp.modalidad_anpe);
+                        this.ocultarComponente(this.Cmp.resp_proc_contratacion_anpe);
+                        this.ocultarComponente(this.Cmp.modalidad_licitacion);
+                        this.ocultarComponente(this.Cmp.resp_proc_contratacion_licitacion);
+                        this.ocultarComponente(this.Cmp.modalidad_excepcion);
+                        this.ocultarComponente(this.Cmp.resp_proc_contratacion_excepcion);
+                        this.ocultarComponente(this.Cmp.modalidad_desastres);
+                        this.ocultarComponente(this.Cmp.resp_proc_contratacion_desastres);
+
+                    }else {
+                        this.Cmp.flujo_mod_directa.reset();
+                        this.Cmp.resp_proc_contratacion_directa.reset();
+
+                        this.Cmp.modalidad_menor.setValue('no');
                         this.ocultarComponente(this.Cmp.flujo_mod_directa);
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_directa);
-                        this.ocultarComponente(this.Cmp.modalidad_menor);
+                        this.mostrarComponente(this.Cmp.modalidad_menor);
+                        this.mostrarComponente(this.Cmp.modalidad_anpe);
+                        this.mostrarComponente(this.Cmp.modalidad_licitacion);
+                        this.mostrarComponente(this.Cmp.modalidad_excepcion);
+                        this.mostrarComponente(this.Cmp.modalidad_desastres);
                     }
 
                 }, this);
@@ -884,11 +914,12 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.modalidad_menor.on('select', function (cmp, rec) {
                     if (this.Cmp.modalidad_menor.getValue() == 'si') {
                         this.mostrarComponente(this.Cmp.resp_proc_contratacion_menor);
+                        this.ocultarComponente(this.Cmp.modalidad_directa);
                     }else {
                         this.Cmp.modalidad_directa.reset();
                         this.Cmp.flujo_mod_directa.reset();
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_menor);
-                        this.ocultarComponente(this.Cmp.modalidad_directa);
+                        this.mostrarComponente(this.Cmp.modalidad_directa);
                     }
 
                 }, this);
@@ -896,8 +927,10 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.modalidad_anpe.on('select', function (cmp, rec) {
                     if (this.Cmp.modalidad_anpe.getValue() == 'si') {
                         this.mostrarComponente(this.Cmp.resp_proc_contratacion_anpe);
+                        this.ocultarComponente(this.Cmp.modalidad_directa);
                     }else {
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_anpe);
+                        this.mostrarComponente(this.Cmp.modalidad_directa);
                     }
 
                 }, this);
@@ -905,8 +938,10 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.modalidad_licitacion.on('select', function (cmp, rec) {
                     if (this.Cmp.modalidad_licitacion.getValue() == 'si') {
                         this.mostrarComponente(this.Cmp.resp_proc_contratacion_licitacion);
+                        this.ocultarComponente(this.Cmp.modalidad_directa);
                     }else {
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_licitacion);
+                        this.mostrarComponente(this.Cmp.modalidad_directa);
                     }
 
                 }, this);
@@ -914,8 +949,10 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.modalidad_excepcion.on('select', function (cmp, rec) {
                     if (this.Cmp.modalidad_excepcion.getValue() == 'si') {
                         this.mostrarComponente(this.Cmp.resp_proc_contratacion_excepcion);
+                        this.ocultarComponente(this.Cmp.modalidad_directa);
                     }else {
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_excepcion);
+                        this.mostrarComponente(this.Cmp.modalidad_directa);
                     }
 
                 }, this);
@@ -923,17 +960,13 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.modalidad_desastres.on('select', function (cmp, rec) {
                     if (this.Cmp.modalidad_desastres.getValue() == 'si') {
                         this.mostrarComponente(this.Cmp.resp_proc_contratacion_desastres);
+                        this.ocultarComponente(this.Cmp.modalidad_directa);
                     }else {
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_desastres);
+                        this.mostrarComponente(this.Cmp.modalidad_directa);
                     }
 
                 }, this);
-
-                if (this.Cmp.modalidad_anpe.getValue() == 'si') {
-                    this.mostrarComponente(this.Cmp.resp_proc_contratacion_anpe);
-                }else {
-                    this.ocultarComponente(this.Cmp.resp_proc_contratacion_anpe);
-                }
 
 
             },
@@ -945,7 +978,7 @@ header("content-type: text/javascript; charset=UTF-8");
             if (this.Cmp.modalidad_directa.getValue() == 'si') {
                 this.mostrarComponente(this.Cmp.flujo_mod_directa);
                 this.mostrarComponente(this.Cmp.resp_proc_contratacion_directa);
-                //this.ocultarComponente(this.Cmp.modalidad_menor);
+
             }else {
                 this.Cmp.modalidad_directa.setValue('no')
                 this.ocultarComponente(this.Cmp.flujo_mod_directa);
@@ -1016,16 +1049,37 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.mostrarComponente(this.Cmp.resp_proc_contratacion_directa);
                     this.Cmp.modalidad_menor.reset();
                     this.Cmp.resp_proc_contratacion_menor.reset();
+                    this.Cmp.modalidad_anpe.reset();
+                    this.Cmp.resp_proc_contratacion_anpe.reset();
+                    this.Cmp.modalidad_licitacion.reset();
+                    this.Cmp.resp_proc_contratacion_licitacion.reset();
+                    this.Cmp.modalidad_excepcion.reset();
+                    this.Cmp.resp_proc_contratacion_excepcion.reset();
+                    this.Cmp.modalidad_desastres.reset();
+                    this.Cmp.resp_proc_contratacion_desastres.reset();
                     this.ocultarComponente(this.Cmp.modalidad_menor);
                     this.ocultarComponente(this.Cmp.resp_proc_contratacion_menor);
+                    this.ocultarComponente(this.Cmp.modalidad_anpe);
+                    this.ocultarComponente(this.Cmp.resp_proc_contratacion_anpe);
+                    this.ocultarComponente(this.Cmp.modalidad_licitacion);
+                    this.ocultarComponente(this.Cmp.resp_proc_contratacion_licitacion);
+                    this.ocultarComponente(this.Cmp.modalidad_excepcion);
+                    this.ocultarComponente(this.Cmp.resp_proc_contratacion_excepcion);
+                    this.ocultarComponente(this.Cmp.modalidad_desastres);
+                    this.ocultarComponente(this.Cmp.resp_proc_contratacion_desastres);
                 }else {
                     //this.detCmp.id_orden_trabajo.reset();
                     this.Cmp.flujo_mod_directa.reset();
                     this.Cmp.resp_proc_contratacion_directa.reset();
-                    this.Cmp.modalidad_menor.setValue('no')
+                    this.Cmp.modalidad_menor.setValue('no');
                     this.ocultarComponente(this.Cmp.flujo_mod_directa);
                     this.ocultarComponente(this.Cmp.resp_proc_contratacion_directa);
                     this.mostrarComponente(this.Cmp.modalidad_menor);
+                    this.mostrarComponente(this.Cmp.modalidad_anpe);
+                    this.mostrarComponente(this.Cmp.modalidad_licitacion);
+                    this.mostrarComponente(this.Cmp.modalidad_excepcion);
+                    this.mostrarComponente(this.Cmp.modalidad_desastres);
+
                 }
 
             }, this);
@@ -1033,9 +1087,16 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.modalidad_anpe.on('select', function (cmp, rec) {
                 if (this.Cmp.modalidad_anpe.getValue() == 'si') {
                     this.mostrarComponente(this.Cmp.resp_proc_contratacion_anpe);
+                    this.ocultarComponente(this.Cmp.modalidad_directa);
+                    this.ocultarComponente(this.Cmp.flujo_mod_directa);
+                    this.ocultarComponente(this.Cmp.resp_proc_contratacion_directa);
+                    this.Cmp.modalidad_directa.reset();
+                    this.Cmp.flujo_mod_directa.reset();
+                    this.Cmp.resp_proc_contratacion_directa.reset();
                 }else {
                     this.Cmp.resp_proc_contratacion_anpe.reset();
                     this.ocultarComponente(this.Cmp.resp_proc_contratacion_anpe);
+                    this.mostrarComponente(this.Cmp.modalidad_menor);
                 }
 
             }, this);
@@ -1043,9 +1104,11 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.modalidad_licitacion.on('select', function (cmp, rec) {
                 if (this.Cmp.modalidad_licitacion.getValue() == 'si') {
                     this.mostrarComponente(this.Cmp.resp_proc_contratacion_licitacion);
+                    this.ocultarComponente(this.Cmp.modalidad_directa);
                 }else {
                     this.Cmp.resp_proc_contratacion_licitacion.reset();
                     this.ocultarComponente(this.Cmp.resp_proc_contratacion_licitacion);
+                    this.mostrarComponente(this.Cmp.modalidad_menor);
                 }
 
             }, this);
@@ -1053,9 +1116,11 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.modalidad_excepcion.on('select', function (cmp, rec) {
                 if (this.Cmp.modalidad_excepcion.getValue() == 'si') {
                     this.mostrarComponente(this.Cmp.resp_proc_contratacion_excepcion);
+                    this.ocultarComponente(this.Cmp.modalidad_directa);
                 }else {
                     this.Cmp.resp_proc_contratacion_excepcion.reset();
                     this.ocultarComponente(this.Cmp.resp_proc_contratacion_excepcion);
+                    this.mostrarComponente(this.Cmp.modalidad_menor);
                 }
 
             }, this);
@@ -1063,9 +1128,11 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.modalidad_desastres.on('select', function (cmp, rec) {
                 if (this.Cmp.modalidad_desastres.getValue() == 'si') {
                     this.mostrarComponente(this.Cmp.resp_proc_contratacion_desastres);
+                    this.ocultarComponente(this.Cmp.modalidad_directa);
                 }else {
                     this.Cmp.resp_proc_contratacion_desastres.reset();
                     this.ocultarComponente(this.Cmp.resp_proc_contratacion_desastres);
+                    this.mostrarComponente(this.Cmp.modalidad_menor);
                 }
 
             }, this);

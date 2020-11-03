@@ -1120,3 +1120,17 @@ COMMENT ON COLUMN adq.tmodalidad_solicitud.flujo_mod_directa
 IS 'codigo del flujo de modalidad directa';
 
 /***********************************F-SCP-MAY-ADQ-0-30/10/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-1-30/10/2020****************************************/
+ALTER TABLE adq.tsolicitud
+ADD COLUMN proceso_contratacion VARCHAR(100);
+
+ALTER TABLE adq.tsolicitud
+ADD COLUMN contratacion_directa VARCHAR(100);
+
+COMMENT ON COLUMN adq.tsolicitud.proceso_contratacion
+IS 'RPC/RPA';
+
+COMMENT ON COLUMN adq.tsolicitud.contratacion_directa
+IS 'si/no';
+/***********************************F-SCP-MAY-ADQ-1-30/10/2020****************************************/
