@@ -102,7 +102,8 @@ BEGIN
                         instit.codigo_telf_institucion,
 
                         provee.id_lugar_departamento as id_lugar_fk,
-                        provee.id_lugar_ciudad as id_lugar_fk2
+                        provee.id_lugar_ciudad as id_lugar_fk2,
+						            provee.razon_social_sigep
 
                         from param.tproveedor provee
 						inner join segu.tusuario usu1 on usu1.id_usuario = provee.id_usuario_reg
