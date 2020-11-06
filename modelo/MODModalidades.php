@@ -35,7 +35,9 @@ class MODModalidades extends MODbase{
 		$this->captura('fecha_mod','timestamp');
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
-		
+
+		$this->captura('con_concepto','varchar');
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -57,6 +59,8 @@ class MODModalidades extends MODbase{
 		$this->setParametro('condicion_menor','condicion_menor','numeric');
 		$this->setParametro('condicion_mayor','condicion_mayor','numeric');
 		$this->setParametro('observaciones','observaciones','varchar');
+
+		$this->setParametro('con_concepto','con_concepto','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -80,6 +84,8 @@ class MODModalidades extends MODbase{
 		$this->setParametro('condicion_menor','condicion_menor','numeric');
 		$this->setParametro('condicion_mayor','condicion_mayor','numeric');
 		$this->setParametro('observaciones','observaciones','varchar');
+
+		$this->setParametro('con_concepto','con_concepto','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

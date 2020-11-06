@@ -69,6 +69,7 @@ class MODProveedor extends MODbase{
 
 		$this->captura('id_lugar_fk','int4');
 		$this->captura('id_lugar_fk2','int4');
+		$this->captura('razon_social_sigep','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

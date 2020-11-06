@@ -58,7 +58,10 @@ BEGIN
 			id_usuario_ai,
 			usuario_ai,
 			id_usuario_mod,
-			fecha_mod
+			fecha_mod,
+
+            con_concepto
+
           	) values(
 			'activo',
 			v_parametros.codigo,
@@ -71,9 +74,9 @@ BEGIN
 			v_parametros._id_usuario_ai,
 			v_parametros._nombre_usuario_ai,
 			null,
-			null
+			null,
 
-
+			v_parametros.con_concepto
 
 			)RETURNING id_modalidad into v_id_modalidad;
 
@@ -106,7 +109,10 @@ BEGIN
 			id_usuario_mod = p_id_usuario,
 			fecha_mod = now(),
 			id_usuario_ai = v_parametros._id_usuario_ai,
-			usuario_ai = v_parametros._nombre_usuario_ai
+			usuario_ai = v_parametros._nombre_usuario_ai,
+
+            con_concepto = v_parametros.con_concepto
+
 			where id_modalidad=v_parametros.id_modalidad;
 
 			--Definicion de la respuesta

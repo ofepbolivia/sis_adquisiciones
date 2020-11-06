@@ -92,6 +92,26 @@ Phx.vista.Modalidades=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
+        {
+            config: {
+                name: 'con_concepto',
+                fieldLabel: 'Flujo según Concepto?',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 120,
+                maxLength: 100,
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender: true,
+                store: ['si', 'no']
+            },
+            type: 'ComboBox',
+            filters: {pfiltro: 'modali.con_concepto', type: 'string'},
+            valorInicial: 'no',
+            id_grupo: 2,
+            grid: true,
+            form: true
+        },
 		{
 			config:{
 				name: 'observaciones',
@@ -237,7 +257,8 @@ Phx.vista.Modalidades=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
-		
+		{name:'con_concepto', type: 'string'},
+
 	],
 	sortInfo:{
 		field: 'id_modalidad',
