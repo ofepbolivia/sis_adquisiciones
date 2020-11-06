@@ -114,10 +114,25 @@ Class RSolicitudCompra extends Report {
         } else {
           $fechaAprobador = '';
         }
+
         $firma_jefatura_adquisiciones = $this->getDataSource()->getParameter('funcionario_jefatura_adq');
         $cargo_jefatura_adquisiciones = $this->getDataSource()->getParameter('cargo_jefatura_adq');
         $necesidad_contratacion_desc = $this->getDataSource()->getParameter('justificacion');
         $tipoConcepto = $this->getDataSource()->getParameter('tipo_concepto');
+
+        if ($this->getDataSource()->getParameter('fecha_rpc') != '') {
+          $fecha_rpc_correcto = date_format(date_create($this->getDataSource()->getParameter('fecha_rpc')), 'd/m/Y');
+        } else {
+          $fecha_rpc_correcto = '';
+        }
+
+        if ($this->getDataSource()->getParameter('fecha_jefatura_adq') != '') {
+          $fecha_jefatura_adq = date_format(date_create($this->getDataSource()->getParameter('fecha_jefatura_adq')), 'd/m/Y');
+        } else {
+          $fecha_jefatura_adq = '';
+        }
+
+
 
         /*Aqui poner la condicion para el texto*/
         if ($tipoConcepto == 'bien' || $tipoConcepto == 'servicio') {
@@ -511,7 +526,7 @@ Class RSolicitudCompra extends Report {
                                             <tr>
                                                 <td align="center" >
                                                     <br><br>
-                                                    <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_rpc_flujo, $cargo_rpc_flujo, $nro_tramite_qr) . '" alt="Logo">
+                                                    <img  style="width: 110px; height: 110px;" src="' . $this->generarImagenRpc($firma_rpc_flujo, $cargo_rpc_flujo, $nro_tramite_qr, $fecha_rpc_correcto) . '" alt="Logo">
                                                 </td>
                                             </tr>
                                         </table>
@@ -613,7 +628,7 @@ Class RSolicitudCompra extends Report {
                                                 <tr>
                                                     <td align="center" >
                                                         <br><br>
-                                                        <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_rpc_flujo, $cargo_rpc_flujo, $nro_tramite_qr) . '" alt="Logo">
+                                                        <img  style="width: 110px; height: 110px;" src="' . $this->generarImagenRpc($firma_rpc_flujo, $cargo_rpc_flujo, $nro_tramite_qr,$fecha_rpc_correcto) . '" alt="Logo">
                                                     </td>
                                                 </tr>
                                             </table>
@@ -686,7 +701,7 @@ Class RSolicitudCompra extends Report {
                                           <tr>
                                               <td align="center" >
                                                   <br><br>
-                                                  <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_rpc_flujo, $cargo_rpc_flujo, $nro_tramite_qr) . '" alt="Logo">
+                                                  <img  style="width: 110px; height: 110px;" src="' . $this->generarImagenRpc($firma_rpc_flujo, $cargo_rpc_flujo, $nro_tramite_qr,$fecha_rpc_correcto) . '" alt="Logo">
                                               </td>
                                           </tr>
                                       </table>
@@ -789,7 +804,7 @@ Class RSolicitudCompra extends Report {
                                               <tr>
                                                   <td align="center" >
                                                       <br><br>
-                                                      <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_rpc_flujo, $cargo_rpc_flujo, $nro_tramite_qr) . '" alt="Logo">
+                                                      <img  style="width: 110px; height: 110px;" src="' . $this->generarImagenRpc($firma_rpc_flujo, $cargo_rpc_flujo, $nro_tramite_qr,$fecha_rpc_correcto) . '" alt="Logo">
                                                   </td>
                                               </tr>
                                           </table>
@@ -859,7 +874,7 @@ Class RSolicitudCompra extends Report {
                                               <tr>
                                                   <td align="center" >
                                                       <br><br>
-                                                      <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_rpc_flujo, $cargo_rpc_flujo, $nro_tramite_qr) . '" alt="Logo">
+                                                      <img  style="width: 110px; height: 110px;" src="' . $this->generarImagenRpc($firma_rpc_flujo, $cargo_rpc_flujo, $nro_tramite_qr,$fecha_rpc_correcto) . '" alt="Logo">
                                                   </td>
                                               </tr>
                                           </table>
@@ -962,7 +977,7 @@ Class RSolicitudCompra extends Report {
                                               <tr>
                                                   <td align="center" >
                                                       <br><br>
-                                                      <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_rpc_flujo, $cargo_rpc_flujo, $nro_tramite_qr) . '" alt="Logo">
+                                                      <img  style="width: 110px; height: 110px;" src="' . $this->generarImagenRpc($firma_rpc_flujo, $cargo_rpc_flujo, $nro_tramite_qr,$fecha_rpc_correcto) . '" alt="Logo">
                                                   </td>
                                               </tr>
                                           </table>
@@ -981,7 +996,7 @@ Class RSolicitudCompra extends Report {
               if ($firma_rpc_flujo != '') {
                 $conteo_texto = strlen($necesidad_contratacion_desc);
                 $conteo_texto_rpc = strlen($firma_rpc_flujo);
-                $this->ReporteJefaturaAdquisiciones($pdf,$firma_jefatura_adquisiciones,$cargo_jefatura_adquisiciones,$nro_tramite_qr,$conteo_texto,$tipoConcepto,$conteo_texto_rpc,$totalDetalle);
+                $this->ReporteJefaturaAdquisiciones($pdf,$firma_jefatura_adquisiciones,$cargo_jefatura_adquisiciones,$nro_tramite_qr,$conteo_texto,$tipoConcepto,$conteo_texto_rpc,$totalDetalle,$fecha_jefatura_adq);
               }
             }
         }
@@ -1001,7 +1016,7 @@ Class RSolicitudCompra extends Report {
 		return $res;
     }
 
-    function ReporteJefaturaAdquisiciones(TCPDF $pdf,$firma_jefatura,$cargo_jefatura,$nro_tramite_qr,$conteo_texto,$tipoConcepto,$conteo_texto_rpc,$totalDetalle){
+    function ReporteJefaturaAdquisiciones(TCPDF $pdf,$firma_jefatura,$cargo_jefatura,$nro_tramite_qr,$conteo_texto,$tipoConcepto,$conteo_texto_rpc,$totalDetalle,$fecha_jefatura_adq){
       if (($conteo_texto <= '155') && ($conteo_texto_rpc < '35') && ($totalDetalle < '2')) {
         $pdf->AddPage();
       }
@@ -1039,7 +1054,7 @@ Class RSolicitudCompra extends Report {
                      <tr>
                          <td align="center" >
                              <br><br>
-                             <img  style="width: 110px; height: 110px;" src="' . $this->generarImagenJefatura($firma_jefatura, $cargo_jefatura, $nro_tramite_qr) . '" alt="Jefatura">
+                             <img  style="width: 110px; height: 110px;" src="' . $this->generarImagenJefatura($firma_jefatura, $cargo_jefatura, $nro_tramite_qr, $fecha_jefatura_adq) . '" alt="Jefatura">
                          </td>
                      </tr>
                  </table>
@@ -1346,20 +1361,38 @@ Class RSolicitudCompra extends Report {
         return $url_archivo;
     }
 
-    function generarImagenJefatura($nom, $car, $ntra){
-        $cadena_qr = 'Nombre: '.$nom. "\n". "Cargo: ".$car. "\n"."N° Tramite: ". $ntra;
+    function generarImagenRpc($nom, $car, $ntra, $fecha_rpc){
+        $cadena_qr = 'Nombre: '.$nom. "\n". "Cargo: ".$car. "\n"."N° Tramite: ". $ntra. "\n"."Fecha Autorización: ". $fecha_rpc;
         $barcodeobj = new TCPDF2DBarcode($cadena_qr, 'QRCODE,M');
         $png = $barcodeobj->getBarcodePngData($w = 8, $h = 8, $color = array(0, 0, 0));
         $im = imagecreatefromstring($png);
         if ($im !== false) {
             header('Content-Type: image/png');
-            imagepng($im, dirname(__FILE__) . "/../../reportes_generados/" . $nom.'_'.$car . ".png");
+            imagepng($im, dirname(__FILE__) . "/../../reportes_generados/" . $nom . "RPC.png");
             imagedestroy($im);
 
         } else {
             echo 'A ocurrido un Error.';
         }
-        $url_archivo = dirname(__FILE__) . "/../../reportes_generados/" . $nom.'_'.$car . ".png";
+        $url_archivo = dirname(__FILE__) . "/../../reportes_generados/" . $nom . "RPC.png";
+
+        return $url_archivo;
+    }
+
+    function generarImagenJefatura($nom, $car, $ntra, $fecha){
+        $cadena_qr = 'Nombre: '.$nom. "\n". "Cargo: ".$car. "\n"."N° Tramite: ". $ntra. "\n"."Fecha Autorización: ". $fecha;
+        $barcodeobj = new TCPDF2DBarcode($cadena_qr, 'QRCODE,M');
+        $png = $barcodeobj->getBarcodePngData($w = 8, $h = 8, $color = array(0, 0, 0));
+        $im = imagecreatefromstring($png);
+        if ($im !== false) {
+            header('Content-Type: image/png');
+            imagepng($im, dirname(__FILE__) . "/../../reportes_generados/" . $nom."Jefatura.png");
+            imagedestroy($im);
+
+        } else {
+            echo 'A ocurrido un Error.';
+        }
+        $url_archivo = dirname(__FILE__) . "/../../reportes_generados/" . $nom."Jefatura.png";
 
         return $url_archivo;
     }

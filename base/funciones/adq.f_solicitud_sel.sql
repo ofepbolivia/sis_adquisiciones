@@ -80,6 +80,8 @@ DECLARE
    v_fecha_jefatura_adq				 varchar;
    v_codigo_rpc			varchar;
    v_nombre_aprobador	varchar;
+   v_id_tipo_estado_rpc	integer;
+   v_id_tipo_estado_adq	integer;
    /***************************************************************************************/
 BEGIN
 
@@ -656,19 +658,19 @@ BEGIN
                 and v_estado_tramite != 'pendiente') then
             		SELECT 	vf.desc_funcionario1,
                     		vf.nombre_cargo,
-                            max(twf.fecha_reg::date),
-                            te.codigo
+                            te.codigo,
+                            te.id_tipo_estado
                     INTO
                             v_nombre_funcionario_rpc,
                             v_cargo_rpc,
-                            v_fecha_rpc,
-                            v_codigo_rpc
+                            v_codigo_rpc,
+                            v_id_tipo_estado_rpc
                     FROM wf.testado_wf twf
                         INNER JOIN wf.ttipo_estado te ON te.id_tipo_estado = twf.id_tipo_estado
                         INNER JOIN wf.tproceso_wf pro ON twf.id_proceso_wf = pro.id_proceso_wf
                         INNER JOIN orga.vfuncionario_cargo vf ON vf.id_funcionario = twf.id_funcionario
                         WHERE twf.id_proceso_wf = v_proces_wf AND (te.codigo = 'vbrpa' or te.codigo = 'vbrpc') and ( vf.fecha_finalizacion is null or vf.fecha_finalizacion >= now())
-                        GROUP BY twf.id_funcionario, vf.desc_funcionario1,te.codigo,vf.nombre_cargo,pro.nro_tramite;
+                        GROUP BY twf.id_funcionario, vf.desc_funcionario1,te.codigo,vf.nombre_cargo,pro.nro_tramite,te.id_tipo_estado;
     		end if;
 
             if (v_nombre_funcionario_rpc is null) then
@@ -683,7 +685,31 @@ BEGIN
             	v_codigo_rpc = '';
             end if;
             /********************************************************************************************/
+			/*Aumentando para recuperar la fecha del estado siguiente RPC o RPA (Ismael Valdivia 06/11/2020)*/
+            if (v_id_tipo_estado_rpc is not null) then
+            	SELECT
+                       max(twf.fecha_reg::date)
+                       into
+                       v_fecha_rpc
+                FROM wf.testado_wf twf
+                INNER JOIN wf.ttipo_estado te ON te.id_tipo_estado = twf.id_tipo_estado
+                INNER JOIN wf.tproceso_wf pro ON twf.id_proceso_wf = pro.id_proceso_wf
+                INNER JOIN orga.vfuncionario_cargo vf ON vf.id_funcionario = twf.id_funcionario
+                WHERE twf.id_proceso_wf = v_proces_wf AND te.id_tipo_estado = (select est.id_tipo_estado_hijo
+                                                                          from wf.testructura_estado est
+                                                                          where est.id_tipo_estado_padre = v_id_tipo_estado_rpc
+                                                                          )
+                and ( vf.fecha_finalizacion is null or vf.fecha_finalizacion >= now())
+                GROUP BY twf.id_funcionario, vf.desc_funcionario1,te.codigo,vf.nombre_cargo,pro.nro_tramite,te.id_tipo_estado;
 
+
+            end if;
+
+            IF (v_fecha_rpc is null) then
+            	v_fecha_rpc = '';
+            end if;
+
+            /*********************************************************/
             /*Aqui Recuperamos la firma del RPC cuando pase su estado (Ismael Valdivia 13/10/2020)*/
             if (v_estado_tramite != 'aprobado' and v_estado_tramite != 'vbrpc' and v_estado_tramite != 'vbrpa' and v_estado_tramite != 'vbpresupuestos' and v_estado_tramite != 'suppresu'
             	and v_estado_tramite != 'vbpoa' and v_estado_tramite != 'vbaprobador' and v_estado_tramite != 'vbgerencia'
@@ -691,11 +717,11 @@ BEGIN
                 and v_estado_tramite != 'pendiente') then
                     SELECT 	vf.desc_funcionario1,
                             vf.nombre_cargo,
-                            max(twf.fecha_reg::date)
+                            te.id_tipo_estado
                     INTO
                             v_nombre_funcionario_jefatura_adq,
                             v_cargo_jefatura_adq,
-                            v_fecha_jefatura_adq
+                            v_id_tipo_estado_adq
                     FROM wf.testado_wf twf
                         INNER JOIN wf.ttipo_estado te ON te.id_tipo_estado = twf.id_tipo_estado
                         INNER JOIN wf.tproceso_wf pro ON twf.id_proceso_wf = pro.id_proceso_wf
@@ -703,6 +729,31 @@ BEGIN
                     WHERE twf.id_proceso_wf = v_proces_wf AND te.codigo = 'aprobado' and ( vf.fecha_finalizacion is null or vf.fecha_finalizacion >= now())
                     GROUP BY twf.id_funcionario, vf.desc_funcionario1,te.codigo,vf.nombre_cargo,pro.nro_tramite,te.id_tipo_estado;
 			end if;
+			/*Aumentando para recuperar la fecha del estado siguiente jefatura Adq (Ismael Valdivia 06/11/2020)*/
+            if (v_id_tipo_estado_adq is not null) then
+            	SELECT
+                       max(twf.fecha_reg::date)
+                       into
+                       v_fecha_jefatura_adq
+                FROM wf.testado_wf twf
+                INNER JOIN wf.ttipo_estado te ON te.id_tipo_estado = twf.id_tipo_estado
+                INNER JOIN wf.tproceso_wf pro ON twf.id_proceso_wf = pro.id_proceso_wf
+                INNER JOIN orga.vfuncionario_cargo vf ON vf.id_funcionario = twf.id_funcionario
+                WHERE twf.id_proceso_wf = v_proces_wf AND te.id_tipo_estado = (select est.id_tipo_estado_hijo
+                                                                          from wf.testructura_estado est
+                                                                          where est.id_tipo_estado_padre = v_id_tipo_estado_adq
+                                                                          )
+                and ( vf.fecha_finalizacion is null or vf.fecha_finalizacion >= now())
+                GROUP BY twf.id_funcionario, vf.desc_funcionario1,te.codigo,vf.nombre_cargo,pro.nro_tramite,te.id_tipo_estado;
+
+
+            end if;
+
+            IF (v_fecha_jefatura_adq is null) then
+            	v_fecha_jefatura_adq = '';
+            end if;
+
+            /******************************************************************************************************/
 
             if (v_nombre_funcionario_jefatura_adq is null) then
             	v_nombre_funcionario_jefatura_adq = '';
@@ -777,9 +828,11 @@ BEGIN
                         '''||v_nombre_funcionario_rpc||'''::varchar as funcionario_rpc,
                         '''||v_cargo_rpc||'''::varchar as cargo_rpc,
                         '''||v_codigo_rpc||'''::varchar as codigo_rpc,
+                         '''||v_fecha_rpc||'''::varchar as fecha_rpc,
 
                         '''||v_nombre_funcionario_jefatura_adq||'''::varchar as funcionario_jefatura_adq,
                         '''||v_cargo_jefatura_adq||'''::varchar as cargo_jefatura_adq,
+                        '''||v_fecha_jefatura_adq||'''::varchar as fecha_jefatura_adq,
                         cat.codigo::varchar as codigo_adquisicion,
 
                         (SELECT count(det.id_solicitud)

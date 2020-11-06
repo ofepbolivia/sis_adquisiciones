@@ -441,8 +441,10 @@ class ACTSolicitud extends ACTbase
         $dataSource->putParameter('funcionario_rpc', $datosSolicitud[0]['funcionario_rpc']);
         $dataSource->putParameter('cargo_rpc', $datosSolicitud[0]['cargo_rpc']);
         $dataSource->putParameter('codigo_rpc', $datosSolicitud[0]['codigo_rpc']);
+        $dataSource->putParameter('fecha_rpc', $datosSolicitud[0]['fecha_rpc']);
         $dataSource->putParameter('funcionario_jefatura_adq', $datosSolicitud[0]['funcionario_jefatura_adq']);
         $dataSource->putParameter('cargo_jefatura_adq', $datosSolicitud[0]['cargo_jefatura_adq']);
+        $dataSource->putParameter('fecha_jefatura_adq', $datosSolicitud[0]['fecha_jefatura_adq']);
         $dataSource->putParameter('codigo_adquisicion', $datosSolicitud[0]['codigo_adquisicion']);
         $dataSource->putParameter('total_detalle', $datosSolicitud[0]['total_detalle']);
         $dataSource->putParameter('tipo_modalidad', $datosSolicitud[0]['tipo_modalidad']);

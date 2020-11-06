@@ -495,8 +495,14 @@ class MODSolicitud extends MODbase
         $this->captura('funcionario_rpc', 'varchar');
         $this->captura('cargo_rpc', 'varchar');
         $this->captura('codigo_rpc', 'varchar');
+        /*Aumentando las fechas de aprobaciones (Ismael Valdivia 06/11/2020)*/
+        $this->captura('fecha_rpc', 'varchar');
+        /*******************************************************************/
         $this->captura('funcionario_jefatura_adq', 'varchar');
         $this->captura('cargo_jefatura_adq', 'varchar');
+        /*Aumentando las fechas de aprobaciones (Ismael Valdivia 06/11/2020)*/
+        $this->captura('fecha_jefatura_adq', 'varchar');
+        /*******************************************************************/
         $this->captura('codigo_adquisicion', 'varchar');
         $this->captura('total_detalle', 'varchar');
         $this->captura('tipo_modalidad', 'varchar');
