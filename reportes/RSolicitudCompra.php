@@ -1061,7 +1061,7 @@ Class RSolicitudCompra extends Report {
                          <td align="center" >
                              <br><br>
                              <img  style="width: 110px; height: 110px;" src="' . $this->generarImagenJefatura($firma_jefatura, $cargo_jefatura, $nro_tramite_qr, $fecha_jefatura_adq) . '" alt="Jefatura">
-                             <br><b>Fecha Autorización: </b>'.$fecha_jefatura_adq.'
+                             <br><b>Fecha Verificación: </b>'.$fecha_jefatura_adq.'
                          </td>
                      </tr>
                  </table>
