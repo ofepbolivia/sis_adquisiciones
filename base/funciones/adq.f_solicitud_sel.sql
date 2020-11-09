@@ -697,7 +697,7 @@ BEGIN
                 INNER JOIN orga.vfuncionario_cargo vf ON vf.id_funcionario = twf.id_funcionario
                 WHERE twf.id_proceso_wf = v_proces_wf AND te.id_tipo_estado = (select est.id_tipo_estado_hijo
                                                                           from wf.testructura_estado est
-                                                                          where est.id_tipo_estado_padre = v_id_tipo_estado_rpc
+                                                                          where est.id_tipo_estado_padre = v_id_tipo_estado_rpc and est.estado_reg = 'activo'
                                                                           )
                 and ( vf.fecha_finalizacion is null or vf.fecha_finalizacion >= now())
                 GROUP BY twf.id_funcionario, vf.desc_funcionario1,te.codigo,vf.nombre_cargo,pro.nro_tramite,te.id_tipo_estado;
@@ -741,7 +741,7 @@ BEGIN
                 INNER JOIN orga.vfuncionario_cargo vf ON vf.id_funcionario = twf.id_funcionario
                 WHERE twf.id_proceso_wf = v_proces_wf AND te.id_tipo_estado = (select est.id_tipo_estado_hijo
                                                                           from wf.testructura_estado est
-                                                                          where est.id_tipo_estado_padre = v_id_tipo_estado_adq
+                                                                          where est.id_tipo_estado_padre = v_id_tipo_estado_adq and est.estado_reg = 'activo'
                                                                           )
                 and ( vf.fecha_finalizacion is null or vf.fecha_finalizacion >= now())
                 GROUP BY twf.id_funcionario, vf.desc_funcionario1,te.codigo,vf.nombre_cargo,pro.nro_tramite,te.id_tipo_estado;
