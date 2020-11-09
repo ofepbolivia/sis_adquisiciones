@@ -107,6 +107,10 @@ Class RSolicitudCompra extends Report {
         $cigla_tramite = array('GM', 'GO', 'GA', 'GC');
 
         $fechaFormatoRPCE = '2020-10-01';
+
+        $fechaFormatoTituloFecha = '2020-10-01';
+
+
         $codigoAquisicion = $this->getDataSource()->getParameter('codigo_adquisicion');
         $tipo_modalidad= $this->getDataSource()->getParameter('tipo_modalidad');
         if ($this->getDataSource()->getParameter('fecha_aprobador') != '') {
@@ -165,6 +169,15 @@ Class RSolicitudCompra extends Report {
             }
         }
 
+
+        /*Aumentando para cambiar el titulo de la fecha del reporte (Ismael Valdivia 09/11/2020)*/
+        if ($fecha_solicitud  >= $fechaFormatoTituloFecha ) {
+          $titulo_fecha_ela = 'Fecha de Elaboración';
+        } else {
+          $titulo_fecha_ela = 'Fecha de Solicitud';
+        }
+        /***************************************************************************************/
+
         if(in_array(substr($this->getDataSource()->getParameter('num_tramite'),0, 2), $cigla_tramite)){
             if( $fecha_solicitud  >= '2019-09-01' ){
                 if ($fecha_apro != null || $fecha_apro != ''){
@@ -182,7 +195,7 @@ Class RSolicitudCompra extends Report {
         if ($fecha_solicitud  >= $fechaFormatoRPCE && $codigoAquisicion == 'CNPD') {
           $pdf->Cell($width3, $height, 'Fecha de Elaboración', 0, 0, 'C', false, '', 0, false, 'T', 'C');
         } else {
-          $pdf->Cell($width3, $height, 'Fecha de Solicitud', 0, 0, 'C', false, '', 0, false, 'T', 'C');
+          $pdf->Cell($width3, $height, $titulo_fecha_ela, 0, 0, 'C', false, '', 0, false, 'T', 'C');
         }
         /*********************************************************************************************/
 
