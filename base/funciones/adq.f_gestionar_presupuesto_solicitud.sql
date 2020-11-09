@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION adq.f_gestionar_presupuesto_solicitud (
   p_id_solicitud_compra integer,
   p_id_usuario integer,
@@ -116,9 +114,12 @@ BEGIN
                                      and sd.cantidad > 0 ) LOOP
                                      
                                 
-                     IF(v_registros.presu_comprometido='si') THEN                     
-                        raise exception 'El presupuesto ya se encuentra comprometido';                     
+                     --(may) 06-11-2020
+                   IF (v_registros.tipo_modalidad != 'mod_excepcion') THEN
+                     IF(v_registros.presu_comprometido='si') THEN
+                        raise exception 'El presupuesto ya se encuentra comprometido';
                      END IF;
+                   END IF;
                      
                      
                      
