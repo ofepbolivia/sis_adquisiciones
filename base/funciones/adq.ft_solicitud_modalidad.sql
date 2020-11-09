@@ -148,7 +148,7 @@ BEGIN
                                     v_id_uo_sol =   orga.f_get_uo_gerencia_area_ope(NULL, v_funcionario_sol, v_solicitud.fecha_soli::Date);
 
 
-
+                                    --RAISE EXCEPTION 'MATRIZ % - %', v_id_uo_matriz,v_id_uo_sol;
 
                                     IF (v_id_uo_matriz = v_id_uo_sol ) THEN
 
@@ -501,6 +501,18 @@ BEGIN
                           FROM adq.tmodalidades mod
                           WHERE mod.condicion_menor <= v_total_det
                           and mod.condicion_mayor >= v_total_det
+                          and mod.codigo = 'mod_directa'
+                          and mod.con_concepto = 'si';
+
+                    ELSIF v_modalidades_solicitud.modalidad_excepcion = 'si' THEN
+
+                          --COMPARACION CON LA TABLA DE MODALIDAD que ingrese los que se parametricen con conceptos de gasto
+                          SELECT mod.codigo
+                          into v_codigo_modalidad
+                          FROM adq.tmodalidades mod
+                          WHERE mod.condicion_menor <= v_total_det
+                          and mod.condicion_mayor >= v_total_det
+                          and mod.codigo = 'mod_excepcion'
                           and mod.con_concepto = 'si';
 
                     ELSE
@@ -599,6 +611,22 @@ BEGIN
 
                             END IF;
 
+                        ELSIF (v_codigo_modalidad ='mod_excepcion') THEN
+                        	v_modalidad = v_modalidades_solicitud.modalidad_excepcion;
+
+                            IF v_modalidad = 'si' THEN
+                                UPDATE adq.tmodalidad_solicitud set
+                                calificacion = 'SI'
+                                WHERE id_modalidad_solicitud = v_modalidad_solicitud.id_modalidad_solicitud;
+                            ELSE
+                            	UPDATE adq.tmodalidad_solicitud set
+                                calificacion = 'NO'
+                                WHERE id_modalidad_solicitud = v_modalidad_solicitud.id_modalidad_solicitud;
+
+                            	raise exception 'Este proceso pertenece al Tipo Contratación: %, y no esta habilitado para la %  en la Matriz Tipo Contratación-Aprobador. Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre). ',v_nom_tipo_contratacion, upper(v_nombre_modalidad);
+
+                            END IF;
+
                         /*
                         ELSIF (v_modalidades_solicitud.modalidad_desastres ='si') THEN
                         	v_modalidad = 'mod_';
@@ -658,6 +686,10 @@ BEGIN
                         ELSIF (v_solu_modalidades.modalidad_directa = 'si' and v_codigo_modalidad = 'mod_directa') THEN
                         	v_respuesta_modalidad = v_modalidades_solicitud.flujo_mod_directa;
                             v_proceso_contratacion = v_solu_modalidades.resp_proc_contratacion_directa;
+
+                        ELSIF (v_solu_modalidades.modalidad_excepcion = 'si' and v_codigo_modalidad = 'mod_excepcion') THEN
+                        	v_respuesta_modalidad = 'mod_excepcion';
+                            v_proceso_contratacion = v_solu_modalidades.resp_proc_contratacion_excepcion;
 
                         END IF;
 

@@ -617,11 +617,11 @@ header("content-type: text/javascript; charset=UTF-8");
                         typeAhead: true,
                         triggerAction: 'all',
                         lazyRender: true,
-                        store: ['RPA', 'RPC']
+                        store: ['MAE']
                     },
                     type: 'ComboBox',
                     filters: {pfiltro: 'matriz.resp_proc_contratacion_excepcion', type: 'string'},
-                    //valorInicial: 'RPC',
+                    valorInicial: 'MAE',
                     id_grupo: 2,
                     grid: true,
                     form: true
@@ -1026,7 +1026,7 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.modalidad_menor.on('select', function (cmp, rec) {
                 if (this.Cmp.modalidad_menor.getValue() == 'si') {
                     this.mostrarComponente(this.Cmp.resp_proc_contratacion_menor);
-                    this.Cmp.resp_proc_contratacion_menor.setValue('RPA')
+                    this.Cmp.resp_proc_contratacion_menor.setValue('RPA');
                     this.Cmp.modalidad_directa.reset();
                     this.Cmp.flujo_mod_directa.reset();
                     this.Cmp.resp_proc_contratacion_directa.reset();
@@ -1093,6 +1093,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.Cmp.modalidad_directa.reset();
                     this.Cmp.flujo_mod_directa.reset();
                     this.Cmp.resp_proc_contratacion_directa.reset();
+                    this.Cmp.resp_proc_contratacion_anpe.setValue('RPA');
                 }else {
                     this.Cmp.resp_proc_contratacion_anpe.reset();
                     this.ocultarComponente(this.Cmp.resp_proc_contratacion_anpe);
@@ -1117,6 +1118,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 if (this.Cmp.modalidad_excepcion.getValue() == 'si') {
                     this.mostrarComponente(this.Cmp.resp_proc_contratacion_excepcion);
                     this.ocultarComponente(this.Cmp.modalidad_directa);
+                    this.Cmp.resp_proc_contratacion_excepcion.setValue('MAE')
                 }else {
                     this.Cmp.resp_proc_contratacion_excepcion.reset();
                     this.ocultarComponente(this.Cmp.resp_proc_contratacion_excepcion);
