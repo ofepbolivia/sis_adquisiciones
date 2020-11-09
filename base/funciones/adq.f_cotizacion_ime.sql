@@ -140,6 +140,8 @@ DECLARE
       v_cuce							varchar;
       v_moneda							varchar;
 
+      v_tipo_modalidad					varchar;
+      v_tipo_estado						record;
 
 BEGIN
 
@@ -1260,18 +1262,52 @@ BEGIN
 
             END IF;
 
+            --(may) 06-11-2020 para la modalidad de Excepcion
+             select sol.tipo_modalidad
+             into v_tipo_modalidad
+             from adq.tcotizacion cot
+              JOIN adq.tproceso_compra pro ON pro.id_proceso_compra = cot.id_proceso_compra
+             JOIN adq.tsolicitud sol ON sol.id_solicitud = pro.id_solicitud
+             where cot.id_cotizacion = v_parametros.id_cotizacion;
+
+
+            IF (v_tipo_modalidad = 'mod_excepcion' and va_codigo_estado[1] = 'autorizacion_mae'  )THEN
+
+            	 SELECT ts.tipo_asignacion, ft.id_funcionario
+                 INTO	v_tipo_estado
+                 FROM wf.ttipo_estado ts
+                 join wf.tfuncionario_tipo_estado ft on ft.id_tipo_estado = ts.id_tipo_estado
+
+                 WHERE ts.id_tipo_estado =  va_id_tipo_estado[1];
 
 
 
-            -- hay que recuperar el supervidor que seria el estado inmediato,...
-             v_id_estado_actual =  wf.f_registra_estado_wf(va_id_tipo_estado[1],
-                                                           NULL,
-                                                           v_id_estado_wf,
-                                                           v_id_proceso_wf,
-                                                           p_id_usuario,
-                                                           v_parametros._id_usuario_ai,
-                                                           v_parametros._nombre_usuario_ai,
-                                                           v_id_depto);
+                 IF (v_tipo_estado.tipo_asignacion = 'listado') THEN
+
+
+                 	-- hay que recuperar el supervidor que seria el estado inmediato,...
+                     v_id_estado_actual =  wf.f_registra_estado_wf(va_id_tipo_estado[1],
+                                                                   v_tipo_estado.id_funcionario, --NULL,
+                                                                   v_id_estado_wf,
+                                                                   v_id_proceso_wf,
+                                                                   p_id_usuario,
+                                                                   v_parametros._id_usuario_ai,
+                                                                   v_parametros._nombre_usuario_ai,
+                                                                   v_id_depto);
+                 END IF;
+
+            ELSE
+            	 -- hay que recuperar el supervidor que seria el estado inmediato,...
+                 v_id_estado_actual =  wf.f_registra_estado_wf(va_id_tipo_estado[1],
+                                                               NULL,
+                                                               v_id_estado_wf,
+                                                               v_id_proceso_wf,
+                                                               p_id_usuario,
+                                                               v_parametros._id_usuario_ai,
+                                                               v_parametros._nombre_usuario_ai,
+                                                               v_id_depto);
+            END IF;
+            ----
 
 
              -- actualiza estado en la solicitud

@@ -104,7 +104,9 @@ BEGIN
                               s.id_moneda,
                               sd.precio_ga,
                               s.fecha_soli,
-                              s.num_tramite as nro_tramite
+                              s.num_tramite as nro_tramite,
+                              --(may)08-11-2020
+                              s.tipo_modalidad
                               
                               FROM  adq.tsolicitud s 
                               INNER JOIN adq.tsolicitud_det sd on s.id_solicitud = sd.id_solicitud
