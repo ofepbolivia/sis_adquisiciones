@@ -537,7 +537,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         typeAhead: true,
                         triggerAction: 'all',
                         lazyRender: true,
-                        store: ['RPA', 'RPC']
+                        store: ['RPA']
                     },
                     type: 'ComboBox',
                     filters: {pfiltro: 'matriz.resp_proc_contratacion_menor', type: 'string'},
@@ -557,7 +557,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         typeAhead: true,
                         triggerAction: 'all',
                         lazyRender: true,
-                        store: ['RPA', 'RPC']
+                        store: ['RPA']
                     },
                     type: 'ComboBox',
                     filters: {pfiltro: 'matriz.resp_proc_contratacion_anpe', type: 'string'},
@@ -577,11 +577,11 @@ header("content-type: text/javascript; charset=UTF-8");
                         typeAhead: true,
                         triggerAction: 'all',
                         lazyRender: true,
-                        store: ['RPA', 'RPC']
+                        store: ['RPC']
                     },
                     type: 'ComboBox',
                     filters: {pfiltro: 'matriz.resp_proc_contratacion_licitacion', type: 'string'},
-                    //valorInicial: 'RPC',
+                    valorInicial: 'RPC',
                     id_grupo: 2,
                     grid: true,
                     form: true

@@ -580,7 +580,7 @@ BEGIN
                             END IF;
 
                         ELSIF (v_codigo_modalidad ='mod_licitacion') THEN
-                        	v_modalidad = v_modalidades_solicitud.modalidad_directa;
+                        	v_modalidad = v_modalidades_solicitud.modalidad_licitacion;
 
                             IF v_modalidad = 'si' THEN
                                 UPDATE adq.tmodalidad_solicitud set
