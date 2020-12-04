@@ -328,9 +328,11 @@ BEGIN
                         left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud and tsd.estado_reg = ''activo''
 
                         left join param.tcatalogo tcat on tcat.id_catalogo = sol.prioridad
-                         left join param.tcatalogo tcat2 on tcat2.codigo = sol.tipo_modalidad
+                        left join param.tcatalogo tcat2 on tcat2.codigo = sol.tipo_modalidad and tcat2.id_catalogo_tipo=62
                         '||v_inner||'
                         where  sol.estado_reg = ''activo'' and '||v_filtro;
+
+                        --03/12/2020 (may)tcat2.id_catalogo_tipo=62 tmatriz_modalidad porque en catalogo esta viendo 2 registros de distintos tipos
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -509,11 +511,11 @@ BEGIN
                         left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud and tsd.estado_reg = ''activo''
 
                         left join param.tcatalogo tcat on tcat.id_catalogo = sol.prioridad
-                         left join param.tcatalogo tcat2 on tcat2.codigo = sol.tipo_modalidad
+                        left join param.tcatalogo tcat2 on tcat2.codigo = sol.tipo_modalidad and tcat2.id_catalogo_tipo=62
                         '||v_inner||'
                         where  sol.estado_reg = ''activo'' and '||v_filtro;
 
-
+			--03/12/2020 (may)tcat2.id_catalogo_tipo=62 tmatriz_modalidad porque en catalogo esta viendo 2 registros de distintos tipos
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 
@@ -613,7 +615,9 @@ BEGIN
                 INNER JOIN wf.tproceso_wf pro ON twf.id_proceso_wf = pro.id_proceso_wf
                 INNER JOIN orga.vfuncionario_cargo vf ON vf.id_funcionario = twf.id_funcionario
                 WHERE twf.id_proceso_wf = v_proces_wf AND (te.codigo = 'vbaprobador' or te.codigo = 'vbgerencia') and ( vf.fecha_finalizacion is null or vf.fecha_finalizacion >= now())
-                GROUP BY twf.id_funcionario, vf.desc_funcionario1,te.codigo,vf.nombre_cargo,pro.nro_tramite;
+                GROUP BY twf.id_funcionario, vf.desc_funcionario1,te.codigo,vf.nombre_cargo,pro.nro_tramite,twf.fecha_reg
+                ORDER BY twf.fecha_reg DESC
+                limit 1;
 
              if (v_nombre_aprobador is null) then
             	v_nombre_aprobador = '';
@@ -634,8 +638,10 @@ BEGIN
                         INNER JOIN wf.tproceso_wf pro ON twf.id_proceso_wf = pro.id_proceso_wf
                         INNER JOIN orga.vfuncionario_cargo vf ON vf.id_funcionario = twf.id_funcionario
                         WHERE twf.id_proceso_wf = v_proces_wf AND (te.codigo = 'vbaprobador' or te.codigo = 'vbgerencia') and ( vf.fecha_finalizacion is null or vf.fecha_finalizacion >= now())
-                        GROUP BY twf.id_funcionario, vf.desc_funcionario1,te.codigo,vf.nombre_cargo,pro.nro_tramite;
-    		end if;
+                        GROUP BY twf.id_funcionario, vf.desc_funcionario1,te.codigo,vf.nombre_cargo,pro.nro_tramite,twf.fecha_reg
+                        ORDER BY twf.fecha_reg DESC
+                        limit 1;
+            end if;
 
             if (v_nombre_funcionario_aprobador is null) then
             	v_nombre_funcionario_aprobador = '';
