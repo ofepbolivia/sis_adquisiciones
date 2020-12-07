@@ -160,6 +160,15 @@ DECLARE
        --bvp
 	   v_llave_aprobado			varchar;
 	   v_si_no					varchar;
+
+       --(may)
+       v_id_funcionario_eswf		integer;
+       v_proceso_wf					integer;
+       v_solicitud					record;
+       v_max_monto_min				numeric;
+       v_id_rpc						integer;
+       v_desc_funcionario			varchar;
+
 BEGIN
 
     v_nombre_funcion = 'adq.f_solicitud_ime';
@@ -1350,6 +1359,52 @@ BEGIN
                                                              v_titulo);
 
 
+
+          --(may) 16-11-2020
+
+          IF (v_codigo_estado_siguiente in ('vbrpa', 'vbrpc')) THEN
+
+          	SELECT esw.id_funcionario, esw.id_proceso_wf
+            INTO v_id_funcionario_eswf, v_proceso_wf
+            FROM wf.testado_wf esw
+            WHERE esw.id_estado_wf = v_id_estado_actual;
+
+            SELECT sol.id_uo, sol.fecha_soli, sol.id_categoria_compra
+            INTO v_solicitud
+            FROM adq.tsolicitud sol
+            WHERE sol.id_solicitud = v_id_solicitud;
+
+            SELECT  max(ruo.monto_min), rpc.id_rpc
+			INTO v_max_monto_min, v_id_rpc
+            FROM adq.trpc_uo ruo
+            inner join adq.trpc rpc on rpc.id_rpc = ruo.id_rpc
+            WHERE ruo.estado_reg = 'activo'
+              and  ruo.id_uo = v_solicitud.id_uo
+              and  ruo.id_categoria_compra = v_solicitud.id_categoria_compra
+              and ((ruo.fecha_ini <= v_solicitud.fecha_soli and ruo.fecha_fin >=v_solicitud.fecha_soli )
+                   or
+                   (ruo.fecha_ini <= v_solicitud.fecha_soli and ruo.fecha_fin is null ))
+            GROUP BY rpc.id_rpc;
+
+
+            SELECT fc.desc_funcionario1, fc.id_funcionario
+			INTO v_desc_funcionario, v_id_funcionario
+            FROM adq.trpc rpc
+            inner join orga.vfuncionario_cargo fc on fc.id_cargo = rpc.id_cargo
+            WHERE rpc.id_rpc = v_id_rpc
+            and ((v_solicitud.fecha_soli BETWEEN fc.fecha_asignacion and fc.fecha_finalizacion)  or fc.fecha_finalizacion is null);
+
+       	 	--raise exception 'llega % - % ',v_id_funcionario_eswf,v_id_funcionario ;
+            IF (v_id_funcionario_eswf = v_id_funcionario) THEN -- 35 KARINA BARRANCOS RIOS
+            	UPDATE adq.tsolicitud  SET
+                id_depto = '2'  --ADQ central cochabamba
+                WHERE id_proceso_wf  = v_proceso_wf;
+            END IF;
+
+
+          END IF;
+
+          --
 
           --------------------------------------
           -- registra los procesos disparados

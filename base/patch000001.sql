@@ -1134,3 +1134,41 @@ IS 'RPC/RPA';
 COMMENT ON COLUMN adq.tsolicitud.contratacion_directa
 IS 'si/no';
 /***********************************F-SCP-MAY-ADQ-1-30/10/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-07/12/2020****************************************/
+CREATE TABLE adq.ttresoluciones_info_pre (
+  id_resoluciones_info_pre SERIAL,
+  nro_directorio VARCHAR(500),
+  nro_nota VARCHAR(500),
+  nro_nota2 VARCHAR(500),
+  observaciones VARCHAR(500),
+  id_gestion INTEGER,
+  gestion INTEGER,
+  CONSTRAINT ttresoluciones_info_pre_pkey PRIMARY KEY(id_resoluciones_info_pre)
+) INHERITS (pxp.tbase)
+WITH (oids = false);
+
+COMMENT ON COLUMN adq.ttresoluciones_info_pre.id_resoluciones_info_pre
+IS 'identificador';
+
+COMMENT ON COLUMN adq.ttresoluciones_info_pre.nro_directorio
+IS 'nro directorio';
+
+COMMENT ON COLUMN adq.ttresoluciones_info_pre.nro_nota
+IS 'nro nota MEFP';
+
+COMMENT ON COLUMN adq.ttresoluciones_info_pre.nro_nota2
+IS 'en atencion a la nota';
+
+COMMENT ON COLUMN adq.ttresoluciones_info_pre.observaciones
+IS 'observaciones de las resoluciones';
+
+COMMENT ON COLUMN adq.ttresoluciones_info_pre.id_gestion
+IS 'identificador de la tabla param.tgestion';
+
+COMMENT ON COLUMN adq.ttresoluciones_info_pre.gestion
+IS 'nombre gestion de la tabla param.tgestion';
+
+ALTER TABLE adq.ttresoluciones_info_pre
+  OWNER TO postgres;
+/***********************************F-SCP-MAY-ADQ-0-07/12/2020****************************************/
