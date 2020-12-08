@@ -485,7 +485,9 @@ BEGIN
                        pxp.aggarray(id_funcionario)
                      into
                        va_id_funcionario_gerente
-                     FROM orga.f_get_aprobadores_x_funcionario(v_parametros.fecha_soli, v_parametros.id_funcionario , 'todos', 'si', 'todos', 'ninguno') AS (id_funcionario integer);
+                     --08-12-2020(may) modificacion de la fecha para que sea de una fecha actual para que rescate su correspondiente gerente aprobador actual
+					 --FROM orga.f_get_aprobadores_x_funcionario(v_parametros.fecha_soli, v_parametros.id_funcionario , 'todos', 'si', 'todos', 'ninguno') AS (id_funcionario integer);
+                     FROM orga.f_get_aprobadores_x_funcionario(now()::date, v_parametros.id_funcionario , 'todos', 'si', 'todos', 'ninguno') AS (id_funcionario integer);
                     --NOTA el valor en la primera posicion del array es el gerente  de menor nivel
                 END IF;
             END IF;
