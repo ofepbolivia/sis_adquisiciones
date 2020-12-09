@@ -36,7 +36,8 @@ class MODTresolucionesInfoPre extends MODbase{
 		$this->captura('fecha_mod','timestamp');
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
-		
+		$this->captura('fecha_certificacion','varchar');
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -59,6 +60,7 @@ class MODTresolucionesInfoPre extends MODbase{
 		$this->setParametro('observaciones','observaciones','varchar');
 		$this->setParametro('id_gestion','id_gestion','int4');
 		$this->setParametro('gestion','gestion','int4');
+		$this->setParametro('fecha_certificacion','fecha_certificacion','date');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -83,6 +85,7 @@ class MODTresolucionesInfoPre extends MODbase{
 		$this->setParametro('observaciones','observaciones','varchar');
 		$this->setParametro('id_gestion','id_gestion','int4');
 		$this->setParametro('gestion','gestion','int4');
+		$this->setParametro('fecha_certificacion','fecha_certificacion','date');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

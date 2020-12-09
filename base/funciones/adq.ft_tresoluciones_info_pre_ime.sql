@@ -65,7 +65,9 @@ BEGIN
 			id_usuario_ai,
 			usuario_ai,
 			id_usuario_mod,
-			fecha_mod
+			fecha_mod,
+            fecha_certificacion
+
           	) values(
 			'activo',
 			v_parametros.nro_directorio,
@@ -79,9 +81,8 @@ BEGIN
 			v_parametros._id_usuario_ai,
 			v_parametros._nombre_usuario_ai,
 			null,
-			null
-
-
+			null,
+            v_parametros.fecha_certificacion
 
 			)RETURNING id_resoluciones_info_pre into v_id_resoluciones_info_pre;
 
@@ -121,7 +122,8 @@ BEGIN
 			id_usuario_mod = p_id_usuario,
 			fecha_mod = now(),
 			id_usuario_ai = v_parametros._id_usuario_ai,
-			usuario_ai = v_parametros._nombre_usuario_ai
+			usuario_ai = v_parametros._nombre_usuario_ai,
+            fecha_certificacion = v_parametros.fecha_certificacion
 			where id_resoluciones_info_pre=v_parametros.id_resoluciones_info_pre;
 
 			--Definicion de la respuesta

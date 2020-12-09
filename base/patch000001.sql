@@ -1172,3 +1172,11 @@ IS 'nombre gestion de la tabla param.tgestion';
 ALTER TABLE adq.ttresoluciones_info_pre
   OWNER TO postgres;
 /***********************************F-SCP-MAY-ADQ-0-07/12/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-09/12/2020****************************************/
+ALTER TABLE adq.ttresoluciones_info_pre
+ADD COLUMN fecha_certificacion DATE;
+
+COMMENT ON COLUMN adq.ttresoluciones_info_pre.fecha_certificacion
+IS 'fecha de la certificacion segun parametrizacion';
+/***********************************F-SCP-MAY-ADQ-0-09/12/2020****************************************/

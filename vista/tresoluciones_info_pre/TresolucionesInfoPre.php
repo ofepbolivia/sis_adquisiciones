@@ -73,7 +73,7 @@ Phx.vista.TresolucionesInfoPre=Ext.extend(Phx.gridInterfaz,{
 			config:{
 				name: 'nro_directorio',
 				fieldLabel: 'Resolución Administrativa de Directorio',
-				allowBlank: true,
+				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
 				maxLength:500
@@ -88,7 +88,7 @@ Phx.vista.TresolucionesInfoPre=Ext.extend(Phx.gridInterfaz,{
 			config:{
 				name: 'nro_nota',
 				fieldLabel: 'Nota Entregado Ministerio de Economía y Finanzas Públicas',
-				allowBlank: true,
+				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
 				maxLength:500
@@ -103,7 +103,7 @@ Phx.vista.TresolucionesInfoPre=Ext.extend(Phx.gridInterfaz,{
 			config:{
 				name: 'nro_nota2',
 				fieldLabel: 'Nota Ministerio de Economía y Finanzas Públicas ',
-				allowBlank: true,
+				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
 				maxLength:500
@@ -114,6 +114,20 @@ Phx.vista.TresolucionesInfoPre=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
+        {
+            config: {
+                name: 'fecha_certificacion',
+                fieldLabel: 'Fecha Certificación Presupuestaria',
+                allowBlank: false,
+                anchor: '80%',
+                gwidth: 100,
+                format: 'd/m/Y'
+            },
+            type: 'DateField',
+            id_grupo: 1,
+            grid:true,
+            form:true
+        },
 		{
 			config:{
 				name: 'observaciones',
@@ -260,6 +274,7 @@ Phx.vista.TresolucionesInfoPre=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
+		{name:'fecha_certificacion', type: 'string'},
 
 	],
 	sortInfo:{

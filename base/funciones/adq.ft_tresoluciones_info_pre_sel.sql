@@ -59,7 +59,8 @@ BEGIN
 						reinpre.id_usuario_mod,
 						reinpre.fecha_mod,
 						usu1.cuenta as usr_reg,
-						usu2.cuenta as usr_mod
+						usu2.cuenta as usr_mod,
+                        to_char(reinpre.fecha_certificacion	,''DD/MM/YYYY'')::varchar as fecha_certificacion
 
 						from adq.ttresoluciones_info_pre reinpre
 						inner join segu.tusuario usu1 on usu1.id_usuario = reinpre.id_usuario_reg
