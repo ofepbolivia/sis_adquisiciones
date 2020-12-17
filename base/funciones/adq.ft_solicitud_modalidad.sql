@@ -65,7 +65,9 @@ DECLARE
 
      v_proceso_contratacion	varchar;
      v_count_codigo_modalidad	integer;
-
+     v_id_uo_jefatura		integer;
+	 v_id_uo_jefatura_gerencia	integer;
+     v_id_uo_jefatura_unidad	integer;
 
 
 BEGIN
@@ -102,6 +104,7 @@ BEGIN
       FOR v_solicitud_det in(SELECT sd.id_concepto_ingas
                               FROM adq.tsolicitud_det sd
                               WHERE sd.id_solicitud = v_id_solicitud
+                              and sd.estado_reg = 'activo'
                               GROUP BY sd.id_concepto_ingas
                              )LOOP
 
@@ -152,35 +155,46 @@ BEGIN
 
                                     IF (v_id_uo_matriz = v_id_uo_sol ) THEN
 
-                                    --RAISE EXCEPTION 'MATRIZ1 % - %', v_id_uo_matriz,v_solicitud.id_uo;
+                                    v_id_uo_jefatura =   orga.f_get_uo_jefatura_area_ope(NULL, v_solicitud.id_funcionario, v_solicitud.fecha_soli::Date);
+                                    v_id_uo_jefatura_gerencia =   orga.f_get_uo_jefa_ger_area_ope(NULL, v_solicitud.id_funcionario, v_solicitud.fecha_soli::Date);
+                                    v_id_uo_jefatura_unidad =   orga.f_get_uo_jefa_unidad_area_ope(NULL, v_solicitud.id_funcionario, v_solicitud.fecha_soli::Date);
+                           			--RAISE EXCEPTION 'id_uo_jegatura % - % - %', v_id_uo_jefatura, v_id_uo_jefatura_gerencia, v_id_uo_jefatura_unidad;
 
-                                        SELECT mc.id_matriz_modalidad
+                                        SELECT count(mc.id_matriz_modalidad)
                                         INTO v_matriz_id_modalidad
                                         FROM adq.tmatriz_concepto mc
                                         left join adq.tmatriz_modalidad mm on mm.id_matriz_modalidad = mc.id_matriz_modalidad
                                         WHERE mc.id_concepto_ingas = v_solicitud_det.id_concepto_ingas
                                         and mc.estado_reg = 'activo'
-                                        AND mm.id_uo_gerencia = v_id_uo_sol ;
+                                        AND mm.id_uo_gerencia = v_id_uo_sol;
+
+                            			--si existe mas de 1 registro se toma la condicion por su departamento jefatura
+                            			IF (v_matriz_id_modalidad > 1) THEN
+
+                                        	SELECT mc.id_matriz_modalidad
+                                            INTO v_matriz_id_modalidad
+                                            FROM adq.tmatriz_concepto mc
+                                            left join adq.tmatriz_modalidad mm on mm.id_matriz_modalidad = mc.id_matriz_modalidad
+                                            WHERE mc.id_concepto_ingas = v_solicitud_det.id_concepto_ingas
+                                            and mc.estado_reg = 'activo'
+                                            --and mm.id_uo = v_id_uo_jefatura
+                                            and mm.id_uo in (v_id_uo_jefatura,v_id_uo_jefatura_unidad, v_id_uo_jefatura_gerencia)
+                                            and mm.id_uo_gerencia = v_id_uo_sol;
+
+                                        ELSE
+
+                                        	SELECT mc.id_matriz_modalidad
+                                            INTO v_matriz_id_modalidad
+                                            FROM adq.tmatriz_concepto mc
+                                            left join adq.tmatriz_modalidad mm on mm.id_matriz_modalidad = mc.id_matriz_modalidad
+                                            WHERE mc.id_concepto_ingas = v_solicitud_det.id_concepto_ingas
+                                            and mc.estado_reg = 'activo'
+                                            AND mm.id_uo_gerencia = v_id_uo_sol;
+
+                                        END IF;
 
 
-                                        /*--control para que no tenga mas de un concepto de gasto
-                                        SELECT count(mc.id_concepto_ingas)
-                                        into v_count_concepto_ingas
-                                        FROM adq.tmatriz_concepto mc
-                                        left join adq.tmatriz_modalidad mm on mm.id_matriz_modalidad = mc.id_matriz_modalidad
-                                        WHERE mc.id_concepto_ingas = v_solicitud_det.id_concepto_ingas
-                                        and mc.estado_reg = 'activo'
-                                        and mm.id_uo_gerencia != 10094
-                                        and  mm.id_uo_gerencia = v_id_uo_sol; --nombre de parametrizacion en la matriz Gerencias Regionales
-
-
-                                        IF (v_count_concepto_ingas > 1) THEN
-                                          RAISE EXCEPTION 'En la Matriz Tipo Contratación(Aprobador) existe mas de un Concepto de Gasto % en un agrupador. Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).', v_desc_ingas;
-                                        END IF;*/
-
-                                          --and (mm.id_uo = v_solicitud.id_uo or mm.id_uo = v_id_uo_sol);
-
-                                         --RAISE EXCEPTION 'MATRIZ %',v_matriz_id_modalidad;
+                                        --RAISE EXCEPTION 'MATRIZ %',v_matriz_id_modalidad;
 
                                         v_id_matriz_modalidad =   v_matriz_id_modalidad;
 
