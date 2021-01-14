@@ -807,10 +807,12 @@ BEGIN
 
                   --prioridad 2 regionales nacioanles, 3 internacionales, 1 central,  0 reservado
                   --si la el tope de compra es igual a 0 entonces no tiene limite
+                  --13-01-2021 (may) se comenta el control,por	que yanose controla losimportesmayores segun eldepto
 
-                  IF  v_prioridad_depto = 2 and  (v_total_soli  >= v_tope_compra and v_tope_compra != 0)   THEN
+                  /*IF  v_prioridad_depto = 2 and  (v_total_soli  >= v_tope_compra and v_tope_compra != 0)   THEN
                    raise exception 'Las compras en las regionales no pueden estar por encima de % (moneda base)',v_tope_compra;
                   END IF;
+                  */
 
 
 
