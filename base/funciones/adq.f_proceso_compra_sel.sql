@@ -41,6 +41,8 @@ DECLARE
     v_forma_pago  		varchar;
     v_nro_cuota			varchar;
 
+    v_filtro_dep		varchar;
+
 
 BEGIN
 
@@ -550,6 +552,14 @@ BEGIN
 	elsif(p_transaccion='ADQ_PROINIADEJE_SEL')then
 
     	begin
+
+            --(may) 14-01-2021 en depto de opcion a todos
+        	IF v_parametros.id_depto is null THEN
+            	v_filtro_dep = ' ';
+            ELSE
+            	v_filtro_dep =  ' and pro.id_depto = '''||v_parametros.id_depto||''' ';
+            END IF;
+
         	IF v_parametros.tipo='iniciados' THEN
 	        	v_filtro = ' and (pro.estados_cotizacion not like ''%adjudicado%'' and pro.estados_cotizacion not like ''%contrato_pendiente%''
             				and pro.estados_cotizacion not like ''%contrato_elaborado%'' and pro.estados_cotizacion not like ''%pago_habilitado%''
@@ -561,21 +571,37 @@ BEGIN
             	v_filtro = ' and (pro.estados_cotizacion like ''%pago_habilitado%'' or pro.estados_cotizacion like ''%finalizada%'')';
             END IF;
 
-        	v_consulta = 'select sol.num_tramite, sol.justificacion, sol.desc_funcionario1 as solicitante,
-       		  usu.desc_persona as tecnico_adquisiciones, sol.desc_proveedor as proveedor_recomendado,
-            pro.proveedores_cot as proveedor_adjudicado,  pro.fecha_ini_proc, sol.precio_total_mb as precio_bs,
-            sol.precio_total as precio_moneda_solicitada, sol.codigo as moneda_solicitada,
-            case when pro.requiere_contrato = ''si'' then ''Contrato''
-                 else case when sol.tipo=''bien'' then ''Orden de Bien''
-                      when sol.tipo=''servicio'' then ''Orden de Servicio''
-                      end
-                 end as contrato_orden
+        	v_consulta = 'select sol.num_tramite,
+            					 sol.justificacion,
+                                 sol.desc_funcionario1 as solicitante,
+       		  					 usu.desc_persona as tecnico_adquisiciones,
+                                 sol.desc_proveedor as proveedor_recomendado,
+            					 pro.proveedores_cot as proveedor_adjudicado,
+                                 pro.fecha_ini_proc,
+                                 sol.precio_total_mb as precio_bs,
+            					 sol.precio_total as precio_moneda_solicitada,
+                                 sol.codigo as moneda_solicitada,
+            					 case when pro.requiere_contrato = ''si'' then ''Contrato''
+                 					else case when sol.tipo=''bien'' then ''Orden de Bien''
+                      				when sol.tipo=''servicio'' then ''Orden de Servicio''
+                     			 end
+                 				 end as contrato_orden,
+                                 tsol.cuce,
+                                 tmod.nombre_modalidad as tipo_modalidad,
+                                 dep.nombre::varchar as nombre_depto
+
             from adq.vsolicitud_compra sol
             left join adq.vproceso_compra pro on pro.id_solicitud=sol.id_solicitud and pro.estados_cotizacion!=''anulado''
             inner join segu.vusuario usu on usu.cuenta=pro.usr_aux
+
+            left join adq.tsolicitud tsol on tsol.id_solicitud = sol.id_solicitud and tsol.estado_reg = ''activo''
+            left join adq.tmodalidades tmod on tmod.codigo = tsol.tipo_modalidad and tmod.estado_reg = ''activo''
+            left join param.tdepto dep on dep.id_depto = sol.id_depto
+
             where pro.fecha_ini_proc BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin ||'''
             and sol.precio_total_mb > ' || v_parametros.monto_mayor ||'
-            and pro.estado != ''anulado'' and pro.id_depto='||v_parametros.id_depto||v_filtro||'
+            and pro.estado != ''anulado''
+            '||v_filtro_dep||v_filtro||'
             order by pro.fecha_ini_proc, pro.num_tramite';
 
         	return v_consulta;
@@ -592,6 +618,13 @@ BEGIN
 
     	begin
 
+            --(may) 14-01-2021 en depto de opcion a todos
+            IF v_parametros.id_depto is null THEN
+            	v_filtro_dep = ' ';
+            ELSE
+            	v_filtro_dep =  ' and pro.id_depto = '''||v_parametros.id_depto||''' ';
+            END IF;
+
             v_consulta = 'select ''Iniciados'' as estado,
             					cc.nombre,
                                 count(pro.id_proceso_compra) as total
@@ -602,7 +635,8 @@ BEGIN
 
             where pro.fecha_ini_proc BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin||'''
 			and sol.precio_total_mb > ' || v_parametros.monto_mayor || '
-			and pro.estado != ''anulado'' and pro.id_depto=' ||v_parametros.id_depto||'
+			and pro.estado != ''anulado''
+			' || v_filtro_dep || '
 			and (pro.estados_cotizacion not like ''%adjudicado%''
             and pro.estados_cotizacion not like ''%contrato_pendiente%''
 			and pro.estados_cotizacion not like ''%contrato_elaborado%''
@@ -623,7 +657,7 @@ BEGIN
             where pro.fecha_ini_proc BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin||'''
 			and sol.precio_total_mb > '||v_parametros.monto_mayor||'
             and pro.estado != ''anulado''
-            and pro.id_depto='||v_parametros.id_depto||'
+            '||v_filtro_dep||'
 			and (pro.estados_cotizacion like ''%adjudicado%''
             or pro.estados_cotizacion like ''%contrato_pendiente%''
 			or pro.estados_cotizacion like ''%contrato_elaborado%'')
@@ -639,7 +673,8 @@ BEGIN
 			inner join adq.tcategoria_compra cc on cc.id_categoria_compra=pro.id_categoria_compra
 			where pro.fecha_ini_proc BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin||'''
 			and sol.precio_total_mb > '||v_parametros.monto_mayor||'
-			and pro.estado != ''anulado'' and pro.id_depto=' ||v_parametros.id_depto||'
+			and pro.estado != ''anulado''
+			'||v_filtro_dep||'
 			and (pro.estados_cotizacion like ''%pago_habilitado%''
             or pro.estados_cotizacion like ''%finalizada%'')
 			group by cc.nombre';

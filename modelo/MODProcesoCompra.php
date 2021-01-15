@@ -366,11 +366,16 @@ class MODProcesoCompra extends MODbase
         $this->captura('precio_moneda_solicitada', 'numeric');
         $this->captura('moneda_solicitada', 'varchar');
         $this->captura('requiere_contrato', 'text');
+        $this->captura('cuce', 'varchar');
+
+        $this->captura('tipo_modalidad', 'varchar');
+        $this->captura('nombre_depto', 'varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();
         //Devuelve la respuesta
+        //var_dump($this->respuesta) ;exit;
         return $this->respuesta;
     }
 

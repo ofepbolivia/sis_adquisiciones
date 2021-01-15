@@ -17,11 +17,12 @@ header("content-type: text/javascript; charset=UTF-8");
                     hiddenName: 'id_depto',
                     url: '../../sis_parametros/control/Depto/listarDepto',
                     origen:'DEPTO',
-                    allowBlank:false,
+                    allowBlank:true,
                     fieldLabel: 'Depto',
                     gdisplayField:'desc_depto',//dibuja el campo extra de la consulta al hacer un inner join con orra tabla
                     width:250,
                     gwidth:180,
+                    qtip: 'Si este campo esta vacio, se listara todos los Deptos',
                     baseParams:{estado:'activo',codigo_subsistema:'ADQ'}
 
                 },
@@ -36,11 +37,12 @@ header("content-type: text/javascript; charset=UTF-8");
                     name: 'monto_mayor',
                     fieldLabel: 'Montos mayor a',
                     allowBlank: true,
-                    anchor: '35%',
+                    anchor: 200,
                     gwidth: 80,
                     maxLength:6
                 },
                 type:'NumberField',
+                valorInicial: 1,
                 grid:true,
                 form:true
             },
@@ -50,6 +52,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Fecha Inicio',
                     allowBlank: false,
                     disabled: false,
+                    anchor: 220,
                     gwidth: 100,
                     format: 'd/m/Y'
 
@@ -64,6 +67,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Fecha Fin',
                     allowBlank: false,
                     disabled: false,
+                    anchor: 220,
                     gwidth: 100,
                     format: 'd/m/Y'
 
