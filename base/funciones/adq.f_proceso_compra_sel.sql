@@ -590,7 +590,7 @@ BEGIN
                                  tmod.nombre_modalidad as tipo_modalidad,
                                  dep.nombre::varchar as nombre_depto
 
-            from adq.vsolicitud_compra sol
+            from adq.vsolicitud_compra_rep sol
             left join adq.vproceso_compra pro on pro.id_solicitud=sol.id_solicitud and pro.estados_cotizacion!=''anulado''
             inner join segu.vusuario usu on usu.cuenta=pro.usr_aux
 
