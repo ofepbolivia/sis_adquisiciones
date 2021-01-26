@@ -69,6 +69,8 @@ DECLARE
 	 v_id_uo_jefatura_gerencia	integer;
      v_id_uo_jefatura_unidad	integer;
 
+     v_id_uo_jefatura_direccion	integer;
+
 
 BEGIN
 
@@ -158,7 +160,8 @@ BEGIN
                                     v_id_uo_jefatura =   orga.f_get_uo_jefatura_area_ope(NULL, v_solicitud.id_funcionario, v_solicitud.fecha_soli::Date);
                                     v_id_uo_jefatura_gerencia =   orga.f_get_uo_jefa_ger_area_ope(NULL, v_solicitud.id_funcionario, v_solicitud.fecha_soli::Date);
                                     v_id_uo_jefatura_unidad =   orga.f_get_uo_jefa_unidad_area_ope(NULL, v_solicitud.id_funcionario, v_solicitud.fecha_soli::Date);
-                           			--RAISE EXCEPTION 'id_uo_jegatura % - % - %', v_id_uo_jefatura, v_id_uo_jefatura_gerencia, v_id_uo_jefatura_unidad;
+                           			v_id_uo_jefatura_direccion =   orga.f_get_uo_direccion_area_ope(NULL, v_solicitud.id_funcionario, v_solicitud.fecha_soli::Date);
+                           			--RAISE EXCEPTION 'id_uo_jegatura % - % - % - %', v_id_uo_jefatura, v_id_uo_jefatura_gerencia, v_id_uo_jefatura_unidad,v_id_uo_jefatura_direccion;
 
                                         SELECT count(mc.id_matriz_modalidad)
                                         INTO v_matriz_id_modalidad
@@ -178,7 +181,7 @@ BEGIN
                                             WHERE mc.id_concepto_ingas = v_solicitud_det.id_concepto_ingas
                                             and mc.estado_reg = 'activo'
                                             --and mm.id_uo = v_id_uo_jefatura
-                                            and mm.id_uo in (v_id_uo_jefatura,v_id_uo_jefatura_unidad, v_id_uo_jefatura_gerencia)
+                                            and mm.id_uo in (v_id_uo_jefatura,v_id_uo_jefatura_unidad, v_id_uo_jefatura_gerencia,v_id_uo_jefatura_direccion)
                                             and mm.id_uo_gerencia = v_id_uo_sol;
 
                                         ELSE
