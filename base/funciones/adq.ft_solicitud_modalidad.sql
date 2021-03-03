@@ -172,7 +172,7 @@ BEGIN
                                         AND mm.id_uo_gerencia = v_id_uo_sol;
 
                             			--si existe mas de 1 registro se toma la condicion por su departamento jefatura
-                            			IF (v_matriz_id_modalidad > 1) THEN
+                            			IF (v_matriz_id_modalidad > 1 or v_matriz_id_modalidad = 0) THEN
 
                                         	SELECT mc.id_matriz_modalidad
                                             INTO v_matriz_id_modalidad
