@@ -49,7 +49,7 @@ BEGIN
 
         begin
 
-        	IF v_parametros.id_uo = 10094 THEN
+        	IF v_parametros.id_uo = 10445 THEN
 
             	v_id_uo_gerencia = v_parametros.id_uo;
 
@@ -172,7 +172,7 @@ BEGIN
 
 		begin
 
-        	IF v_parametros.id_uo = 10094 THEN
+        	IF v_parametros.id_uo = 10445 THEN
 
             	v_id_uo_gerencia = v_parametros.id_uo;
 

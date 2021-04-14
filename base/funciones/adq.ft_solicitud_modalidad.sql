@@ -125,7 +125,7 @@ BEGIN
                                                                 left join adq.tmatriz_modalidad mm on mm.id_matriz_modalidad = mc.id_matriz_modalidad
                                                                 WHERE mc.id_concepto_ingas = v_solicitud_det.id_concepto_ingas
                                                                 and mc.estado_reg = 'activo'
-                                                                and mm.id_uo != 10094
+                                                                and mm.id_uo != 10445
                                                          		 )LOOP
 
                                             --RAISE EXCEPTION 'MATRIZ % - %',v_id_matriz.id_matriz_modalidad, v_id_matriz.id_uo;
@@ -275,7 +275,7 @@ BEGIN
                                   left join adq.tmatriz_modalidad mm on mm.id_matriz_modalidad = mc.id_matriz_modalidad
                                   WHERE mc.id_concepto_ingas = v_solicitud_det.id_concepto_ingas
                                   and mc.estado_reg = 'activo'
-                                  and mm.id_uo in (10094, v_solicitud.id_uo) ; --nombre de parametrizacion en la matriz Gerencias Regionales
+                                  and mm.id_uo in (10445, v_solicitud.id_uo) ; --nombre de parametrizacion en la matriz Gerencias Regionales
 
 
 
@@ -375,7 +375,7 @@ BEGIN
             --informacion para sacar el funcionario aprobador
 
             --PARA LOS TIPO DE UNIDADES DE GERENCIAS REGIONALES
-             IF ( v_modalidades_matriz.id_uo =  10094) THEN
+             IF ( v_modalidades_matriz.id_uo =  10445) THEN
 
                 -- PARA VER QUE SI SON GERENCIAS REGIONALES SI EL APROBADOR VA SER GERENTE GENERAL O EL GERENTE DE LA REGIONAL
              	IF (v_modalidades_matriz.id_cargo = 18594  or v_modalidades_matriz.id_cargo IS NULL) THEN
