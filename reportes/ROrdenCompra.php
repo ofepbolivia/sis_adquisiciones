@@ -338,16 +338,18 @@ Class ROrdenCompra extends Report {
 			$pdf->SetFillColor(192,192,192, true);
 			$pdf->Cell($width4+$width3+$width2, $height, $this->getDataSource()->getParameter('contacto'), $white, 1, 'L', true, '', 0, false, 'T', 'C');
 		}
-		
-		if($this->getDataSource()->getParameter('celular_contacto')!=''){
-			$pdf->SetFontSize(7);
-			$pdf->SetFont('', 'B');
-			$pdf->Cell($width1, $height, 'Telefono:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-			$pdf->SetFont('', '');
-			$pdf->SetFillColor(192,192,192, true);
-			$pdf->Cell($width4+$width3+$width2, $height, $this->getDataSource()->getParameter('celular_contacto'), $white, 1, 'L', true, '', 0, false, 'T', 'C');
-		}
-		
+		//04-05-2021 (may) a solicitud de Patricia Lopez interina desde la fecha 19 Abril
+        if($this->getDataSource()->getParameter('contacto') != 'PATRICIA LOPEZ VARGAS') {
+            if($this->getDataSource()->getParameter('celular_contacto')!=''){
+                $pdf->SetFontSize(7);
+                $pdf->SetFont('', 'B');
+                $pdf->Cell($width1, $height, 'Telefono:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+                $pdf->SetFont('', '');
+                $pdf->SetFillColor(192,192,192, true);
+                $pdf->Cell($width4+$width3+$width2, $height, $this->getDataSource()->getParameter('celular_contacto'), $white, 1, 'L', true, '', 0, false, 'T', 'C');
+            }
+        }
+		//
 		if($this->getDataSource()->getParameter('email_contacto')!=''){
 			$pdf->SetFontSize(7);
 			$pdf->SetFont('', 'B');
