@@ -284,12 +284,20 @@ header("content-type: text/javascript; charset=UTF-8");
 
             Phx.vista.CotizacionAdq.superclass.onButtonEdit.call(this);
             this.mostrarComponente(this.Cmp.correo_contacto);
-            this.mostrarComponente(this.Cmp.telefono_contacto);
+            //this.mostrarComponente(this.Cmp.telefono_contacto);
             this.mostrarComponente(this.Cmp.funcionario_contacto);
             this.mostrarComponente(this.Cmp.lugar_entrega);
             this.mostrarComponente(this.Cmp.fecha_entrega);
             this.mostrarComponente(this.Cmp.tiempo_entrega);
             this.ocultarComponente(this.Cmp.prellenar_oferta);
+
+            //17-05-2021 (may) a solicitud de PATRICIA Lopez interina NO mostrar su numero de telefono
+            if (this.Cmp.funcionario_contacto.value == 'PATRICIA LOPEZ VARGAS') {
+                this.ocultarComponente(this.Cmp.telefono_contacto);
+            }
+            else {
+                this.mostrarComponente(this.Cmp.telefono_contacto);
+            }
 
 
         },
