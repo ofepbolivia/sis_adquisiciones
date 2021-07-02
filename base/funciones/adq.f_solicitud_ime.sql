@@ -340,7 +340,10 @@ BEGIN
             nro_po,
             fecha_po,
             prioridad,
-            presupuesto_aprobado
+            presupuesto_aprobado,
+            --(28-06-2021) may
+            id_contrato
+
           	) values(
 			'activo',
 			--v_parametros.id_solicitud_ext,
@@ -381,7 +384,9 @@ BEGIN
             trim(both ' ' from v_parametros.nro_po),
             v_parametros.fecha_po,
 			v_parametros.prioridad,
-            'verificar'
+            'verificar',
+            --(28-06-2021) may
+            v_parametros.id_contrato
 
 			)RETURNING id_solicitud into v_id_solicitud;
 
@@ -518,7 +523,10 @@ BEGIN
             precontrato = COALESCE(v_parametros.precontrato,'no'),
             nro_po = trim(both ' ' from v_parametros.nro_po),
             fecha_po = v_parametros.fecha_po,
-            prioridad = v_parametros.id_prioridad
+            prioridad = v_parametros.id_prioridad,
+            --28-06-2021 (may)
+            id_contrato = v_parametros.id_contrato
+
 			where id_solicitud = v_parametros.id_solicitud;
 
 			--Definicion de la respuesta

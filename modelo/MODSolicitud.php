@@ -106,6 +106,9 @@ class MODSolicitud extends MODbase
 
         $this->captura('tipo_modalidad', 'varchar');
 
+        $this->captura('id_contrato', 'integer');
+        $this->captura('desc_contrato', 'varchar');
+
         //Ejecuta la instruccion
         $this->armarConsulta();
         //echo($this->consulta);exit;
@@ -163,6 +166,8 @@ class MODSolicitud extends MODbase
 
         $this->setParametro('id_prioridad', 'id_prioridad', 'integer');
 
+        $this->setParametro('id_contrato', 'id_contrato', 'integer');
+
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();
@@ -216,6 +221,7 @@ class MODSolicitud extends MODbase
 
         $this->setParametro('id_prioridad', 'id_prioridad', 'integer');
 
+        $this->setParametro('id_contrato', 'id_contrato', 'integer');
 
 
         //Ejecuta la instruccion
@@ -511,7 +517,7 @@ class MODSolicitud extends MODbase
         /****************************************************************************/
 
         $this->armarConsulta();
-        //echo($this->consulta);exit;
+        echo($this->consulta);exit;
         $this->ejecutarConsulta();
         return $this->respuesta;
     }
@@ -654,6 +660,8 @@ class MODSolicitud extends MODbase
             $this->setParametro('fecha_po', 'fecha_po', 'date');
 
             $this->setParametro('prioridad', 'prioridad', 'integer');
+
+            $this->setParametro('id_contrato', 'id_contrato', 'integer');
 
             //Ejecuta la instruccion
             $this->armarConsulta();

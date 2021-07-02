@@ -807,6 +807,68 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 {
                     config: {
+                        name: 'id_contrato',
+                        hiddenName: 'id_contrato',
+                        fieldLabel: 'Contrato',
+                        typeAhead: false,
+                        forceSelection: true,
+                        allowBlank: false,
+                        //disabled: true,
+                        emptyText: 'Contratos...',
+                        store: new Ext.data.JsonStore({
+                            url: '../../sis_workflow/control/Tabla/listarTablaCombo',
+                            id: 'id_contrato',
+                            root: 'datos',
+                            sortInfo: {
+                                field: 'id_contrato',
+                                direction: 'ASC'
+                            },
+                            totalProperty: 'total',
+                            fields: ['id_contrato','nro_tramite', 'numero', 'tipo', 'objeto', 'estado', 'desc_proveedor', 'monto', 'moneda', 'fecha_inicio', 'fecha_fin'],
+                            // turn on remote sorting
+                            remoteSort: true,
+                            baseParams: {
+                                //02-06-2021 (may) modificacion para filtro, no hay con.nro_tramite
+                                //par_filtro: 'con.nro_tramite#con.numero#con.tipo#con.monto#prov.desc_proveedor#con.objeto#con.monto',
+                                par_filtro: 'con.numero#con.tipo#con.monto#prov.desc_proveedor#con.objeto#con.monto',
+                                tipo_proceso: "CON",
+                                tipo_estado: "finalizado"
+                            }
+                        }),
+                        valueField: 'id_contrato',
+                        displayField: 'numero',
+                        gdisplayField: 'desc_contrato',
+                        triggerAction: 'all',
+                        lazyRender: true,
+                        resizable: true,
+                        mode: 'remote',
+                        pageSize: 20,
+                        queryDelay: 200,
+                        listWidth: 380,
+                        minChars: 2,
+                        gwidth: 100,
+                        anchor: '80%',
+                        renderer: function (value, p, record) {
+                            if (record.data['desc_contrato']) {
+                                return String.format('{0}', record.data['desc_contrato']);
+                            }
+                            return '';
+
+                        },
+                        tpl: '<tpl for="."><div class="x-combo-list-item"><p><b>Nro: {numero} ({tipo})</b></p><p>Obj: <strong>{objeto}</strong></p><p>Prov : {desc_proveedor}</p> <p>Nro.Trámite: {nro_tramite}</p><p>Monto: {monto} {moneda}</p><p>Rango: {fecha_inicio} al {fecha_fin}</p></div></tpl>'
+                    },
+                    type: 'ComboBox',
+                    id_grupo: 2,
+                    filters: {
+                        pfiltro: 'con.numero',
+                        type: 'numeric'
+                    },
+                    grid: true,
+                    form: true
+                },
+
+                {
+                    config: {
                         name: 'id_prioridad',
                         fieldLabel: 'Prioridad',
                         allowBlank: false,
@@ -1301,13 +1363,15 @@ header("content-type: text/javascript; charset=UTF-8");
                 'cuce',
                 {name: 'fecha_conclusion', type: 'date', dateFormat: 'Y-m-d'},
                 {name: 'presupuesto_aprobado', type: 'string'},
-                {name: 'tipo_modalidad', type: 'string'}
+                {name: 'tipo_modalidad', type: 'string'},
+                'id_contrato', 'desc_contrato'
             ],
 
             arrayDefaultColumHidden: ['id_fecha_reg', 'id_fecha_mod',
                 'fecha_mod', 'usr_reg', 'estado_reg', 'fecha_reg', 'usr_mod',
                 'id_depto', 'numero', 'obs', 'id_funcionario_aprobador', 'desc_funcionario_rpc', 'fecha_apro', 'id_categoria_compra', 'justificacion',
-                'lugar_entrega', 'fecha_inicio', 'dias_plazo_entrega', 'posibles_proveedores', 'comite_calificacion', 'extendida', 'obs_presupuestos'],
+                'lugar_entrega', 'fecha_inicio', 'dias_plazo_entrega', 'posibles_proveedores', 'comite_calificacion', 'extendida', 'obs_presupuestos',
+                'id_contrato'],
 
 
             /*rowExpander: new Ext.ux.grid.RowExpander({

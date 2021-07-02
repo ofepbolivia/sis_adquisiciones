@@ -305,7 +305,10 @@ BEGIN
                         sol.cuce,
                         sol.fecha_conclusion,
                         sol.presupuesto_aprobado,
-                        tcat2.descripcion as tipo_modalidad
+                        tcat2.descripcion as tipo_modalidad,
+
+                        con.id_contrato,
+                        (con.tipo||'' - ''||con.numero)::varchar as desc_contrato
 
 						from adq.tsolicitud sol
 						inner join segu.tusuario usu1 on usu1.id_usuario = sol.id_usuario_reg
@@ -327,6 +330,8 @@ BEGIN
 
                         left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud and tsd.estado_reg = ''activo''
 
+                        left join leg.tcontrato con on con.id_contrato = sol.id_contrato
+
                         left join param.tcatalogo tcat on tcat.id_catalogo = sol.prioridad
                         left join param.tcatalogo tcat2 on tcat2.codigo = sol.tipo_modalidad and tcat2.id_catalogo_tipo=62
                         '||v_inner||'
@@ -342,7 +347,8 @@ BEGIN
              fun.desc_funcionario1, funa.desc_funcionario1, uo.codigo, uo.nombre_unidad,
              ges.gestion, mon.codigo, dep.codigo, pm.nombre, cat.nombre, funrpc.desc_funcionario1,
              ew.obs, pro.desc_proveedor, funs.desc_funcionario1, ew.id_tipo_estado,
-             pwf.id_tipo_estado_wfs, tcat.codigo, tcat.id_catalogo, tcat2.descripcion order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+             pwf.id_tipo_estado_wfs, tcat.codigo, tcat.id_catalogo, tcat2.descripcion, con.id_contrato,
+             con.tipo, con.numero  order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
 			--Devuelve la respuesta
 			return v_consulta;
@@ -511,6 +517,8 @@ BEGIN
                         left join param.vproveedor pro on pro.id_proveedor = sol.id_proveedor
 
                         left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud and tsd.estado_reg = ''activo''
+
+                        left join leg.tcontrato con on con.id_contrato = sol.id_contrato
 
                         left join param.tcatalogo tcat on tcat.id_catalogo = sol.prioridad
                         left join param.tcatalogo tcat2 on tcat2.codigo = sol.tipo_modalidad and tcat2.id_catalogo_tipo=62

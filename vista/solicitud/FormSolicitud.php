@@ -39,6 +39,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
             this.Cmp.tipo_concepto.store.loadData(this.arrayStore['Bien'].concat(this.arrayStore['Servicio']));
 
+            this.construyeVariablesContratos();
         },
         buildComponentesDetalle: function () {
             this.detCmp = {
@@ -1095,6 +1096,68 @@ header("content-type: text/javascript; charset=UTF-8");
 
             {
                 config: {
+                    name: 'id_contrato',
+                    hiddenName: 'id_contrato',
+                    fieldLabel: 'Contrato',
+                    typeAhead: false,
+                    forceSelection: true,
+                    allowBlank: false,
+                    disabled: false,
+                    emptyText: 'Contratos...',
+                    store: new Ext.data.JsonStore({
+                        url: '../../sis_workflow/control/Tabla/listarTablaCombo',
+                        id: 'id_contrato',
+                        root: 'datos',
+                        sortInfo: {
+                            field: 'id_contrato',
+                            direction: 'ASC'
+                        },
+                        totalProperty: 'total',
+                        fields: ['id_contrato','nro_tramite', 'numero', 'tipo', 'objeto', 'estado', 'desc_proveedor', 'monto', 'moneda', 'fecha_inicio', 'fecha_fin'],
+                        // turn on remote sorting
+                        remoteSort: true,
+                        baseParams: {
+                            //02-06-2021 (may) modificacion para filtro, no hay con.nro_tramite
+                            //par_filtro: 'con.nro_tramite#con.numero#con.tipo#con.monto#prov.desc_proveedor#con.objeto#con.monto',
+                            par_filtro: 'con.numero#con.tipo#con.monto#prov.desc_proveedor#con.objeto#con.monto',
+                            tipo_proceso: "CON",
+                            tipo_estado: "finalizado"
+                        }
+                    }),
+                    valueField: 'id_contrato',
+                    displayField: 'numero',
+                    gdisplayField: 'desc_contrato',
+                    triggerAction: 'all',
+                    lazyRender: true,
+                    resizable: true,
+                    mode: 'remote',
+                    pageSize: 20,
+                    queryDelay: 200,
+                    listWidth: 380,
+                    minChars: 2,
+                    gwidth: 100,
+                    anchor: '83%',
+                    renderer: function (value, p, record) {
+                        if (record.data['desc_contrato']) {
+                            return String.format('{0}', record.data['desc_contrato']);
+                        }
+                        return '';
+
+                    },
+                    tpl: '<tpl for="."><div class="x-combo-list-item"><p><b>Nro: {numero} ({tipo})</b></p><p>Obj: <strong>{objeto}</strong></p><p>Prov : {desc_proveedor}</p> <p>Nro.Trámite: {nro_tramite}</p><p>Monto: {monto} {moneda}</p><p>Rango: {fecha_inicio} al {fecha_fin}</p></div></tpl>'
+                },
+                type: 'ComboBox',
+                id_grupo: 2,
+                filters: {
+                    pfiltro: 'con.numero',
+                    type: 'numeric'
+                },
+                grid: true,
+                form: true
+            },
+
+            {
+                config: {
                     name: 'prioridad',
                     fieldLabel: 'Prioridad',
                     allowBlank: false,
@@ -1256,10 +1319,47 @@ header("content-type: text/javascript; charset=UTF-8");
 
             }, this);
 
-            this.Cmp.id_proveedor.on('select', function (combo, record, index) {
+            //28-06-2021 (may)
+            this.ocultarComponente(this.Cmp.id_contrato);
+
+
+            this.Cmp.id_proveedor.on('select', function (cmb, record, index) {
 
                 this.Cmp.correo_proveedor.reset();
                 this.Cmp.correo_proveedor.setValue(record.data.email);
+
+                //28-06-2021 (may) se aumenta contrato si opcion Tipo de Contrato == ampliacion_contrato
+                this.Cmp.precontrato.on('select', function (combo, record, index) {
+                    if (combo.value == 'ampliacion_contrato') {
+                        this.mostrarComponente(this.Cmp.id_contrato);
+                    }else {
+                        this.ocultarComponente(this.Cmp.id_contrato);
+                        this.Cmp.id_contrato.reset();
+                    }
+
+
+                    var fecha = this.Cmp.fecha_soli.getValue();
+
+                    var dd = fecha.getDate();
+                    var mm = fecha.getMonth() + 1; //January is 0!
+                    var yyyy = fecha.getFullYear();
+                    if (dd < 10) {
+                        dd = '0' + dd;
+                    }
+                    if (mm < 10) {
+                        mm = '0' + mm;
+                    }
+
+                    var today = dd + '/' + mm + '/' + yyyy;
+
+                    var anio = this.Cmp.fecha_soli.getValue();
+                    anio = anio.getFullYear();
+                    this.Cmp.id_contrato.reset();
+                    this.Cmp.id_contrato.store.baseParams.filter = "[{\"type\":\"numeric\",\"comparison\":\"eq\", \"value\":\"" + cmb.getValue() + "\",\"field\":\"CON.id_proveedor\"}]";
+                    this.Cmp.id_contrato.store.baseParams.filtro_directo = "(((CON.fecha_fin is null) or (con.fecha_fin + interval ''15 day'' )::date >= (''" + today + "''::date)) and (pw.nro_tramite LIKE ''LEGAL%'' or ((pw.nro_tramite LIKE ''CI%'' or pw.nro_tramite LIKE ''CN%'')  and  (ges.gestion < ''"+ anio +"''))))";
+                    this.Cmp.id_contrato.modificado = true;
+
+                }, this);
 
 
             }, this);
@@ -1325,6 +1425,8 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
             }, this);
+
+
 
         },
 
@@ -1540,6 +1642,41 @@ header("content-type: text/javascript; charset=UTF-8");
             });
 
         },
+
+        construyeVariablesContratos: function () {
+            Phx.CP.loadingShow();
+            Ext.Ajax.request({
+                url: '../../sis_workflow/control/Tabla/cargarDatosTablaProceso',
+                params: {"tipo_proceso": "CON", "tipo_estado": "finalizado", "limit": "100", "start": "0"},
+                success: this.successCotratos,
+                failure: this.conexionFailure,
+                timeout: this.timeout,
+                scope: this
+            });
+
+
+        },
+        successCotratos: function (resp) {
+            Phx.CP.loadingHide();
+            var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+            if (reg.datos) {
+
+                this.ID_CONT = reg.datos[0].atributos.id_tabla
+
+                this.Cmp.id_contrato.store.baseParams.id_tabla = this.ID_CONT;
+
+            } else {
+                alert('Error al cargar datos de contratos')
+            }
+        },
+
+        sistema: 'ADQ',
+        id_cotizacion: 0,
+        id_proceso_compra: 0,
+        id_solicitud: 0,
+        auxFuncion: 'onBtnAdq',
+        tabla_id: 'id_obligacion_pago',
+        tabla: 'tes.tobligacion_pago',
 
 
     })

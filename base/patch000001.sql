@@ -1180,3 +1180,11 @@ ADD COLUMN fecha_certificacion DATE;
 COMMENT ON COLUMN adq.ttresoluciones_info_pre.fecha_certificacion
 IS 'fecha de la certificacion segun parametrizacion';
 /***********************************F-SCP-MAY-ADQ-0-09/12/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-28/06/2021****************************************/
+ALTER TABLE adq.tsolicitud
+ADD COLUMN id_contrato INTEGER;
+
+COMMENT ON COLUMN adq.tsolicitud.id_contrato
+IS 'identificador contrato si ampliacion_contrato';
+/***********************************F-SCP-MAY-ADQ-0-28/06/2021****************************************/
