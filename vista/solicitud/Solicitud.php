@@ -812,8 +812,8 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Contrato',
                         typeAhead: false,
                         forceSelection: true,
-                        allowBlank: false,
-                        //disabled: true,
+                        allowBlank: true,
+                        disabled: true,
                         emptyText: 'Contratos...',
                         store: new Ext.data.JsonStore({
                             url: '../../sis_workflow/control/Tabla/listarTablaCombo',

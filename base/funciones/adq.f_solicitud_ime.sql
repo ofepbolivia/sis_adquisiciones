@@ -523,9 +523,7 @@ BEGIN
             precontrato = COALESCE(v_parametros.precontrato,'no'),
             nro_po = trim(both ' ' from v_parametros.nro_po),
             fecha_po = v_parametros.fecha_po,
-            prioridad = v_parametros.id_prioridad,
-            --28-06-2021 (may)
-            id_contrato = v_parametros.id_contrato
+            prioridad = v_parametros.id_prioridad
 
 			where id_solicitud = v_parametros.id_solicitud;
 

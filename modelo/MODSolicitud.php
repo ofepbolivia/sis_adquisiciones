@@ -221,7 +221,7 @@ class MODSolicitud extends MODbase
 
         $this->setParametro('id_prioridad', 'id_prioridad', 'integer');
 
-        $this->setParametro('id_contrato', 'id_contrato', 'integer');
+        //$this->setParametro('id_contrato', 'id_contrato', 'integer');
 
 
         //Ejecuta la instruccion
