@@ -517,7 +517,7 @@ class MODSolicitud extends MODbase
         /****************************************************************************/
 
         $this->armarConsulta();
-        echo($this->consulta);exit;
+        //echo($this->consulta);exit;
         $this->ejecutarConsulta();
         return $this->respuesta;
     }
