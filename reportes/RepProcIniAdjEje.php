@@ -125,7 +125,7 @@ class RepProcIniAdjEje
         $this->docexcel->getActiveSheet()->setCellValue('L1','CUCE');
         $this->docexcel->getActiveSheet()->setCellValue('M1','Modalidad Contratación');
         $this->docexcel->getActiveSheet()->setCellValue('N1','Depto');
-        $this->docexcel->getActiveSheet()->setCellValue('O1','Nro. PO');
+        $this->docexcel->getActiveSheet()->setCellValue('O1','Número de Orden o Número PO');
 
 
         //*************************************Detalle*****************************************
@@ -207,7 +207,7 @@ class RepProcIniAdjEje
         $this->docexcel->getActiveSheet()->setCellValue('L1','CUCE');
         $this->docexcel->getActiveSheet()->setCellValue('M1','Modalidad Contratación');
         $this->docexcel->getActiveSheet()->setCellValue('N1','Depto');
-        $this->docexcel->getActiveSheet()->setCellValue('O1','Nro. PO');
+        $this->docexcel->getActiveSheet()->setCellValue('O1','Número de Orden o Número PO');
 
         //*************************************Detalle*****************************************
         $columna = 0;
@@ -288,7 +288,7 @@ class RepProcIniAdjEje
         $this->docexcel->getActiveSheet()->setCellValue('L1','CUCE');
         $this->docexcel->getActiveSheet()->setCellValue('M1','Modalidad Contratación');
         $this->docexcel->getActiveSheet()->setCellValue('N1','Depto');
-        $this->docexcel->getActiveSheet()->setCellValue('O1','Nro. PO');
+        $this->docexcel->getActiveSheet()->setCellValue('O1','Número de Orden o Número PO');
 
         //*************************************Detalle*****************************************
         $columna = 0;
