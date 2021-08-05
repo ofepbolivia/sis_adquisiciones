@@ -371,6 +371,8 @@ class MODProcesoCompra extends MODbase
         $this->captura('tipo_modalidad', 'varchar');
         $this->captura('nombre_depto', 'varchar');
 
+        $this->captura('nro_po', 'varchar');
+
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();
