@@ -589,7 +589,8 @@ BEGIN
                                  tsol.cuce,
                                  tmod.nombre_modalidad as tipo_modalidad,
                                  dep.nombre::varchar as nombre_depto,
-                                 coalesce(tsol.nro_po, pro.numeros_oc)::varchar as nro_po
+                                 (case when (tsol.nro_po = '''' or tsol.nro_po is null) then pro.numeros_oc
+                                 else tsol.nro_po end)::varchar as nro_po
 
             from adq.vsolicitud_compra_rep sol
             left join adq.vproceso_compra pro on pro.id_solicitud=sol.id_solicitud and pro.estados_cotizacion!=''anulado''
