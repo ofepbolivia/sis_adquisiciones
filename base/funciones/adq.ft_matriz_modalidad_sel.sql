@@ -83,7 +83,8 @@ BEGIN
                         matriz.resp_proc_contratacion_desastres,
                         matriz.flujo_mod_directa,
 
-                        uogeren.nombre_unidad as nombre_gerencia
+                        uogeren.nombre_unidad as nombre_gerencia,
+                        matriz.flujo_sistema
 
 						from adq.tmatriz_modalidad matriz
 						inner join segu.tusuario usu1 on usu1.id_usuario = matriz.id_usuario_reg
@@ -133,7 +134,8 @@ BEGIN
                         matriz.resp_proc_contratacion_excepcion,
                         matriz.resp_proc_contratacion_desastres,
                         matriz.flujo_mod_directa,
-                        uogeren.nombre_unidad  '||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+                        uogeren.nombre_unidad,
+                        matriz.flujo_sistema  '||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
 			--Devuelve la respuesta
 			return v_consulta;

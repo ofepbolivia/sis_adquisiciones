@@ -1188,3 +1188,8 @@ ADD COLUMN id_contrato INTEGER;
 COMMENT ON COLUMN adq.tsolicitud.id_contrato
 IS 'identificador contrato si ampliacion_contrato';
 /***********************************F-SCP-MAY-ADQ-0-28/06/2021****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-25/08/2021****************************************/
+ALTER TABLE adq.tmatriz_modalidad
+ADD COLUMN flujo_sistema VARCHAR(100);
+/***********************************F-SCP-MAY-ADQ-0-25/08/2021****************************************/

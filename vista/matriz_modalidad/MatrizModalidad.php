@@ -327,6 +327,26 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 {
                     config: {
+                        name: 'flujo_sistema',
+                        fieldLabel: 'Flujo Sistema',
+                        allowBlank: false,
+                        anchor: '100%',
+                        gwidth: 50,
+                        maxLength: 100,
+                        typeAhead: true,
+                        triggerAction: 'all',
+                        lazyRender: true,
+                        store: ['ADQUISICIONES', 'TESORERIA', 'ADQUISICIONES-TESORERIA']
+                    },
+                    type: 'ComboBox',
+                    filters: {pfiltro: 'matriz.flujo_sistema', type: 'string'},
+                    id_grupo: 0,
+                    grid: true,
+                    form: true
+                },
+
+                {
+                    config: {
                         name: 'contrato_global',
                         fieldLabel: 'Contrato Global',
                         allowBlank: true,
@@ -840,6 +860,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {name: 'flujo_mod_directa', type: 'string'},
 
                 {name: 'nombre_gerencia', type: 'string'},
+                {name: 'flujo_sistema', type: 'string'},
 
             ],
             sortInfo: {
@@ -868,6 +889,44 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.ocultarComponente(this.Cmp.resp_proc_contratacion_licitacion);
                 this.ocultarComponente(this.Cmp.resp_proc_contratacion_excepcion);
                 this.ocultarComponente(this.Cmp.resp_proc_contratacion_desastres);
+
+                //24-08-2021 (may) modificacion para flujo_sistema si adq mostrar modalidades y tesoreria no tiene las modalidades
+                this.Cmp.flujo_sistema.on('select', function (cmp, rec) {
+                    if (this.Cmp.flujo_sistema.getValue() == 'TESORERIA') {
+                        this.ocultarComponente(this.Cmp.modalidad_directa);
+                        this.ocultarComponente(this.Cmp.modalidad_menor);
+                        this.ocultarComponente(this.Cmp.modalidad_anpe);
+                        this.ocultarComponente(this.Cmp.modalidad_licitacion);
+                        this.ocultarComponente(this.Cmp.modalidad_excepcion);
+                        this.ocultarComponente(this.Cmp.modalidad_desastres);
+
+                        this.ocultarComponente(this.Cmp.resp_proc_contratacion_menor);
+                        this.ocultarComponente(this.Cmp.resp_proc_contratacion_anpe);
+                        this.ocultarComponente(this.Cmp.resp_proc_contratacion_licitacion);
+                        this.ocultarComponente(this.Cmp.resp_proc_contratacion_excepcion);
+                        this.ocultarComponente(this.Cmp.resp_proc_contratacion_desastres);
+                    }else {
+                        this.Cmp.modalidad_directa.reset();
+                        this.Cmp.modalidad_menor.reset();
+                        this.Cmp.modalidad_anpe.reset();
+                        this.Cmp.modalidad_licitacion.reset();
+                        this.Cmp.modalidad_excepcion.reset();
+                        this.Cmp.modalidad_desastres.reset();
+
+                        this.Cmp.resp_proc_contratacion_menor.reset();
+                        this.Cmp.resp_proc_contratacion_anpe.reset();
+                        this.Cmp.resp_proc_contratacion_licitacion.reset();
+                        this.Cmp.resp_proc_contratacion_excepcion.reset();
+                        this.Cmp.resp_proc_contratacion_desastres.reset();
+
+                        this.mostrarComponente(this.Cmp.modalidad_directa);
+                        this.mostrarComponente(this.Cmp.modalidad_menor);
+                        this.mostrarComponente(this.Cmp.modalidad_anpe);
+                        this.mostrarComponente(this.Cmp.modalidad_licitacion);
+                        this.mostrarComponente(this.Cmp.modalidad_excepcion);
+                        this.mostrarComponente(this.Cmp.modalidad_desastres);
+                    }
+                }, this);
 
                 this.Cmp.modalidad_directa.on('select', function (cmp, rec) {
                     if (this.Cmp.modalidad_directa.getValue() == 'si') {
@@ -974,6 +1033,23 @@ header("content-type: text/javascript; charset=UTF-8");
         onButtonEdit: function () {
             datos = this.sm.getSelected().data;
             Phx.vista.MatrizModalidad.superclass.onButtonEdit.call(this); //sobrecarga enable select
+
+            //24-08-2021 (may) modificacion para flujo_sistema si adq mostrar modalidades y tesoreria no tiene las modalidades
+            if (this.Cmp.flujo_sistema.getValue() == 'TESORERIA') {
+                this.ocultarComponente(this.Cmp.modalidad_directa);
+                this.ocultarComponente(this.Cmp.modalidad_menor);
+                this.ocultarComponente(this.Cmp.modalidad_anpe);
+                this.ocultarComponente(this.Cmp.modalidad_licitacion);
+                this.ocultarComponente(this.Cmp.modalidad_excepcion);
+                this.ocultarComponente(this.Cmp.modalidad_desastres);
+            }else {
+                this.mostrarComponente(this.Cmp.modalidad_directa);
+                this.mostrarComponente(this.Cmp.modalidad_menor);
+                this.mostrarComponente(this.Cmp.modalidad_anpe);
+                this.mostrarComponente(this.Cmp.modalidad_licitacion);
+                this.mostrarComponente(this.Cmp.modalidad_excepcion);
+                this.mostrarComponente(this.Cmp.modalidad_desastres);
+            }
 
             if (this.Cmp.modalidad_directa.getValue() == 'si') {
                 this.mostrarComponente(this.Cmp.flujo_mod_directa);

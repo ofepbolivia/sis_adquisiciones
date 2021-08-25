@@ -107,7 +107,8 @@ BEGIN
 
             flujo_mod_directa,
 
-            id_uo_gerencia
+            id_uo_gerencia,
+            flujo_sistema
 
           	) values(
 			'activo',
@@ -143,7 +144,8 @@ BEGIN
 
             v_parametros.flujo_mod_directa,
 
-            v_id_uo_gerencia
+            v_id_uo_gerencia,
+            v_parametros.flujo_sistema
 
 			)RETURNING id_matriz_modalidad into v_id_matriz_modalidad;
 
@@ -228,7 +230,8 @@ BEGIN
 
             flujo_mod_directa = v_parametros.flujo_mod_directa,
 
-            id_uo_gerencia = v_id_uo_gerencia
+            id_uo_gerencia = v_id_uo_gerencia,
+            flujo_sistema = v_parametros.flujo_sistema
 
 			where id_matriz_modalidad=v_parametros.id_matriz_modalidad;
 
