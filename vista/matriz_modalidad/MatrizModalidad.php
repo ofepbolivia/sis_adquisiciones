@@ -331,7 +331,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         fieldLabel: 'Flujo Sistema',
                         allowBlank: false,
                         anchor: '100%',
-                        gwidth: 50,
+                        gwidth: 170,
                         maxLength: 100,
                         typeAhead: true,
                         triggerAction: 'all',
@@ -893,6 +893,20 @@ header("content-type: text/javascript; charset=UTF-8");
                 //24-08-2021 (may) modificacion para flujo_sistema si adq mostrar modalidades y tesoreria no tiene las modalidades
                 this.Cmp.flujo_sistema.on('select', function (cmp, rec) {
                     if (this.Cmp.flujo_sistema.getValue() == 'TESORERIA') {
+
+                        this.Cmp.modalidad_directa.reset();
+                        this.Cmp.modalidad_menor.reset();
+                        this.Cmp.modalidad_anpe.reset();
+                        this.Cmp.modalidad_licitacion.reset();
+                        this.Cmp.modalidad_excepcion.reset();
+                        this.Cmp.modalidad_desastres.reset();
+
+                        this.Cmp.resp_proc_contratacion_menor.reset();
+                        this.Cmp.resp_proc_contratacion_anpe.reset();
+                        this.Cmp.resp_proc_contratacion_licitacion.reset();
+                        this.Cmp.resp_proc_contratacion_excepcion.reset();
+                        this.Cmp.resp_proc_contratacion_desastres.reset();
+
                         this.ocultarComponente(this.Cmp.modalidad_directa);
                         this.ocultarComponente(this.Cmp.modalidad_menor);
                         this.ocultarComponente(this.Cmp.modalidad_anpe);
@@ -906,18 +920,6 @@ header("content-type: text/javascript; charset=UTF-8");
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_excepcion);
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_desastres);
                     }else {
-                        this.Cmp.modalidad_directa.reset();
-                        this.Cmp.modalidad_menor.reset();
-                        this.Cmp.modalidad_anpe.reset();
-                        this.Cmp.modalidad_licitacion.reset();
-                        this.Cmp.modalidad_excepcion.reset();
-                        this.Cmp.modalidad_desastres.reset();
-
-                        this.Cmp.resp_proc_contratacion_menor.reset();
-                        this.Cmp.resp_proc_contratacion_anpe.reset();
-                        this.Cmp.resp_proc_contratacion_licitacion.reset();
-                        this.Cmp.resp_proc_contratacion_excepcion.reset();
-                        this.Cmp.resp_proc_contratacion_desastres.reset();
 
                         this.mostrarComponente(this.Cmp.modalidad_directa);
                         this.mostrarComponente(this.Cmp.modalidad_menor);
