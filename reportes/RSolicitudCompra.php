@@ -5,7 +5,7 @@ require_once dirname(__FILE__).'/../../pxp/pxpReport/Report.php';
     
     private $dataSource;    
     public function setDataSource(DataSource $dataSource) {
-        $this->dataSource = $dataSource;
+        $this->dataSource = $dataSource;        
     }
     
     public function getDataSource() {
@@ -76,10 +76,35 @@ Class RSolicitudCompra extends Report {
         $pdf->SetFontSize(8.5);
         $pdf->SetFont('', 'B');
         $pdf->setTextColor(0,0,0);
-
+        $fecha_apro = $this->getDataSource()->getParameter('fecha_apro');
         $fecha_reg = substr($this->getDataSource()->getParameter('fecha_reg'),0,4);
         $gestion = $this->getDataSource()->getParameter('desc_gestion');
-       
+        $cigla_tramite = array('GM', 'GO', 'GA', 'GC');
+
+        if(in_array(substr($this->getDataSource()->getParameter('num_tramite'),0, 2), $cigla_tramite)){
+            if ( $this->getDataSource()->getParameter('fecha_soli_material') >= '2019-09-01' ) {
+                $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli_material');
+            }else{
+                $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli');
+            }
+        }else{
+            if ( $this->getDataSource()->getParameter('fecha_soli_gant') >= '2019-09-01'){
+                $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli_gant');
+            }else{
+                $fecha_solicitud = $this->getDataSource()->getParameter('fecha_soli');
+            }
+        }
+
+        if(in_array(substr($this->getDataSource()->getParameter('num_tramite'),0, 2), $cigla_tramite)){
+            if( $fecha_solicitud  >= '2019-09-01' ){
+                if ($fecha_apro != null || $fecha_apro != ''){
+                    $fecha_apro = date_format(date_create($fecha_solicitud), 'd-m-Y');
+                }
+            }
+        }
+        if ($fecha_apro != null || $fecha_apro != ''){
+            $fecha_apro = date_format(date_create($fecha_apro), 'd-m-Y');
+        }       
         $pdf->Cell($width3, $height, 'Número de Solicitud', 0, 0, 'L', false, '', 0, false, 'T', 'C');
         $pdf->Cell($width3, $height, 'Fecha de Solicitud', 0, 0, 'C', false, '', 0, false, 'T', 'C');
         $pdf->Cell($width3, $height, 'Fecha de Aprobacion', 0, 0, 'C', false, '', 0, false, 'T', 'C');
@@ -91,8 +116,8 @@ Class RSolicitudCompra extends Report {
       
         $pdf->SetFont('', '');        
         $pdf->Cell($width3, $height, $this->getDataSource()->getParameter('numero'), 0, 0, 'C', false, '', 0, false, 'T', 'C');        
-        $pdf->Cell($width3, $height, $this->getDataSource()->getParameter('fecha_soli'), 0, 0, 'C', false, '', 0, false, 'T', 'C');
-        $pdf->Cell($width3, $height, $this->getDataSource()->getParameter('fecha_apro'), 0, 0, 'C', false, '', 0, false, 'T', 'C');        
+        $pdf->Cell($width3, $height, date_format(date_create($fecha_solicitud), 'd-m-Y'), 0, 0, 'C', false, '', 0, false, 'T', 'C');
+        $pdf->Cell($width3, $height, $fecha_apro, 0, 0, 'C', false, '', 0, false, 'T', 'C');        
         $pdf->Cell($width2+8, $height, $this->getDataSource()->getParameter('num_tramite'), 0, 0, 'C', false, '', 0, false, 'T', 'C');
 		$pdf->Cell($width2-3, $height, $this->getDataSource()->getParameter('tipo'), 0, 0, 'C', false, '', 0, false, 'T', 'C');
         $pdf->Cell($width2-3, $height, $this->getDataSource()->getParameter('desc_moneda'), 0, 0, 'C', false, '', 0, false, 'T', 'C');
@@ -181,7 +206,7 @@ Class RSolicitudCompra extends Report {
         $this->writeDetalles($this->getDataSource()->getParameter('detalleDataSource'), $pdf);
         
         //imprime el pie del reporte
-        
+        $pdf->setTextColor(0,0,0);
         $pdf->SetFontSize(8);
         $pdf->SetFont('', 'B');
         $pdf->Cell($width3, $height, 'Justificación', 0, 0, 'L', false, '', 1, false, 'T', 'C');
@@ -205,6 +230,241 @@ Class RSolicitudCompra extends Report {
         
         $pdf->Ln();
         $pdf->Ln();
+        $firma_solicitante = $this->getDataSource()->getParameter('desc_funcionario');
+        $cargo_solicitante = $this->getDataSource()->getParameter('cargo_desc_funcionario');
+        $firma_gerente = $this->getDataSource()->getParameter('desc_funcionario_apro');
+        $cargo_gerente = $this->getDataSource()->getParameter('cargo_desc_funcionario_apro');
+        $nro_tramite_qr = $this->getDataSource()->getParameter('num_tramite');
+        $prioridad = $this->getDataSource()->getParameter('prioridad');
+        $firma_rpc = $this->getDataSource()->getParameter('desc_funcionario_rpc');
+        $cargo_rpc = $this->getDataSource()->getParameter('cargo_desc_funcionario_rpc');      
+        $dep_prioridad = $this->getDataSource()->getParameter('dep_prioridad'); 
+        //$date = date('d/m/Y');        
+       //var_dump($cargo_gerente);exit;
+       
+        if ($fecha_solicitud >= '2019-09-01') {
+            
+            $pdf->GetY() >= 234 && $pdf->Ln(20);
+
+            if($this->getDataSource()->getParameter('estado')=='borrador'){
+                    $tbl = '<table>
+                    <tr>
+                    <td style="width: 15%"></td>
+                    <td style="width: 70%">
+                    <table cellspacing="0" cellpadding="1" border="1" style="font-family: Calibri; font-size: 9px;">
+                        <tr>
+                            <td style="font-family: Calibri; font-size: 9px;"><b> Solicitado por:</b> <br> </td>
+                            <td style="font-family: Calibri; font-size: 9px;"><b> Aprobado por:</b><br> </td>
+                        </tr>
+                        <tr>
+                            <td align="center" >
+                                <br><br>
+                                <img  style="width: 95px; height: 95px;" src="" alt="Logo"><br>
+
+                            </td>
+                            <td align="center" >
+                                <br><br>
+                                <img  style="width: 95px; height: 95px;" src="" alt="Logo"><br>
+
+                            </td>
+                        </tr>
+                    </table>
+                    </td>
+                    <td style="width:15%;"></td>
+                    </tr>
+                    </table>';
+            $pdf->Ln(5);
+            $pdf->writeHTML($tbl, true, false, false, false, '');                                                      
+            }
+            else if($prioridad == 383 and $dep_prioridad != 1){                
+                $estados_prioridad = array('vbpoa', 'suppresu', 'vbpresupuestos', 'vbrpc');                
+                if ($this->getDataSource()->getParameter('estado') != 'borrador' and in_array($this->getDataSource()->getParameter('estado'),$estados_prioridad)){                    
+                    $tbl = '<table>
+                            <tr>
+                            <td style="width: 15%"></td>
+                            <td style="width: 70%">
+                            <table cellspacing="0" cellpadding="1" border="1">
+                                <tr>
+                                    <td style="font-family: Calibri; font-size: 9px;"><b> Solicitado por:</b>' .$firma_solicitante. '</td>
+                                    <td style="font-family: Calibri; font-size: 9px;"><b> Aprobado por:</b><br> </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" >
+                                        <br><br>
+                                        <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_solicitante, $cargo_solicitante, $nro_tramite_qr) . '" alt="Logo">                                        
+                                    </td>
+                                    <td align="center" >
+                                        <br><br>
+                                        <img  style="width: 95px; height: 95px;" src="" alt="Logo"><br>
+
+                                    </td>                                
+                                </tr>
+                            </table>
+                            </td>
+                            <td style="width:15%;"></td>
+                            </tr>
+                            </table>
+        
+                        ';
+                    $pdf->Ln(5);
+                    $pdf->writeHTML($tbl, true, false, false, false, '');
+                }else{                    
+                    $tbl = '<table>
+                            <tr>
+                            <td style="width: 15%"></td>
+                            <td style="width: 70%">
+                            <table cellspacing="0" cellpadding="1" border="1" style="font-family: Calibri; font-size: 9px;">
+                                <tr>
+                                    <td style="font-family: Calibri; font-size: 9px;"><b> Solicitado por:</b>' .$firma_solicitante. '</td>
+                                    <td style="font-family: Calibri; font-size: 9px;"><b> Aprobado por:</b>' .$firma_gerente. '</td>
+                                </tr>
+                                <tr>
+                                    <td align="center" >
+                                        <br><br>
+                                        <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_solicitante, $cargo_solicitante, $nro_tramite_qr) . '" alt="Logo">    
+                                    </td>
+                                    <td align="center" >
+                                        <br><br>
+                                        <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_rpc, $cargo_rpc, $nro_tramite_qr) . '" alt="Logo">
+                                    </td>
+                                </tr>
+                            </table>
+                            </td>
+                            <td style="width:15%;"></td>
+                            </tr>
+                            </table>
+                        ';
+                    $pdf->Ln(5);
+                    $pdf->writeHTML($tbl, true, false, false, false, '');
+                }
+            }  
+                else if ($prioridad == 383 and $dep_prioridad == 1){
+                    $estados_priori = array('vbgerencia');                    
+                    if ($this->getDataSource()->getParameter('estado') != 'borrador' and in_array($this->getDataSource()->getParameter('estado'),$estados_priori)){                    
+                        $tbl = '<table>
+                        <tr>
+                        <td style="width: 15%"></td>
+                        <td style="width: 70%">
+                        <table cellspacing="0" cellpadding="1" border="1">
+                            <tr>
+                                <td style="font-family: Calibri; font-size: 9px;"><b> Solicitado por:</b>' .$firma_solicitante. '</td>
+                                <td style="font-family: Calibri; font-size: 9px;"><b> Aprobado por:</b><br> </td>
+                            </tr>
+                            <tr>
+                                <td align="center" >
+                                    <br><br>
+                                    <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_solicitante, $cargo_solicitante, $nro_tramite_qr) . '" alt="Logo">                                        
+                                </td>
+                                <td align="center" >
+                                    <br><br>
+                                    <img  style="width: 95px; height: 95px;" src="" alt="Logo"><br>
+    
+                                </td>                                
+                            </tr>
+                        </table>
+                        </td>
+                        <td style="width:15%;"></td>
+                        </tr>
+                        </table>
+    
+                    ';
+                    $pdf->Ln(5);
+                    $pdf->writeHTML($tbl, true, false, false, false, '');
+                }else{
+                    $tbl = '<table>
+                            <tr>
+                            <td style="width: 15%"></td>
+                            <td style="width: 70%">
+                            <table cellspacing="0" cellpadding="1" border="1" style="font-family: Calibri; font-size: 9px;">
+                                <tr>
+                                    <td style="font-family: Calibri; font-size: 9px;"><b> Solicitado por:</b>' .$firma_solicitante. '</td>
+                                    <td style="font-family: Calibri; font-size: 9px;"><b> Aprobado por:</b>' .$firma_gerente. '</td>
+                                </tr>
+                                <tr>
+                                    <td align="center" >
+                                        <br><br>
+                                        <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_solicitante, $cargo_solicitante, $nro_tramite_qr) . '" alt="Logo">    
+                                    </td>
+                                    <td align="center" >
+                                        <br><br>
+                                        <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_gerente, $cargo_gerente, $nro_tramite_qr) . '" alt="Logo">
+                                    </td>
+                                </tr>
+                            </table>
+                            </td>
+                            <td style="width:15%;"></td>
+                            </tr>
+                            </table>
+        
+                        ';                    
+            $pdf->Ln(5);
+            $pdf->writeHTML($tbl, true, false, false, false, '');
+                }                               
+  
+            }else if($prioridad != 383){
+                $estados_ant_gerencia = array('vbactif', 'vbuti', 'vbgerencia'); 
+                if( $this->getDataSource()->getParameter('estado') != 'borrador' and in_array($this->getDataSource()->getParameter('estado'),$estados_ant_gerencia)){
+                    $tbl = '<table>
+                            <tr>
+                            <td style="width: 15%"></td>
+                            <td style="width: 70%">
+                            <table cellspacing="0" cellpadding="1" border="1">
+                                <tr>
+                                    <td style="font-family: Calibri; font-size: 9px;"><b> Solicitado por:</b>' .$firma_solicitante. '</td>
+                                    <td style="font-family: Calibri; font-size: 9px;"><b> Aprobado por:</b><br> </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" >
+                                        <br><br>
+                                        <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_solicitante, $cargo_solicitante, $nro_tramite_qr) . '" alt="Logo">                                        
+                                    </td>
+                                    <td align="center" >
+                                        <br><br>
+                                        <img  style="width: 95px; height: 95px;" src="" alt="Logo"><br>
+
+                                    </td>                                
+                                </tr>
+                            </table>
+                            </td>
+                            <td style="width:15%;"></td>
+                            </tr>
+                            </table>
+        
+                        ';
+                    $pdf->Ln(5);
+                    $pdf->writeHTML($tbl, true, false, false, false, '');
+                }else{                                    
+                    $tbl = '<table>
+                            <tr>
+                            <td style="width: 15%"></td>
+                            <td style="width: 70%">
+                            <table cellspacing="0" cellpadding="1" border="1" style="font-family: Calibri; font-size: 9px;">
+                                <tr>
+                                    <td style="font-family: Calibri; font-size: 9px;"><b> Solicitado por:</b>' .$firma_solicitante. '</td>
+                                    <td style="font-family: Calibri; font-size: 9px;"><b> Aprobado por:</b>' .$firma_gerente. '</td>
+                                </tr>
+                                <tr>
+                                    <td align="center" >
+                                        <br><br>
+                                        <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_solicitante, $cargo_solicitante, $nro_tramite_qr) . '" alt="Logo">    
+                                    </td>
+                                    <td align="center" >
+                                        <br><br>
+                                        <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($firma_gerente, $cargo_gerente, $nro_tramite_qr) . '" alt="Logo">
+                                    </td>
+                                </tr>
+                            </table>
+                            </td>
+                            <td style="width:15%;"></td>
+                            </tr>
+                            </table>
+                        ';
+                    $pdf->Ln(5);
+                    $pdf->writeHTML($tbl, true, false, false, false, '');
+                }
+            }            
+        }
+        
 
         //presupuestos para la sisguiente gestion
         /*
@@ -226,8 +486,7 @@ Class RSolicitudCompra extends Report {
             
          $pdf->setTextColor(0,0,0);
          $pdf->setFont('','B');
-         $pdf->setFont('','');
-        
+         $pdf->setFont('','');         
         //cambia el color de lienas
         $pdf->SetDrawColor    (  0,-1,-1,-1,false,'');   
         
@@ -252,7 +511,7 @@ Class RSolicitudCompra extends Report {
             
                     
                 
-        $conf_par_tablewidths=array($width2,$width2*2,$width2*2+10,$width2+$width2);
+        $conf_par_tablewidths=array($width2,$width2*2,$width2*2+15,$width1+$width2);
         $conf_par_tablealigns=array('L','L','L','R');
         $conf_par_tablenumbers=array(0,0,0,0);
         $conf_tableborders=array();
@@ -305,7 +564,7 @@ Class RSolicitudCompra extends Report {
              $pdf-> MultiRow($RowArray,false,0); 
             
             //chequear disponibilidad
-            
+
             $estado_sin_presupuesto = array("borrador", "pendiente", "vbgerencia", "vbpresupuestos");
 	 	    if (in_array($this->getDataSource()->getParameter('estado'), $estado_sin_presupuesto)){
                 //verifica la disponibilidad de presupeusto para el  agrupador     
@@ -321,20 +580,27 @@ Class RSolicitudCompra extends Report {
             else{
                $disponibilida ='DISPONIBLE Y APROBADO';
                $pdf->tabletextcolor=$conf_par_tabletextcolor_verde;
-            } 
-            
+            }
+            if($this->getDataSource()->getParameter('sw_cat')=='si'){
+                $descCentroCosto =  'Cat. Prog.: '.$row['groupeddata'][0]['codigo_categoria']."\n".$row['grup_desc_centro_costo'];
+            }else{
+                $descCentroCosto =  $row['grup_desc_centro_costo'];
+            }
+
             // din chequeo disponibilidad
             $RowArray = array(
                         'codigo_partida'  => $row['groupeddata'][0]['codigo_partida'],
                         'nombre_partida'  => $row['groupeddata'][0]['nombre_partida'],
-                        'desc_centro_costo'    => $row['grup_desc_centro_costo']. "\nCP: ".$row['groupeddata'][0]['codigo_categoria'],
+                        //'desc_centro_costo'    => $row['groupeddata'][0]['desc_centro_costo'],
+                        'desc_centro_costo'    => $descCentroCosto,
+                        //'desc_centro_costo'    => $row['grup_desc_centro_costo']. "\nCP: ".$row['groupeddata'][0]['codigo_categoria'],
                         //'desc_centro_costo'    => $row['groupeddata'][0]['desc_centro_costo']. "\n".$row['groupeddata'][0]['codigo_categoria'],
                         //'desc_centro_costo'    => $row['groupeddata'][0]['codigo_categoria'],
                         // 'totalRef' => $row['totalRef'],
                         'ejecutado' =>  $disponibilida
                     );     
                          
-            $pdf-> MultiRow($RowArray,false,0); 
+            $pdf-> MultiRow($RowArray,false,0);
             
             /////////////////////////////////      
             //agregar detalle de la solicitud
@@ -345,8 +611,18 @@ Class RSolicitudCompra extends Report {
             $pdf->tablenumbers=$conf_det_tablenumbers;
             $pdf->tableborders=$conf_tableborders;
             $pdf->tabletextcolor=$conf_tabletextcolor;
+
+            $table = '<table border="1" style="font-size: 7pt; color: black;">
+                        <tr>
+                            <th width="25%" align="center"><b>Concepto Gasto</b></th>
+                            <th width="45%" align="center"><b>Descripción</b></th>
+                            <th width="8%" align="center"><b>Cantidad</b></th>
+                            <th width="12%" align="center"><b>Precio Unitario</b></th>
+                            <th width="10%" align="center"><b>Precio Total</b></th>
+                        </tr>
+                        ';
             
-            $RowArray = array(
+            /*$RowArray = array(
             			'desc_concepto_ingas'  => 'Concepto Gasto',
                         'descripcion'  => 'Descripcion' ,                        
                         'cantidad'    => 'Cantidad',
@@ -354,7 +630,7 @@ Class RSolicitudCompra extends Report {
                         'precio_total' => 'Precio Total'
                     );     
                          
-            $pdf-> MultiRow($RowArray,false,1); 
+            $pdf-> MultiRow($RowArray,false,1);*/
             
             //$pdf->Ln();
             $totalRef=0;
@@ -367,10 +643,19 @@ Class RSolicitudCompra extends Report {
             $pdf->tablealigns=$conf_det2_tablealigns;
             $pdf->tablenumbers=$conf_det2_tablenumbers;
             $pdf->tableborders=$conf_tableborders;
+
             
             foreach ($row['groupeddata'] as $solicitudDetalle) {
-                    
-                $RowArray = array(
+
+                $table.='<tr>
+                            <td style="text-align: justify;">'.$solicitudDetalle['desc_concepto_ingas'].'</td>
+                            <td>'.stripcslashes(nl2br(htmlentities($solicitudDetalle['descripcion']))).'</td>
+                            <td style="text-align: center;">'.$solicitudDetalle['cantidad'].'</td>
+                            <td style="text-align: right;">'.number_format($solicitudDetalle['precio_unitario'],2,',','.').'</td>
+                            <td style="text-align: right;">'.number_format($solicitudDetalle['precio_total'],2,',','.').'</td>
+                         </tr>
+                        ';
+                /*$RowArray = array(
                         'desc_concepto_ingas'  => $solicitudDetalle['desc_concepto_ingas'],
                         'descripcion'  =>  $solicitudDetalle['descripcion'],
                         'cantidad'    => $solicitudDetalle['cantidad'],
@@ -378,7 +663,7 @@ Class RSolicitudCompra extends Report {
                         'precio_total' => $solicitudDetalle['precio_total']
                     );     
                          
-                $pdf-> MultiRow($RowArray,false,1) ; 
+                $pdf-> MultiRow($RowArray,false,1) ;*/
                 
                 $totalRef=$totalRef+$solicitudDetalle['precio_total'];
                 $totalGa=$totalGa+$solicitudDetalle['precio_ga'];
@@ -391,15 +676,45 @@ Class RSolicitudCompra extends Report {
            $pdf->tablealigns=$conf_tp_tablealigns;
            $pdf->tablenumbers=$conf_tp_tablenumbers;
            $pdf->tableborders=$conf_tp_tableborders;
-            
-           $RowArray = array(
+
+
+            $saldo_comprometer = (double) $row['captura_presupuesto'];
+
+            if($saldo_comprometer < 0){
+                $dif = $saldo_comprometer +  $totalRef;
+            }else{
+                $dif = $saldo_comprometer -  $totalRef;
+            }
+
+            $table.='<tr>
+                            <td colspan="3" align="center"><b>TOTAL</b></td>
+                            
+                            <td style="font-weight: bold">('.$this->getDataSource()->getParameter('desc_moneda').')</td>
+                            <td style="text-align: right; font-weight: bold">'.number_format ($totalRef,2, ',', '.').'</td>
+                     </tr>';
+            if ($disponibilida == "NO DISPONIBLE") {
+                $table .= '                     
+                         <tr>
+                                <td colspan="3" align="center"></td>
+                                <td style="text-align: right; color:red;">Saldo Disponible</td>
+                                <td style="text-align: right; color:red;">' . number_format($saldo_comprometer, 2, ',', '.') . '</td>                                
+                         </tr>
+                         <tr>
+                                <td colspan="3" align="center"></td>
+                                <td style="text-align: right; color:red;">Diferencia</td>
+                                <td style="text-align: right; color:red;">' . number_format($dif, 2, ',', '.') . '</td>                                                                
+                         </tr>';
+            }
+
+           /*$RowArray = array(
                         'precio_unitario' => '('.$this->getDataSource()->getParameter('desc_moneda').')',
                         'precio_total' => $totalRef
                     );     
                          
-           $pdf-> MultiRow($RowArray,false,1); 
-            
-           
+           $pdf-> MultiRow($RowArray,false,1);*/
+
+            $table.='</table>';
+            $pdf->writeHTML ($table);
            $total_solicitud = $total_solicitud + $totalRef;
            $count_partidas = $count_partidas + 1;
            $pdf->Ln();
@@ -425,6 +740,23 @@ Class RSolicitudCompra extends Report {
                 
         }
         
-    }      
+    }
+    function generarImagen($nom, $car, $ntra){
+        $cadena_qr = 'Nombre: '.$nom. "\n". "Cargo: ".$car. "\n"."N° Tramite: ". $ntra;
+        $barcodeobj = new TCPDF2DBarcode($cadena_qr, 'QRCODE,M');
+        $png = $barcodeobj->getBarcodePngData($w = 8, $h = 8, $color = array(0, 0, 0));
+        $im = imagecreatefromstring($png);
+        if ($im !== false) {
+            header('Content-Type: image/png');
+            imagepng($im, dirname(__FILE__) . "/../../reportes_generados/" . $nom . ".png");
+            imagedestroy($im);
+
+        } else {
+            echo 'A ocurrido un Error.';
+        }
+        $url_archivo = dirname(__FILE__) . "/../../reportes_generados/" . $nom . ".png";
+
+        return $url_archivo;
+    }          
 }
 ?>

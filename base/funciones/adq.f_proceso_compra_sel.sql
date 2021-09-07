@@ -12,13 +12,13 @@ $body$
  DESCRIPCION:   Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla 'adq.tproceso_compra'
  AUTOR: 		 (admin)
  FECHA:	        19-03-2013 12:55:30
- COMENTARIOS:	
+ COMENTARIOS:
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
 
- DESCRIPCION:	
- AUTOR:			
- FECHA:		
+ DESCRIPCION:
+ AUTOR:
+ FECHA:
 ***************************************************************************/
 
 DECLARE
@@ -27,11 +27,20 @@ DECLARE
 	v_parametros  		record;
 	v_nombre_funcion   	text;
 	v_resp				varchar;
-    
+
     v_filadd 			varchar;
-    
-    va_id_depto integer[];
+
+    va_id_depto 		integer[];
     v_filtro			varchar;
+
+    v_num_iniciados		varchar;
+    v_num_adjudicados	varchar;
+    v_num_ejecutados	varchar;
+    v_num_concluidos	varchar;
+
+    v_forma_pago  		varchar;
+    v_nro_cuota			varchar;
+
 
 BEGIN
 
@@ -61,7 +70,7 @@ BEGIN
                where depu.id_usuario =  p_id_usuario and depu.cargo = 'responsable';
 
 
-               v_filadd='( (id_depto  in ('|| COALESCE(array_to_string(va_id_depto,','),'0')||'))   or   id_usuario_auxiliar = '||p_id_usuario::varchar ||' ) and ';
+               v_filadd='( (pc.id_depto  in ('|| COALESCE(array_to_string(va_id_depto,','),'0')||'))   or   id_usuario_auxiliar = '||p_id_usuario::varchar ||' ) and ';
 
           END IF;
 
@@ -69,39 +78,43 @@ BEGIN
     		--Sentencia de la consulta
 			v_consulta:='select
                               id_proceso_compra,
-                              id_depto,
+                              pc.id_depto,
                               num_convocatoria,
-                              id_solicitud,
-                              id_estado_wf,
+                              pc.id_solicitud,
+                              pc.id_estado_wf,
                               fecha_ini_proc,
                               obs_proceso,
-                              id_proceso_wf,
-                              num_tramite,
+                              pc.id_proceso_wf,
+                              pc.num_tramite,
                               codigo_proceso,
-                              estado_reg,
-                              estado,
+                              pc.estado_reg,
+                              pc.estado,
                               num_cotizacion,
-                              id_usuario_reg,
-                              fecha_reg,
-                              fecha_mod,
-                              id_usuario_mod,
+                              pc.id_usuario_reg,
+                              pc.fecha_reg,
+                              pc.fecha_mod,
+                              pc.id_usuario_mod,
                               usr_reg,
                               usr_mod,
                               desc_depto,
                               desc_funcionario,
                               desc_solicitud,
                               desc_moneda,
-                              instruc_rpc,
-                              id_categoria_compra,
+                              pc.instruc_rpc,
+                              pc.id_categoria_compra,
                               usr_aux,
-                              id_moneda,
-                              id_funcionario,
+                              pc.id_moneda,
+                              pc.id_funcionario,
                               id_usuario_auxiliar,
                               objeto,
                               estados_cotizacion,
                               numeros_oc,
-                              proveedores_cot
-                   from adq.vproceso_compra
+                              proveedores_cot,
+                              tca.codigo,
+                              tso.id_gestion
+                   from adq.vproceso_compra pc
+                   left join adq.tsolicitud tso on tso.id_solicitud = pc.id_solicitud
+                   left join param.tcatalogo tca on tca.id_catalogo = tso.prioridad
                    where  '||v_filadd||'  ';
 
 			--Definicion de la respuesta
@@ -270,15 +283,17 @@ BEGIN
              from param.tdepto_usuario depu
              where depu.id_usuario =  p_id_usuario and depu.cargo = 'responsable';
 
-             v_filadd='( (id_depto  in ('|| COALESCE(array_to_string(va_id_depto,','),'0')||'))   or   id_usuario_auxiliar = '||p_id_usuario::varchar ||' ) and ';
+             v_filadd='( (pc.id_depto  in ('|| COALESCE(array_to_string(va_id_depto,','),'0')||'))   or   id_usuario_auxiliar = '||p_id_usuario::varchar ||' ) and ';
 
 
           END IF;
 
 			--Sentencia de la consulta de conteo de registros
-			v_consulta:='select count(id_proceso_compra)
+			v_consulta:='select count(pc.id_proceso_compra)
 
-                        from adq.vproceso_compra
+                        from adq.vproceso_compra pc
+                   		left join adq.tsolicitud tso on tso.id_solicitud = pc.id_solicitud
+                   		left join param.tcatalogo tca on tca.id_catalogo = tso.prioridad
                         where  '||v_filadd||'  ';
 
 			--Definicion de la respuesta
@@ -546,7 +561,8 @@ BEGIN
             	v_filtro = ' and (pro.estados_cotizacion like ''%pago_habilitado%'' or pro.estados_cotizacion like ''%finalizada%'')';
             END IF;
 
-        	v_consulta = 'select sol.num_tramite, sol.justificacion, sol.desc_proveedor as proveedor_recomendado,
+        	v_consulta = 'select sol.num_tramite, sol.justificacion, sol.desc_funcionario1 as solicitante,
+       		  usu.desc_persona as tecnico_adquisiciones, sol.desc_proveedor as proveedor_recomendado,
             pro.proveedores_cot as proveedor_adjudicado,  pro.fecha_ini_proc, sol.precio_total_mb as precio_bs,
             sol.precio_total as precio_moneda_solicitada, sol.codigo as moneda_solicitada,
             case when pro.requiere_contrato = ''si'' then ''Contrato''
@@ -556,6 +572,7 @@ BEGIN
                  end as contrato_orden
             from adq.vsolicitud_compra sol
             left join adq.vproceso_compra pro on pro.id_solicitud=sol.id_solicitud and pro.estados_cotizacion!=''anulado''
+            inner join segu.vusuario usu on usu.cuenta=pro.usr_aux
             where pro.fecha_ini_proc BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin ||'''
             and sol.precio_total_mb > ' || v_parametros.monto_mayor ||'
             and pro.estado != ''anulado'' and pro.id_depto='||v_parametros.id_depto||v_filtro||'
@@ -575,35 +592,56 @@ BEGIN
 
     	begin
 
-            v_consulta = 'select ''Iniciados'' as estado, cc.nombre, count(pro.id_proceso_compra) as total
-						  from adq.vsolicitud_compra sol
-			left join adq.vproceso_compra pro on pro.id_solicitud=sol.id_solicitud and pro.estados_cotizacion!=''anulado''
-			inner join adq.tcategoria_compra cc on cc.id_categoria_compra=pro.id_categoria_compra
-			where pro.fecha_ini_proc BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin||'''
+            v_consulta = 'select ''Iniciados'' as estado,
+            					cc.nombre,
+                                count(pro.id_proceso_compra) as total
+
+                          from adq.vsolicitud_compra sol
+                          left join adq.vproceso_compra pro on pro.id_solicitud=sol.id_solicitud and pro.estados_cotizacion!=''anulado''
+                          inner join adq.tcategoria_compra cc on cc.id_categoria_compra=pro.id_categoria_compra
+
+            where pro.fecha_ini_proc BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin||'''
 			and sol.precio_total_mb > ' || v_parametros.monto_mayor || '
 			and pro.estado != ''anulado'' and pro.id_depto=' ||v_parametros.id_depto||'
-			and (pro.estados_cotizacion not like ''%adjudicado%'' and pro.estados_cotizacion not like ''%contrato_pendiente%''
-			and pro.estados_cotizacion not like ''%contrato_elaborado%'' and pro.estados_cotizacion not like ''%pago_habilitado%''
-			and pro.estados_cotizacion not like ''%finalizada%'' or pro.estados_cotizacion is null)
-			group by cc.nombre UNION ALL
-			select ''Adjudicados'' as estado, cc.nombre, count(pro.id_proceso_compra) as total
-			from adq.vsolicitud_compra sol
+			and (pro.estados_cotizacion not like ''%adjudicado%''
+            and pro.estados_cotizacion not like ''%contrato_pendiente%''
+			and pro.estados_cotizacion not like ''%contrato_elaborado%''
+            and pro.estados_cotizacion not like ''%pago_habilitado%''
+			and pro.estados_cotizacion not like ''%finalizada%''
+            or pro.estados_cotizacion is null)
+			group by cc.nombre
+
+            UNION ALL
+			select ''Adjudicados'' as estado,
+            cc.nombre,
+            count(pro.id_proceso_compra) as total
+
+            from adq.vsolicitud_compra sol
 			left join adq.vproceso_compra pro on pro.id_solicitud=sol.id_solicitud and pro.estados_cotizacion!=''anulado''
 			inner join adq.tcategoria_compra cc on cc.id_categoria_compra=pro.id_categoria_compra
-			where pro.fecha_ini_proc BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin||'''
+
+            where pro.fecha_ini_proc BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin||'''
 			and sol.precio_total_mb > '||v_parametros.monto_mayor||'
-            and pro.estado != ''anulado'' and pro.id_depto='||v_parametros.id_depto||'
-			and (pro.estados_cotizacion like ''%adjudicado%'' or pro.estados_cotizacion like ''%contrato_pendiente%''
+            and pro.estado != ''anulado''
+            and pro.id_depto='||v_parametros.id_depto||'
+			and (pro.estados_cotizacion like ''%adjudicado%''
+            or pro.estados_cotizacion like ''%contrato_pendiente%''
 			or pro.estados_cotizacion like ''%contrato_elaborado%'')
-			group by cc.nombre UNION ALL
-			select ''Ejecutados'' as estado, cc.nombre, count(pro.id_proceso_compra) as total
-			from adq.vsolicitud_compra sol
+			group by cc.nombre
+
+            UNION ALL
+			select ''Ejecutados'' as estado,
+            cc.nombre,
+            count(pro.id_proceso_compra) as total
+
+            from adq.vsolicitud_compra sol
 			left join adq.vproceso_compra pro on pro.id_solicitud=sol.id_solicitud and pro.estados_cotizacion!=''anulado''
 			inner join adq.tcategoria_compra cc on cc.id_categoria_compra=pro.id_categoria_compra
 			where pro.fecha_ini_proc BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin||'''
 			and sol.precio_total_mb > '||v_parametros.monto_mayor||'
 			and pro.estado != ''anulado'' and pro.id_depto=' ||v_parametros.id_depto||'
-			and (pro.estados_cotizacion like ''%pago_habilitado%'' or pro.estados_cotizacion like ''%finalizada%'')
+			and (pro.estados_cotizacion like ''%pago_habilitado%''
+            or pro.estados_cotizacion like ''%finalizada%'')
 			group by cc.nombre';
 
         	return v_consulta;
@@ -636,14 +674,337 @@ BEGIN
 			   return v_consulta;
       END;
 
+         /*********************************
+ 	#TRANSACCION:  'ADQ_REPROCONTRA_SEL'
+ 	#DESCRIPCION:	Obtener procesos iniciados, adjudicados y ejecutados
+ 	#AUTOR:		admin
+ 	#FECHA:		03-08-2018
+	***********************************/
+
+	elsif(p_transaccion='ADQ_REPROCONTRA_SEL')then
+
+    	begin
+
+			v_consulta = 'select
+                                 sol.nombre_depto,
+                                 sol.num_tramite,
+            					 sol.justificacion,
+                                 sol.desc_funcionario1 as solicitante,
+       		  					 pro.proveedores_cot as proveedor_adjudicado,
+                                 sol.fecha_soli,
+                                 (to_char(sol.precio_total_mb,''999G999G999G999D99''))::varchar as precio_bs,
+                                 (to_char(sol.precio_total,''999G999G999G999D99''))::varchar as precio_moneda_solicitada,
+                                 sol.codigo as moneda_solicitada,
+           						 	case when pro.requiere_contrato = ''si'' then ''Contrato''
+                				 	else case when sol.tipo=''bien'' then ''Orden de Bien''
+                      				when sol.tipo=''servicio'' then ''Orden de Servicio''
+                      				end
+                 					end as contrato_orden,
+                                 sol.estado::text as estado_solicitud,
+                                 pro.estados_cotizacion::text as estado_compra
+
+
+                        from adq.vsolicitud_compra sol
+                        inner join adq.vproceso_compra pro on pro.id_solicitud=sol.id_solicitud
+                        inner join segu.vusuario usu on usu.cuenta=pro.usr_aux
+
+                        where sol.fecha_soli BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin ||'''
+                        and sol.precio_total_mb > ' || v_parametros.monto_mayor||'
+
+
+
+        				order by sol.fecha_soli, pro.num_tramite';
+   raise notice '%',v_consulta;
+        	return v_consulta;
+
+        end;
+
+      /*********************************
+ 	#TRANSACCION:  'ADQ_REPROCONRES_SEL'
+ 	#DESCRIPCION:	Obtener procesos iniciados, adjudicados y ejecutados
+ 	#AUTOR:		admin
+ 	#FECHA:		14-08-2018
+	***********************************/
+
+	elsif(p_transaccion='ADQ_REPROCONRES_SEL')then
+
+    	begin
+
+        	IF v_parametros.tipo='iniciados' THEN
+	        	v_filtro = '';
+            ELSIF v_parametros.tipo='adjudicados' THEN
+            	v_filtro = '';
+
+            ELSIF v_parametros.tipo='ejecutados' THEN
+            	v_filtro = ' ';
+            ELSIF v_parametros.tipo='concluidos' THEN
+            	v_filtro = ' ';
+            END IF;
+
+        	v_consulta = 'select sol.num_tramite,
+            					 (to_char(sol.precio_total,''999G999G999G999D99'')||'' ''||sol.codigo)::varchar as importe,
+                                  pro.estados_cotizacion::varchar,
+                                 sol.estado
+
+
+                  from adq.vsolicitud_compra sol
+                  left join adq.vproceso_compra pro on pro.id_solicitud=sol.id_solicitud and pro.estados_cotizacion not like ''%anulado%''
+                  left join segu.vusuario usu on usu.cuenta=pro.usr_aux
+
+                  where sol.fecha_soli BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin ||'''
+                  		and sol.precio_total_mb > ' || v_parametros.monto_mayor ||v_filtro||'
+                  		and sol.estado != ''anulado''
+
+
+
+
+                  order by pro.num_tramite';
+        	return v_consulta;
+
+--raise notice '%', v_consulta;
+     end;
+
+     /*********************************
+ 	#TRANSACCION:  'ADQ_REPRODET_SEL'
+ 	#DESCRIPCION:	Obtener procesos iniciados, adjudicados, con contrato, orden de compra y ejecutados
+ 	#AUTOR:		admin
+ 	#FECHA:		07-09-2018
+	***********************************/
+
+	elsif(p_transaccion='ADQ_REPRODET_SEL')then
+
+    	begin
+        	IF v_parametros.tipo='iniciados' THEN
+	        	v_filtro = '';
+
+           ELSIF v_parametros.tipo='adjudicados' THEN
+            	v_filtro = ' and ( cot.estado like ''%adjudicado%'' or
+                				  cot.estado like ''%contrato_pendiente%'' or
+                			      cot.estado like ''%contrato_elaborado%'' or
+                                  cot.estado like ''%pago_habilitado%''
+                                  or cot.estado like ''%finalizada%''
+                                )';
+
+         ELSIF v_parametros.tipo='contrato' THEN
+            	v_filtro = ' and (cot.requiere_contrato = ''si'' and
+                				  cot.estado != ''borrador'' and
+                                  cot.estado != ''cotizado''
+                			     )';
+
+         ELSIF v_parametros.tipo='compraservicio' THEN
+            	v_filtro = ' and (cot.requiere_contrato = ''no'' and
+                				  cot.estado != ''borrador'' and
+                                  cot.estado != ''cotizado''
+                                  )';
+
+         ELSIF v_parametros.tipo='ejecutados' THEN
+            	v_filtro = ' and (cot.estado like ''%pago_habilitado%''
+                				 or cot.estado like ''%finalizada%'')';
+
+     	 ELSIF v_parametros.tipo='concluidos' THEN
+            	v_filtro = ' and (cot.estado like ''%finalizada%'')';
+            END IF;
+
+
+v_consulta = '                      select  sol.num_tramite,
+                                    (((COALESCE(per.nombre, ''''::character varying)::text || '' ''::text) || COALESCE(per.apellido_paterno, ''''::character varying)::text) || '' ''::text) || COALESCE(per.apellido_materno, ''''::character varying)::text AS solicitante,
+                                    p.desc_proveedor::text as proveedor_adjudicado,
+                                    pc.fecha_ini_proc::date,
+                                    sol.fecha_soli::date,
+                                    cot.fecha_adju::date,
+                                    (COALESCE(sum(sd.precio_total), 0::numeric))::varchar AS precio_bs,
+                                    (COALESCE(sum(sd.precio_unitario * sd.cantidad::numeric), 0::numeric))::varchar AS precio_moneda_solicitada,
+                                    cot.requiere_contrato::text,
+                                    sol.tipo::text,
+                                    cot.nro_contrato::varchar,
+                                    pc.objeto::varchar,
+
+                                    (select list(pp.nro_cuota||''-''||pp.forma_pago)
+                                     from tes.tplan_pago pp
+                                     join tes.tobligacion_pago opa on opa.id_obligacion_pago = pp.id_obligacion_pago
+                                     where
+                                     pp.fecha_conformidad is not null
+                                     and opa.num_tramite = sol.num_tramite)::VARCHAR as forma_pago,
+                                   COALESCE(cot.fecha_entrega::varchar, cot.tiempo_entrega)::varchar as tiempo_entrega,
+                                   (COALESCE(sum(cd.cantidad_adju * cd.precio_unitario_mb), 0::numeric))::varchar AS monto_total_adjudicado_mb,
+                                   (COALESCE(sum(cd.cantidad_adju * cd.precio_unitario), 0::numeric))::varchar AS monto_total_adjudicado,
+                                   COALESCE(cot.numero_oc,''S/N'')::varchar as numero_oc,
+                                   p.desc_proveedor::varchar,
+                                   cot.fecha_entrega::date,
+                                   dep.codigo::varchar as desc_depto,
+                                   cot.estado::varchar as estados_cotizacion,
+                                   (uo.codigo||''-''||uo.nombre_unidad)::varchar as nombre_unidad,
+                                   con.numero::varchar,
+                                   COALESCE(con.fecha_elaboracion,cot.fecha_adju)::date as fecha_elaboracion,
+                                   COALESCE(con.fecha_inicio::varchar,cot.fecha_adju::varchar)::varchar as fecha_inicio,
+                                   COALESCE(con.fecha_fin::varchar,(COALESCE(cot.fecha_entrega::varchar, cot.tiempo_entrega)))::varchar as fecha_fin,
+                                   op.nro_cuota_vigente::numeric,
+                                   ((select sum(pp.monto)
+                                    from tes.tplan_pago pp
+                                    join tes.tobligacion_pago opa on opa.id_obligacion_pago = pp.id_obligacion_pago
+                                    where
+                                    pp.fecha_conformidad is not null
+                                    and pp.estado != ''anulado''
+                                    and opa.num_tramite = sol.num_tramite
+                                     ))::VARCHAR as total_pagado,
+                                    mon.codigo::varchar
+
+               from adq.tsolicitud sol
+            left join adq.tproceso_compra pc on pc.id_solicitud = sol.id_solicitud
+            left join adq.tcotizacion cot on cot.id_proceso_compra = pc.id_proceso_compra and cot.estado != ''anulado''
+            LEFT JOIN adq.tcotizacion_det cd ON cd.id_cotizacion = cot.id_cotizacion
+            LEFT JOIN adq.tsolicitud_det sd ON sd.id_solicitud_det = cd.id_solicitud_det
+            left join tes.tobligacion_pago op on op.id_obligacion_pago = cot.id_obligacion_pago
+            JOIN param.tmoneda mon ON mon.id_moneda = sol.id_moneda
+            join orga.tfuncionario func on func.id_funcionario = sol.id_funcionario and func.estado_reg::text = ''activo''::text
+            join segu.tpersona per on per.id_persona =func.id_persona
+            LEFT JOIN param.vproveedor p ON p.id_proveedor = cot.id_proveedor
+            JOIN param.tdepto dep ON dep.id_depto = pc.id_depto
+            JOIN orga.tuo uo ON uo.id_uo = sol.id_uo
+            join adq.vcotizacion vcot on vcot.id_solicitud = sol.id_solicitud and vcot.monto_total_adjudicado_mb != ''0''
+            left join leg.tcontrato con on con.id_cotizacion = cot.id_cotizacion and con.estado != ''anulado''
+
+            where sol.fecha_soli BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin ||'''
+            and vcot.precio_total_mb > ' || v_parametros.monto_mayor ||v_filtro||'
+            and sol.estado != ''anulado''
+
+
+
+          group by               sol.num_tramite,
+            					 per.nombre,
+                                 per.apellido_paterno,
+                                 per.apellido_materno,
+                                 p.desc_proveedor,
+                                 pc.fecha_ini_proc,
+                                 sol.fecha_soli,
+                                 cot.fecha_adju,
+                                 cot.requiere_contrato,
+                                 sol.tipo,
+                                 cot.nro_contrato,
+                                 pc.objeto,
+                                 cot.fecha_entrega,
+                                 cot.tiempo_entrega,
+                                 cot.numero_oc,
+                                 cot.fecha_entrega,
+                                 dep.codigo,
+                                 cot.estado,
+                                 uo.codigo,
+                                 uo.nombre_unidad,
+                                 con.numero,
+                                 con.fecha_elaboracion,
+                                 con.fecha_inicio,
+                                 con.fecha_fin,
+                                 mon.codigo,
+       		  			         op.nro_cuota_vigente
+
+
+              order by sol.num_tramite';
+
+
+        	return v_consulta;
+
+        end;
+
+    /*********************************
+ 	#TRANSACCION:  'ADQ_REPROADJU_SEL'
+ 	#DESCRIPCION:	Obtener procesos adjudicados
+ 	#AUTOR:		Maylee Perez Pastor
+ 	#FECHA:		18-05-2019
+	***********************************/
+
+	elsif(p_transaccion='ADQ_REPROADJU_SEL')then
+
+    	begin
+
+			v_consulta = ' 	select  sol.cuce::varchar,
+            						sol.fecha_conclusion,
+                            		sol.num_tramite::varchar,
+                            		sol.tipo_concepto::varchar,
+                                    ''Contratación Directa''::varchar as modalidad,
+                                    cot.requiere_contrato::varchar,
+                                    sol.nro_po::varchar,
+                                    con.numero::varchar as numero_contrato,
+                                    COALESCE(con.fecha_elaboracion,cot.fecha_adju)::date as fecha_elaboracion,
+                                    con.objeto::varchar as objeto_contrato,
+                                    p.desc_proveedor::varchar as proveedor_adjudicado,
+                                    (COALESCE(sum(cd.cantidad_adju * cd.precio_unitario_mb), 0::numeric))::varchar AS monto_total_adjudicado_mb,
+                                    sol.justificacion::varchar
+
+
+               from adq.tsolicitud sol
+            left join adq.tproceso_compra pc on pc.id_solicitud = sol.id_solicitud
+            left join adq.tcotizacion cot on cot.id_proceso_compra = pc.id_proceso_compra and cot.estado != ''anulado''
+            LEFT JOIN adq.tcotizacion_det cd ON cd.id_cotizacion = cot.id_cotizacion
+            LEFT JOIN adq.tsolicitud_det sd ON sd.id_solicitud_det = cd.id_solicitud_det
+            left join tes.tobligacion_pago op on op.id_obligacion_pago = cot.id_obligacion_pago
+            JOIN param.tmoneda mon ON mon.id_moneda = sol.id_moneda
+            join orga.tfuncionario func on func.id_funcionario = sol.id_funcionario and func.estado_reg::text = ''activo''::text
+            join segu.tpersona per on per.id_persona =func.id_persona
+            LEFT JOIN param.vproveedor p ON p.id_proveedor = cot.id_proveedor
+            JOIN param.tdepto dep ON dep.id_depto = pc.id_depto
+            JOIN orga.tuo uo ON uo.id_uo = sol.id_uo
+            join adq.vcotizacion vcot on vcot.id_solicitud = sol.id_solicitud and vcot.monto_total_adjudicado_mb != ''0''
+            left join leg.tcontrato con on con.id_cotizacion = cot.id_cotizacion and con.estado != ''anulado''
+
+            where sol.fecha_soli BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin ||'''
+            and vcot.precio_total_mb > ' || v_parametros.monto_mayor ||'
+            and (cot.estado like ''%adjudicado%'' or
+                				  cot.estado like ''%contrato_pendiente%'' or
+                			      cot.estado like ''%contrato_elaborado%'' or
+                                  cot.estado like ''%pago_habilitado%''    or
+                                  cot.estado like ''%finalizada%'')
+            and sol.estado != ''anulado''
+
+            group by               sol.cuce,
+            					   sol.fecha_conclusion,
+            					   sol.num_tramite,
+                                   per.nombre,
+                                   per.apellido_paterno,
+                                   per.apellido_materno,
+                                   p.desc_proveedor,
+                                   pc.fecha_ini_proc,
+                                   sol.fecha_soli,
+                                   cot.fecha_adju,
+                                   cot.requiere_contrato,
+                                   sol.tipo_concepto,
+                                   cot.nro_contrato,
+                                   pc.objeto,
+                                   cot.fecha_entrega,
+                                   cot.tiempo_entrega,
+                                   sol.nro_po,
+                                   cot.fecha_entrega,
+                                   dep.codigo,
+                                   cot.estado,
+                                   uo.codigo,
+                                   uo.nombre_unidad,
+                                   con.numero,
+                                   con.objeto,
+                                   con.numero,
+                                   con.fecha_elaboracion,
+                                   con.fecha_inicio,
+                                   con.fecha_fin,
+                                   mon.codigo,
+                                   op.nro_cuota_vigente,
+                                   sol.justificacion
+
+
+        	order by sol.num_tramite';
+
+   			raise notice '%',v_consulta;
+        	return v_consulta;
+
+        end;
+
+
+
 	else
-					     
+
 		raise exception 'Transaccion inexistente';
-					         
+
 	end if;
-					
+
 EXCEPTION
-					
+
 	WHEN OTHERS THEN
 			v_resp='';
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);

@@ -21,7 +21,9 @@ class ACTCotizacionDet extends ACTbase{
 			
 			$this->res=$this->objFunc->listarCotizacionDet($this->objParam);
 		}
-		$this->res->imprimirRespuesta($this->res->generarJson());
+
+
+        $this->res->imprimirRespuesta($this->res->generarJson());
 	}
 				
 	function insertarCotizacionDet(){
@@ -32,6 +34,8 @@ class ACTCotizacionDet extends ACTbase{
 			$this->res=$this->objFunc->modificarCotizacionDet($this->objParam);
 		}
 		$this->res->imprimirRespuesta($this->res->generarJson());
+
+
 	}
 						
 	function eliminarCotizacionDet(){

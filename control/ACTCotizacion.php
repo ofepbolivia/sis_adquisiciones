@@ -27,6 +27,10 @@ class ACTCotizacion extends ACTbase{
 		if($this->objParam->getParametro('filtro_campo')!=''){
             $this->objParam->addFiltro($this->objParam->getParametro('filtro_campo')." = ".$this->objParam->getParametro('filtro_valor'));  
         }
+
+        if ($this->objParam->getParametro('id_gestion') != '') {
+            $this->objParam->addFiltro("sol.id_gestion = ". $this->objParam->getParametro('id_gestion'));
+        }
 		
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
 			$this->objReporte = new Reporte($this->objParam,$this);
@@ -51,7 +55,9 @@ class ACTCotizacion extends ACTbase{
         if($this->objParam->getParametro('filtro_campo')!=''){
             $this->objParam->addFiltro($this->objParam->getParametro('filtro_campo')." = ".$this->objParam->getParametro('filtro_valor'));  
         }
-        
+        if ($this->objParam->getParametro('id_gestion') != '') {
+            $this->objParam->addFiltro("sol.id_gestion = ". $this->objParam->getParametro('id_gestion'));
+        }
         
         if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
             $this->objReporte = new Reporte($this->objParam,$this);
@@ -295,7 +301,6 @@ class ACTCotizacion extends ACTbase{
                 $this->objParam->addParametroConsulta('puntero',0);
                 $this->objFunc = $this->create('MODCotizacion');
                 $resultOrdenCompra = $this->objFunc->reporteOrdenCompra();
-				
 				if($resultOrdenCompra->getTipo()=='EXITO'){
 				 	
 					    $datosOrdenCompra = $resultOrdenCompra->getDatos();
@@ -349,13 +354,13 @@ class ACTCotizacion extends ACTbase{
 		
 		                $modCotizacionDet = $this->create('MODCotizacionDet');
 		                $resultCotizacionDet = $modCotizacionDet->listarCotizacionDetReporte();
-						
+
 						if($resultCotizacionDet->getTipo() == 'EXITO'){
 					                //$solicitudDetAgrupado = $this->groupArray($resultSolicitudDet->getDatos(), 'codigo_partida','desc_centro_costo');
 					                $cotizacionDetDataSource = new DataSource();
 					                $cotizacionDetDataSource->setDataSet($resultCotizacionDet->getDatos());
 					                $dataSource->putParameter('detalleDataSource', $cotizacionDetDataSource);
-					
+
 					                //build the report
 					                $reporte = new ROrdenCompra();
 					                $reporte->setDataSource($dataSource);
@@ -579,6 +584,12 @@ class ACTCotizacion extends ACTbase{
     function cambioFomrulario500(){
         $this->objFunc=$this->create('MODCotizacion');  
         $this->res=$this->objFunc->cambioFomrulario500($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
+    function insertarCuce(){
+        $this->objFunc=$this->create('MODCotizacion');
+        $this->res=$this->objFunc->insertarCuce($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
     

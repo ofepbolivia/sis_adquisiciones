@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION adq.f_tproveedor_sel (
   p_administrador integer,
   p_id_usuario integer,
@@ -14,13 +12,13 @@ $body$
  DESCRIPCION:   Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla 'param.tproveedor'
  AUTOR: 		Gonzalo Sarmiento Sejas
  FECHA:	        01-03-2013 10:44:58
- COMENTARIOS:	
+ COMENTARIOS:
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
 
- DESCRIPCION:	
- AUTOR:			
- FECHA:		
+ DESCRIPCION:
+ AUTOR:
+ FECHA:
 ***************************************************************************/
 
 DECLARE
@@ -30,13 +28,13 @@ DECLARE
 	v_nombre_funcion   	text;
 	v_resp				varchar;
     v_where 			varchar;
-			    
+
 BEGIN
 
 	v_nombre_funcion = 'adq.f_tproveedor_sel';
     v_parametros = pxp.f_get_record(p_tabla);
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'ADQ_PROVEE_SEL'
  	#DESCRIPCION:	Consulta de datos
  	#AUTOR:		Gonzalo Sarmiento Sejas
@@ -82,25 +80,46 @@ BEGIN
                         else
                         	person.direccion
                         end):: varchar as desc_dir_proveedor,
-						provee.contacto
+						provee.contacto,
+                        provee.tipo as tipo_prov,
+                        person.correo,
+                        (instit.email1||''  ''||instit.email2)::varchar as email_instit,
+                        instit.pag_web,
+                        (person.celular1||''  ''||person.celular2)::varchar as cel_persona,
+                        (person.telefono1||''  ''||person.telefono2)::varchar as telf_persona,
+                        (instit.celular1||''  ''||instit.celular2)::varchar as cel_instit,
+                        (instit.telefono1||''  ''||instit.telefono2)::varchar as telf_instit,
+                        provee.id_beneficiario,
+
+                        provee.condicion,
+                		provee.actividad,
+                		provee.num_proveedor,
+
+                        person.nombre as nombre_persona,
+                        person.ap_paterno as apellido_paterno,
+                        person.ap_materno as apellido_materno,
+                        per.codigo_telf,
+                        instit.codigo_telf_institucion
+
                         from param.tproveedor provee
 						inner join segu.tusuario usu1 on usu1.id_usuario = provee.id_usuario_reg
-						left join segu.tusuario usu2 on usu2.id_usuario = provee.id_usuario_mod   
+						left join segu.tusuario usu2 on usu2.id_usuario = provee.id_usuario_mod
                         left join segu.vpersona2 person on person.id_persona=provee.id_persona
+                        left join segu.tpersona per on per.id_persona = person.id_persona
                         left join param.tinstitucion instit on instit.id_institucion=provee.id_institucion
                         left join param.tlugar lug on lug.id_lugar = provee.id_lugar
 				        where '||v_where||' and ';
-			
+
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
 			--Devuelve la respuesta
 			return v_consulta;
-						
+
 		end;
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'ADQ_PROVEE_CONT'
  	#DESCRIPCION:	Conteo de registros
  	#AUTOR:		Gonzalo Sarmiento Sejas
@@ -114,28 +133,28 @@ BEGIN
 			v_consulta:='select count(id_proveedor)
 					    from param.tproveedor provee
 						inner join segu.tusuario usu1 on usu1.id_usuario = provee.id_usuario_reg
-						left join segu.tusuario usu2 on usu2.id_usuario = provee.id_usuario_mod   
+						left join segu.tusuario usu2 on usu2.id_usuario = provee.id_usuario_mod
                         left join segu.vpersona2 person on person.id_persona=provee.id_persona
                         left join param.tinstitucion instit on instit.id_institucion=provee.id_institucion
                         left join param.tlugar lug on lug.id_lugar = provee.id_lugar
 				        where '||v_where||' and ';
-			
-			--Definicion de la respuesta		    
+
+			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 
 			--Devuelve la respuesta
 			return v_consulta;
 
 		end;
-					
+
 	else
-					     
+
 		raise exception 'Transaccion inexistente';
-					         
+
 	end if;
-					
+
 EXCEPTION
-					
+
 	WHEN OTHERS THEN
 			v_resp='';
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);

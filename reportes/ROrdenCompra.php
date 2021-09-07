@@ -238,11 +238,15 @@ Class ROrdenCompra extends Report {
 
 		$pdf->SetFontSize(9);
 		$pdf->Ln();
-		
+
 		if($this->getDataSource()->getParameter('fecha_entrega')!=''){  
     		
             $pdf->SetFont('', 'B');
-            $pdf->Cell($width3, $height, 'Fecha de Entrega:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+			if($tipo != 'Bien') {
+				$pdf->Cell($width3, $height, 'Fecha de Servicio:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+			}else{
+				$pdf->Cell($width3, $height, 'Fecha de Entrega:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+			}
             $pdf->SetFont('', '');
             $pdf->SetFillColor(192,192,192, true);
             $pdf->Cell($width4+$width3+$width2+$width1, $height, $this->getDataSource()->getParameter('fecha_entrega'), $white, 0, 'L', true, '', 0, false, 'T', 'C');        
@@ -252,7 +256,11 @@ Class ROrdenCompra extends Report {
         }
         else{
             $pdf->SetFont('', 'B');
-            $pdf->Cell($width3, $height, 'Tiempo de Entrega:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+			if($tipo != 'Bien'){
+				$pdf->Cell($width3, $height, 'Tiempo de Servicio:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+			}else {
+				$pdf->Cell($width3, $height, 'Tiempo de Entrega:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+			}
             $pdf->SetFont('', '');
             $pdf->SetFillColor(192,192,192, true);
             //$pdf->Cell($width4+$width3+$width2+$width1, $height, $this->getDataSource()->getParameter('tiempo_entrega'), $white, 0, 'L', true, '', 0, false, 'T', 'C');        
@@ -271,7 +279,11 @@ Class ROrdenCompra extends Report {
         */
 		
 		$pdf->SetFont('', 'B');
-        $pdf->Cell($width3, $height, 'Lugar de Entrega:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+		if($tipo != 'Bien') {
+			$pdf->Cell($width3, $height, 'Lugar de Servicio:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+		}else{
+			$pdf->Cell($width3, $height, 'Lugar de Entrega:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
+		}
         $pdf->SetFont('', '');
         $pdf->SetFillColor(192,192,192, true);
 		$pdf->MultiCell(0, $height, $this->getDataSource()->getParameter('lugar_entrega'), 0,'L', true ,1);        
@@ -302,9 +314,9 @@ Class ROrdenCompra extends Report {
 		$pdf->setFontSize(7);								
         
 		if($this->getDataSource()->getParameter('codigo_proceso')!='PROCINPD'){
-			$pdf->MultiCell(0, $height, 'La suma de dinero será cancelada de la forma establecida, debiendo ustedes emitir la factura respectiva a nombre de BOLIVIANA DE AVIACIÓN – BOA, NIT 154422029,  de no emitirse la misma, BOA se reserva del derecho de efectuar las retenciones impositivas respectivas.', 0,'L', false ,1);
+			$pdf->MultiCell(0, $height, 'La suma de dinero será cancelada de la forma establecida, debiendo ustedes emitir la factura respectiva a nombre de la Empresa, NIT 154422029,  de no emitirse la misma, nos reservamos del derecho de efectuar las retenciones impositivas respectivas.', 0,'L', false ,1);
 		}else{
-			$pdf->MultiCell(0, $height, 'La suma de dinero será cancelada de acuerdo a su oferta, el pedido deberá cumplir con todas las especificaciones solicitadas por Boliviana de Aviación, asimismo, solicitamos nos remita la nota fiscal correspondiente o similar de su país de origen.', 0,'L', false ,1);
+			$pdf->MultiCell(0, $height, 'La suma de dinero será cancelada de acuerdo a su oferta, el pedido deberá cumplir con todas las especificaciones solicitadas por la Empresa, asimismo, solicitamos nos remita la nota fiscal correspondiente o similar de su país de origen.', 0,'L', false ,1);
 		}
 		
 		$pdf->Ln($height);
@@ -349,7 +361,7 @@ Class ROrdenCompra extends Report {
 		$pdf->MultiCell(0, $height, 'NOTA: La cuenta bancaria de todo proveedor debe estar registrada en SIGEP para compras nacionales', 0,'L', false ,1);
 		$pdf->Ln($height);
 		if($this->getDataSource()->getParameter('codigo_proceso')!='PROCINPD'){
-			$pdf->MultiCell(0, $height, 'Ante cualquier demora BOLIVIANA DE AVIACIÓN – BOA se reserva el derecho de retener el UNO PORCIENTO (1%) del monto total por día de retraso hasta un 20%.', 0,'L', false ,1);
+			$pdf->MultiCell(0, $height, 'Ante cualquier demora la Empresa se reserva el derecho de retener el UNO PORCIENTO (1%) del monto total por día de retraso hasta un 20%.', 0,'L', false ,1);
 			$pdf->Ln($height);
 		}		
 		

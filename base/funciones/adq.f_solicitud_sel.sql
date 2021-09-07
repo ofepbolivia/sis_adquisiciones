@@ -52,6 +52,21 @@ DECLARE
     v_nro_memo			varchar;
     v_correlativo		varchar;
 
+    --select revertir presupuesto
+    v_solicitud_partida record;
+    v_verificar	record;
+    v_auxiliar_id		integer;
+    v_fecha_sol			date;
+    v_proces_wf			integer;
+    v_cont				integer;
+    v_cont_1			integer;
+	v_fecha				date;
+    v_nro_tramite		varchar;
+    v_fecha_sol_material date;
+    v_id_estado_wf		integer;
+
+   v_id_uo				integer;
+
 BEGIN
 
 	v_nombre_funcion = 'adq.f_solicitud_sel';
@@ -99,7 +114,6 @@ BEGIN
           IF  lower(v_parametros.tipo_interfaz) in ('solicitudvb','solicitudvbwzd','solicitudvbpoa','solicitudvbpresupuestos') THEN
 
                 IF v_historico =  'no' THEN
-
                     IF p_administrador !=1 THEN
                       v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and (lower(sol.estado)!=''proceso'' ) and ';
                     ELSE
@@ -107,7 +121,13 @@ BEGIN
                     END IF;
                 ELSE
                     IF p_administrador !=1 THEN
-                      v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and ';
+                      if lower(v_parametros.tipo_interfaz) = 'solicitudvbpoa' then
+                          v_auxiliar_id = 75;
+                          v_filtro = ' (ew.id_funcionario='||v_auxiliar_id||') and  (lower(sol.estado)!=''borrador'') and ';
+                      else
+                          v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||') and  (lower(sol.estado)!=''borrador'') and ';
+                      end if;
+                      --v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and ';
                     ELSE
                         v_filtro = ' (lower(sol.estado) != ''borrador'') and ';
                     END IF;
@@ -147,12 +167,8 @@ BEGIN
                v_strg_obs = '''---''::text';
 
                IF p_administrador = 1 THEN
-
-                  v_filtro = ' (lower(sol.estado)!=''borrador'' ) and ';
-
-               END IF;
-
-
+					v_filtro = ' (lower(sol.estado)!=''borrador'' ) and ';
+			   END IF;
 
             ELSE
 
@@ -163,6 +179,42 @@ BEGIN
              END IF;
 
 
+			IF  lower(v_parametros.tipo_interfaz) in ('solicitudhistorico') THEN
+ 			    v_filtro = ' ';
+            END IF;
+
+
+
+            --(31-01-2020) MAY nuevo filtro consulta solicitudes para cada gerencia
+            IF  (lower(v_parametros.tipo_interfaz) in ('solicitudhistoricoxgerencia')) THEN
+
+ 			    --busca id_uo del usuario
+                  SELECT uo.id_uo
+                  INTO v_id_uo
+                  FROM orga.tfuncionario f
+                  inner join segu.tusuario usu on usu.id_persona = f.id_persona
+                  inner join orga.tuo_funcionario func on func.id_funcionario = f.id_funcionario and func.estado_reg = 'activo'
+                  inner join orga.tuo uo on uo.estado_reg='activo' and uo.id_uo = tes.f_get_uo_gerencia_proceso(func.id_uo,null::integer,null::date)
+                  WHERE usu.id_usuario= p_id_usuario;
+
+                  IF v_historico =  'si' THEN
+                     v_strg_sol = 'DISTINCT(sol.id_solicitud)';
+                     v_strg_obs = '''---''::text';
+                  ELSE
+                     v_strg_sol = 'sol.id_solicitud';
+                     v_strg_obs = 'ew.obs';
+                  END IF;
+
+            --raise exception  'llega %', v_id_uo;
+             v_inner = '   inner join wf.testado_wf ew on ew.id_proceso_wf = sol.id_proceso_wf
+                           inner JOIN orga.tuo_funcionario uof on uof.id_funcionario = sol.id_funcionario and uof.tipo = ''oficial'' and uof.estado_reg = ''activo'' and (current_date <= uof.fecha_finalizacion or  uof.fecha_finalizacion is null)
+			               inner JOIN orga.tuo tuo on tuo.id_uo = tes.f_get_uo_gerencia_proceso(uof.id_uo,null::integer,null::date)  ';
+
+             v_filtro = ' tuo.id_uo = '||v_id_uo||'  and  ';
+
+
+
+            END IF;
 
 
     		--Sentencia de la consulta
@@ -229,7 +281,15 @@ BEGIN
                              from unnest(id_tipo_estado_wfs) elemento
                              where elemento = ew.id_tipo_estado) as contador_estados,
 						            sol.nro_po,
-                        sol.fecha_po
+                        sol.fecha_po,
+                        sum(tsd.precio_total) as importe_total,
+                        tcat.codigo as prioridad,
+                        tcat.id_catalogo as id_prioridad,
+                        sol.list_proceso,
+                        sol.cuce,
+                        sol.fecha_conclusion,
+                        sol.presupuesto_aprobado
+
 						from adq.tsolicitud sol
 						inner join segu.tusuario usu1 on usu1.id_usuario = sol.id_usuario_reg
                         inner join wf.tproceso_wf pwf on pwf.id_proceso_wf = sol.id_proceso_wf
@@ -247,12 +307,20 @@ BEGIN
 
 						left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
                         left join param.vproveedor pro on pro.id_proveedor = sol.id_proveedor
+
+                        left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud and tsd.estado_reg = ''activo''
+
+                        left join param.tcatalogo tcat on tcat.id_catalogo = sol.prioridad
                         '||v_inner||'
-                        where  '||v_filtro;
+                        where  sol.estado_reg = ''activo'' and '||v_filtro;
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
-			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+			v_consulta:=v_consulta||' group by sol.id_solicitud, usu1.cuenta, usu2.cuenta,
+             fun.desc_funcionario1, funa.desc_funcionario1, uo.codigo, uo.nombre_unidad,
+             ges.gestion, mon.codigo, dep.codigo, pm.nombre, cat.nombre, funrpc.desc_funcionario1,
+             ew.obs, pro.desc_proveedor, funs.desc_funcionario1, ew.id_tipo_estado,
+             pwf.id_tipo_estado_wfs, tcat.codigo, tcat.id_catalogo order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
 			--Devuelve la respuesta
 			return v_consulta;
@@ -271,7 +339,11 @@ BEGIN
 	elsif(p_transaccion='ADQ_SOL_CONT')then
 
 		begin
+
             v_filtro='';
+            if (v_parametros.id_funcionario_usu is null) then
+              	v_parametros.id_funcionario_usu = -1;
+            end if;
 
             IF  pxp.f_existe_parametro(p_tabla,'historico') THEN
 
@@ -283,46 +355,47 @@ BEGIN
 
             END IF;
 
-            if (v_parametros.id_funcionario_usu is null) then
-            	v_parametros.id_funcionario_usu = -1;
-            end if;
-
             IF p_administrador !=1  and lower(v_parametros.tipo_interfaz) = 'solicitudreq' THEN
 
-              v_filtro = '(ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||'  or sol.id_usuario_reg='||p_id_usuario||' ) and ';
+              v_filtro = '(ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||'  or sol.id_usuario_reg='||p_id_usuario||' or sol.id_funcionario = '||v_parametros.id_funcionario_usu::varchar||') and ';
 
 
             END IF;
 
-            IF  lower(v_parametros.tipo_interfaz) in ('solicitudvb','solicitudvbwzd','solicitudvbpoa','solicitudvbpresupuestos') THEN
+          IF  lower(v_parametros.tipo_interfaz) in ('solicitudvb','solicitudvbwzd','solicitudvbpoa','solicitudvbpresupuestos') THEN
 
-              IF v_historico =  'no' THEN
-
-                IF p_administrador !=1 THEN
-                  v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and (lower(sol.estado)!=''proceso'' ) and ';
+                IF v_historico =  'no' THEN
+                    IF p_administrador !=1 THEN
+                      v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and (lower(sol.estado)!=''proceso'' ) and ';
+                    ELSE
+                        v_filtro = ' (lower(sol.estado)!=''borrador''  and lower(sol.estado)!=''proceso'' and lower(sol.estado)!=''finalizado'') and ';
+                    END IF;
                 ELSE
-                    v_filtro = ' (lower(sol.estado)!=''borrador''  and lower(sol.estado)!=''proceso'' and lower(sol.estado)!=''finalizado'') and ';
-                END IF;
-              ELSE
-                IF p_administrador !=1 THEN
-                  v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and ';
-                ELSE
-                    v_filtro = ' (lower(sol.estado)!=''borrador'') and ';
-                END IF;
-              END IF;
+                    IF p_administrador !=1 THEN
+                      if lower(v_parametros.tipo_interfaz) = 'solicitudvbpoa' then
+                          v_auxiliar_id = 75;
+                          v_filtro = ' (ew.id_funcionario='||v_auxiliar_id||') and  (lower(sol.estado)!=''borrador'') and ';
+                      else
+                          v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||') and  (lower(sol.estado)!=''borrador'') and ';
+                      end if;
+                      --v_filtro = ' (ew.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(sol.estado)!=''borrador'') and ';
+                    ELSE
+                        v_filtro = ' (lower(sol.estado) != ''borrador'') and ';
+                    END IF;
+               END IF;
 
 
-            END IF;
+         END IF;
 
-            --la interface de vbpresupuestos mustra todas las solcitudes no importa el funcionario asignado
-            IF  lower(v_parametros.tipo_interfaz) = 'solicitudvbpresupuestos' and v_historico =  'no' THEN
-                 v_filtro = v_filtro||' (lower(sol.estado)=''vbpresupuestos'' ) and ';
-            END IF;
+         --la interface de vbpresupuestos mustra todas las solcitudes no importa el funcionario asignado
+         IF  lower(v_parametros.tipo_interfaz) = 'solicitudvbpresupuestos' and v_historico =  'no' THEN
+             v_filtro = v_filtro||' (lower(sol.estado)=''vbpresupuestos'' ) and ';
+         END IF;
 
-            --la interface de vbpresupuestos mustra todas las solcitudes no importa el funcionario asignado
-            IF  lower(v_parametros.tipo_interfaz) = 'solicitudvbpoa' and v_historico =  'no'  THEN
-                 v_filtro = ' (lower(sol.estado)=''vbpoa'' ) and ';
-            END IF;
+         --la interface de vbpresupuestos mustra todas las solcitudes no importa el funcionario asignado
+         IF  lower(v_parametros.tipo_interfaz) = 'solicitudvbpoa' and v_historico =  'no'  THEN
+             v_filtro = ' (lower(sol.estado)=''vbpoa'' ) and ';
+         END IF;
 
 
 
@@ -336,17 +409,17 @@ BEGIN
             END IF;
 
 
+
+
             IF v_historico =  'si' THEN
 
                v_inner =  'inner join wf.testado_wf ew on ew.id_proceso_wf = sol.id_proceso_wf';
                v_strg_sol = 'DISTINCT(sol.id_solicitud)';
-               v_strg_obs = '---';
+               v_strg_obs = '''---''::text';
 
-               IF p_administrador =1 THEN
-
-                  v_filtro = ' (lower(sol.estado)!=''borrador'' ) and ';
-
-               END IF;
+               IF p_administrador = 1 THEN
+					v_filtro = ' (lower(sol.estado)!=''borrador'' ) and ';
+			   END IF;
 
             ELSE
 
@@ -354,14 +427,52 @@ BEGIN
                v_strg_sol = 'sol.id_solicitud';
                v_strg_obs = 'ew.obs';
 
+             END IF;
+
+
+			IF  lower(v_parametros.tipo_interfaz) in ('solicitudhistorico') THEN
+ 			    v_filtro = ' ';
             END IF;
+
+
+             --(31-01-2020) MAY nuevo filtro consulta solicitudes para cada gerencia
+            IF  (lower(v_parametros.tipo_interfaz) in ('solicitudhistoricoxgerencia')) THEN
+
+ 			    --busca id_uo del usuario
+                  SELECT uo.id_uo
+                  INTO v_id_uo
+                  FROM orga.tfuncionario f
+                  inner join segu.tusuario usu on usu.id_persona = f.id_persona
+                  inner join orga.tuo_funcionario func on func.id_funcionario = f.id_funcionario and func.estado_reg = 'activo'
+                  inner join orga.tuo uo on uo.estado_reg='activo' and uo.id_uo = tes.f_get_uo_gerencia_proceso(func.id_uo,null::integer,null::date)
+                  WHERE usu.id_usuario= p_id_usuario;
+
+                  IF v_historico =  'si' THEN
+                     v_strg_sol = 'DISTINCT(sol.id_solicitud)';
+                     v_strg_obs = '''---''::text';
+                  ELSE
+                     v_strg_sol = 'sol.id_solicitud';
+                     v_strg_obs = 'ew.obs';
+                  END IF;
+
+            --raise exception  'llega %', v_id_uo;
+             v_inner = '   inner join wf.testado_wf ew on ew.id_proceso_wf = sol.id_proceso_wf
+                           inner JOIN orga.tuo_funcionario uof on uof.id_funcionario = sol.id_funcionario and uof.tipo = ''oficial'' and uof.estado_reg = ''activo'' and (current_date <= uof.fecha_finalizacion or  uof.fecha_finalizacion is null)
+			               inner JOIN orga.tuo tuo on tuo.id_uo = tes.f_get_uo_gerencia_proceso(uof.id_uo,null::integer,null::date)  ';
+
+             v_filtro = ' tuo.id_uo = '||v_id_uo||'  and  ';
+
+
+
+            END IF;
+            --
 
 
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='select count('||v_strg_sol||')
 			            from adq.tsolicitud sol
 						inner join segu.tusuario usu1 on usu1.id_usuario = sol.id_usuario_reg
-
+                        inner join wf.tproceso_wf pwf on pwf.id_proceso_wf = sol.id_proceso_wf
                         inner join orga.vfuncionario fun on fun.id_funcionario = sol.id_funcionario
                         inner join orga.tuo uo on uo.id_uo = sol.id_uo
                         inner join param.tmoneda mon on mon.id_moneda = sol.id_moneda
@@ -376,13 +487,16 @@ BEGIN
 
 						left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
                         left join param.vproveedor pro on pro.id_proveedor = sol.id_proveedor
-				       '||v_inner||'
 
-				        where  '||v_filtro;
+                        left join adq.tsolicitud_det tsd on tsd.id_solicitud = sol.id_solicitud and tsd.estado_reg = ''activo''
+
+                        left join param.tcatalogo tcat on tcat.id_catalogo = sol.prioridad
+                        '||v_inner||'
+                        where  sol.estado_reg = ''activo'' and '||v_filtro;
+
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
-
 
 
 			--Devuelve la respuesta
@@ -405,11 +519,62 @@ BEGIN
             IF  pxp.f_existe_parametro(p_tabla,'id_solicitud') THEN
 
                   v_filtro = 'sol.id_solicitud='||v_parametros.id_solicitud||' and ';
+
+                    select
+                    sol.id_proceso_wf
+                    into v_proces_wf
+                    from adq.tsolicitud sol
+                    where sol.id_solicitud = v_parametros.id_solicitud;
+
+               		select sol.num_tramite
+                     into v_nro_tramite
+                    from adq.tsolicitud sol
+                    where sol.id_solicitud = v_parametros.id_solicitud;
+
             ELSE
                   v_filtro = 'sol.id_proceso_wf='||v_parametros.id_proceso_wf||' and ';
 
+                  v_proces_wf = v_parametros.id_proceso_wf;
+
+               		select sol.num_tramite
+                     into v_nro_tramite
+                    from adq.tsolicitud sol
+                    where sol.id_proceso_wf = v_parametros.id_proceso_wf;
+
             END IF;
 
+			if (substr(v_nro_tramite, 1, 2) in ('GM', 'GO', 'GA', 'GC')) then
+
+            	select sol.fecha_solicitud
+                	into v_fecha_sol_material
+                from mat.tsolicitud sol
+                where sol.nro_tramite = v_nro_tramite;
+
+            else
+
+                select es.id_estado_wf
+                	into v_id_estado_wf 
+                from wf.testado_wf es
+                where es.fecha_reg = (
+                select
+                     max(ewf.fecha_reg)
+                   FROM  wf.testado_wf ewf
+                   INNER JOIN  wf.ttipo_estado te on ewf.id_tipo_estado = te.id_tipo_estado
+                   LEFT JOIN   segu.tusuario usu on usu.id_usuario = ewf.id_usuario_reg
+                   LEFT JOIN  orga.vfuncionario fun on fun.id_funcionario = ewf.id_funcionario
+                   LEFT JOIN  param.tdepto depto on depto.id_depto = ewf.id_depto
+                   WHERE
+                    ewf.id_proceso_wf = v_proces_wf
+                    and te.codigo = 'borrador'
+                    and te.etapa = 'Solicitante');
+
+              select  
+                     ew.fecha_reg::date
+                     into v_fecha_sol
+                   FROM  wf.testado_wf ew
+                   where ew.id_estado_anterior = v_id_estado_wf;
+                                   
+          	end if;
 
             --Sentencia de la consulta
 			v_consulta:='select
@@ -435,7 +600,9 @@ BEGIN
 						sol.id_categoria_compra,
 						sol.id_funcionario,
 						sol.id_estado_wf,
-						sol.fecha_soli,
+                        sol.fecha_soli,
+						'''||coalesce(v_fecha_sol,now())||'''::date as fecha_soli_gant,
+                        '''||coalesce(v_fecha_sol_material,now())||'''::date as fecha_soli_material,
 						sol.fecha_reg,
 						sol.id_usuario_reg,
 						sol.fecha_mod,
@@ -456,8 +623,12 @@ BEGIN
                         sol.numero,
                         funrpc.desc_funcionario1 as desc_funcionario_rpc,
                         COALESCE(sol.usuario_ai,'''')::varchar as nombre_usuario_ai,
-                        uo.codigo as codigo_uo
-
+                        uo.codigo as codigo_uo,
+						fca.descripcion_cargo::varchar as cargo_desc_funcionario,
+                        fcap.descripcion_cargo::varchar as cargo_desc_funcionario_apro,
+                        sol.prioridad,
+                        frpc.descripcion_cargo::varchar as cargo_desc_funcionario_rpc,                       
+                        dep.prioridad as dep_prioridad
 						from adq.tsolicitud sol
 						inner join segu.tusuario usu1 on usu1.id_usuario = sol.id_usuario_reg
 
@@ -475,6 +646,9 @@ BEGIN
 						left join segu.tusuario usu2 on usu2.id_usuario = sol.id_usuario_mod
 
                         inner join wf.testado_wf ew on ew.id_estado_wf = sol.id_estado_wf
+                    	inner join orga.vfuncionario_ultimo_cargo fca on fca.id_funcionario = fun.id_funcionario
+					    inner join orga.vfuncionario_ultimo_cargo fcap on fcap.id_funcionario = sol.id_funcionario_aprobador 
+                        left join orga.vfuncionario_ultimo_cargo frpc on frpc.id_funcionario = sol.id_funcionario_rpc                       
 
 				        where '||v_filtro;
 
@@ -726,8 +900,119 @@ BEGIN
           RAISE NOTICE 'CONSULTA: %',v_consulta;
 			    return v_consulta;
       END;
-    else
+    /*********************************
+ 	#TRANSACCION:  'ADQ_COMEJEPAG_SEL'
+ 	#DESCRIPCION:	Listado Solicitudes + Comprometido Ejecutado Pagado
+ 	#AUTOR:		Franklin Espinoza Alvarez
+ 	#FECHA:		27-10-2017 16:01:32
+	***********************************/
 
+	elsif(p_transaccion='ADQ_COMEJEPAG_SEL')then
+        begin
+    		--Sentencia de la consulta
+            create temp table obligaciones(
+                    id_solicitud_det 	integer,
+                    id_partida			integer,
+                    nombre_partida		text,
+                    id_concepto_ingas	integer,
+                    nombre_ingas			text,
+                    id_solicitud	integer,
+                    id_centro_costo		integer,
+                    codigo_cc			text,
+                    id_partida_ejecucion	integer,
+                    descripcion			text,
+                    comprometido		numeric DEFAULT 0.00,
+                    ejecutado			numeric DEFAULT 0.00,
+                    pagado				numeric DEFAULT 0.00,
+                    revertible			numeric DEFAULT 0.00,
+                    revertir			numeric
+            ) on commit drop;
+
+            insert into obligaciones (id_solicitud_det,
+                                      id_partida,
+                                      nombre_partida,
+            						  id_concepto_ingas,
+                                      nombre_ingas,
+                                      id_solicitud,
+                                      id_centro_costo,
+                                      codigo_cc,
+                                      id_partida_ejecucion,
+                                      descripcion)
+            select
+                sold.id_solicitud_det,
+                sold.id_partida,
+                par.nombre_partida||'-('||par.codigo||')' as nombre_partida,
+                sold.id_concepto_ingas,
+                cig.desc_ingas||'-('||cig.movimiento||')' as nombre_ingas,
+                sold.id_solicitud,
+                sold.id_centro_costo,
+                cc.codigo_cc,
+                sold.id_partida_ejecucion,
+                sold.descripcion
+           from adq.tsolicitud_det sold
+                inner join param.vcentro_costo cc on cc.id_centro_costo=sold.id_centro_costo
+                inner join segu.tusuario usu1 on usu1.id_usuario = sold.id_usuario_reg
+                inner join pre.tpartida par on par.id_partida=sold.id_partida
+                inner join param.tconcepto_ingas cig on cig.id_concepto_ingas=sold.id_concepto_ingas
+            where sold.id_solicitud=v_parametros.id_solicitud;
+
+            select  obli.id_solicitud_det,
+                obli.id_partida,
+                obli.nombre_partida,
+                obli.id_concepto_ingas,
+                obli.nombre_ingas,
+                obli.id_solicitud,
+                obli.id_centro_costo,
+                obli.codigo_cc,
+                obli.id_partida_ejecucion,
+                obli.descripcion
+            into v_verificar
+            from obligaciones obli
+            where obli.id_solicitud=v_parametros.id_solicitud;
+
+			FOR v_solicitud_partida in (select * from obligaciones)LOOP
+            	v_verificar = pre.f_verificar_com_eje_pag(v_solicitud_partida.id_partida_ejecucion,v_parametros.id_moneda);
+
+            	update obligaciones set
+                comprometido = COALESCE(v_verificar.ps_comprometido,0.00::numeric),
+                ejecutado = COALESCE(v_verificar.ps_ejecutado,0.00::numeric),
+                pagado = COALESCE(v_verificar.ps_pagado,0.00::numeric),
+                revertible =  COALESCE(v_verificar.ps_comprometido,0.00::numeric) - COALESCE(v_verificar.ps_ejecutado,0.00::numeric)
+                where obligaciones.id_solicitud_det=v_solicitud_partida.id_solicitud_det;
+
+        	END LOOP;
+
+              v_consulta:='select * from obligaciones where  ';
+
+              --Definicion de la respuesta
+              v_consulta:=v_consulta||v_parametros.filtro;
+              v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion;
+
+
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+    /*********************************
+ 	#TRANSACCION:  'ADQ_GET_DAT_SOL_SEL'
+ 	#DESCRIPCION:	Datos de Solicitud de Compra
+ 	#AUTOR:		F.E.A
+ 	#FECHA:		02-06-2018
+	***********************************/
+    elsif(p_transaccion='ADQ_GET_DAT_SOL_SEL')then
+    	begin
+        v_consulta:='select
+                            ts.id_solicitud,
+                            ts.num_tramite,
+                            ts.id_depto,
+                            ts.instruc_rpc
+                            from adq.tsolicitud ts
+                            where '||v_parametros.filtro;
+        --Devuelve la respuesta
+          return v_consulta;
+        end;
+
+    else
 		raise exception 'Transaccion inexistente';
 
 	end if;
