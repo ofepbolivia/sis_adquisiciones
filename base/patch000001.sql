@@ -1193,3 +1193,11 @@ IS 'identificador contrato si ampliacion_contrato';
 ALTER TABLE adq.tmatriz_modalidad
 ADD COLUMN flujo_sistema VARCHAR(100);
 /***********************************F-SCP-MAY-ADQ-0-25/08/2021****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-10/09/2021****************************************/
+ALTER TABLE adq.tsolicitud
+ADD COLUMN id_matriz_modalidad INTEGER;
+
+COMMENT ON COLUMN adq.tsolicitud.id_matriz_modalidad
+IS 'identificador de la tabla matriz_modalidad';
+/***********************************F-SCP-MAY-ADQ-0-10/09/2021****************************************/

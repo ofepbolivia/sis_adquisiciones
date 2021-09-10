@@ -66,7 +66,7 @@ BEGIN
                 v_id_uo_gerencia =   orga.f_get_uo_gerencia_area_ope(NULL, v_funcionario, now()::Date);
 
                 IF v_id_uo_gerencia = -1 THEN
-                	raise exception 'No se excuentra su Gerencia correspondiente de la Unidad';
+                	raise exception 'No se encuentra su Gerencia correspondiente de la Unidad Responsable';
                 END IF;
 
 

@@ -168,6 +168,9 @@ DECLARE
        v_max_monto_min				numeric;
        v_id_rpc						integer;
        v_desc_funcionario			varchar;
+       --(may) 01-09-2021
+       v_fecha_solicitud		    date;
+       v_id_funcionario_sol	        integer;
 
 BEGIN
 
@@ -458,7 +461,9 @@ BEGIN
 
             select
              s.estado,
-             s.num_tramite
+             s.num_tramite,
+             s.fecha_soli,
+             s.id_categoria_compra
             into
              v_registros
             from
@@ -494,6 +499,19 @@ BEGIN
 					 --FROM orga.f_get_aprobadores_x_funcionario(v_parametros.fecha_soli, v_parametros.id_funcionario , 'todos', 'si', 'todos', 'ninguno') AS (id_funcionario integer);
                      FROM orga.f_get_aprobadores_x_funcionario(now()::date, v_parametros.id_funcionario , 'todos', 'si', 'todos', 'ninguno') AS (id_funcionario integer);
                     --NOTA el valor en la primera posicion del array es el gerente  de menor nivel
+                END IF;
+            END IF;
+
+            --(may) 01-09-2021 desde estado dar siguiente para ver la matriz y poner su funcionario supervisor
+            --CONTROL PARA QUE NO INGRESEN LOS TRAMITES PASADOS A LA SECCION DE INICIO DE LAS MODALIDADES
+
+            --SOLO PARA tramites nacionales CNAPD
+            IF (v_registros.estado = 'borrador' and v_registros.id_categoria_compra = 1) THEN
+
+                IF (v_registros.fecha_soli >= '2020-10-1') THEN
+
+                     v_resp = adq.ft_solicitud_modalidad(v_parametros.id_solicitud, p_id_usuario);
+
                 END IF;
             END IF;
 
@@ -703,9 +721,34 @@ BEGIN
                 v_fecha_aux = EXTRACT(YEAR FROM v_fecha_sol::date);
 
                 IF (v_estado = 'borrador') THEN
+
                 	IF (v_fecha_aux = 2019 and v_codigo_sol_pc in ('CNPD', 'CINPD', '') and v_tipo != 'Boa') THEN
                         raise exception 'ESTIMADO USUARIO,  A SOLICITUD DEL DEPARTAMENTO DE FINANZAS YA NO ES POSIBLE PASAR AL SIGUIENTE ESTADO LAS SOLICITUDES CNAPD Y CINTPD PARA LA GESTION 2019.';
                     end if;
+
+
+                    --(may) 01-09-2021 desde estado dar siguiente para ver la matriz y poner su funcionario supervisor
+                    --CONTROL PARA QUE NO INGRESEN LOS TRAMITES PASADOS A LA SECCION DE INICIO DE LAS MODALIDADES
+
+                    SELECT sol.fecha_soli, sol.id_funcionario, sol.id_categoria_compra
+                    into v_fecha_solicitud, v_id_funcionario_sol, v_id_categoria_compra
+                    FROM adq.tsolicitud sol
+                    WHERE sol.id_solicitud = v_parametros.id_solicitud;
+
+
+                    --SOLO PARA tramites nacionales CNAPD
+                    IF v_id_categoria_compra = 1 THEN
+
+                        IF (v_fecha_solicitud >= '2020-10-1') THEN
+
+                             v_resp = adq.ft_solicitud_modalidad(v_parametros.id_solicitud, p_id_usuario);
+
+                        END IF;
+                    END IF;
+
+                    ---
+
+
                 END IF;
                 --
 

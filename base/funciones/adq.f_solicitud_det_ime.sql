@@ -60,6 +60,8 @@ DECLARE
     v_id_categoria_compra	integer;
     v_id_solicitud			integer;
 
+    v_id_caracteristica_sol_det 	integer;
+
 
 BEGIN
 
@@ -220,7 +222,8 @@ BEGIN
 			)RETURNING id_solicitud_det into v_id_solicitud_det;
 
             ---
-            --(may) 05-10-2020
+            --01-09-2021(may) se modifica para verificar la matriz hara al dar siguiente
+            /*--(may) 05-10-2020
             --CONTROL PARA QUE NO INGRESEN LOS TRAMITES PASADOS A LA SECCION DE INICIO DE LAS MODALIDADES
             SELECT sol.fecha_soli, sol.id_funcionario, sol.id_categoria_compra
             into v_fecha_solicitud, v_id_funcionario_sol, v_id_categoria_compra
@@ -236,7 +239,8 @@ BEGIN
                      v_resp = adq.ft_solicitud_modalidad(v_parametros.id_solicitud, p_id_usuario);
 
                 END IF;
-            END IF;
+            END IF;*/
+
 
             ---
 
@@ -638,7 +642,8 @@ raise exception '%, %', v_orden_trabajo2, v_parametros.orden_trabajo;*/
 			where id_solicitud_det=v_parametros.id_solicitud_det;
 
             -------------
-            --(may) 05-10-2020
+             --01-09-2021(may) se modifica para verificar la matriz hara al dar siguiente
+            /*--(may) 05-10-2020
             --CONTROL PARA QUE NO INGRESEN LOS TRAMITES PASADOS A LA SECCION DE INICIO DE LAS MODALIDADES
             SELECT sol.fecha_soli, sol.id_funcionario, sol.id_categoria_compra
             into v_fecha_solicitud, v_id_funcionario_sol, v_id_categoria_compra
@@ -654,7 +659,7 @@ raise exception '%, %', v_orden_trabajo2, v_parametros.orden_trabajo;*/
                      v_resp = adq.ft_solicitud_modalidad(v_parametros.id_solicitud, p_id_usuario);
 
                 END IF;
-            END IF;
+            END IF;*/
 
             -------------
 
@@ -720,7 +725,8 @@ raise exception '%, %', v_orden_trabajo2, v_parametros.orden_trabajo;*/
             FROM  adq.tsolicitud_det sd
             WHERE sd.id_solicitud_det = v_parametros.id_solicitud_det;
 
-            --(may) 05-10-2020
+            --01-09-2021(may) se modifica para verificar la matriz hara al dar siguiente
+            /*--(may) 05-10-2020
             --CONTROL PARA QUE NO INGRESEN LOS TRAMITES PASADOS A LA SECCION DE INICIO DE LAS MODALIDADES
             SELECT sol.fecha_soli, sol.id_funcionario, sol.id_categoria_compra
             into v_fecha_solicitud, v_id_funcionario_sol, v_id_categoria_compra
@@ -736,13 +742,14 @@ raise exception '%, %', v_orden_trabajo2, v_parametros.orden_trabajo;*/
                      v_resp = adq.ft_solicitud_modalidad_eli(v_id_solicitud, p_id_usuario, v_parametros.id_solicitud_det);
 
                 END IF;
-            END IF;
+            END IF;*/
 
             -------------
 
             update adq.tsolicitud_det set
             estado_reg = 'inactivo',
-            id_usuario_mod = p_id_usuario
+            id_usuario_mod = p_id_usuario,
+            fecha_mod = now()
             where id_solicitud_det=v_parametros.id_solicitud_det;
 
             --Definicion de la respuesta
