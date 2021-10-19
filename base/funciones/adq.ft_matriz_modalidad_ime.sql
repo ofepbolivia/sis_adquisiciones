@@ -55,18 +55,19 @@ BEGIN
 
             ELSE
 
-            	SELECT fc.id_funcionario
+            	/*SELECT fc.id_funcionario
                 into v_funcionario
                 FROM orga.vfuncionario_cargo fc
                 WHERE fc.id_uo = v_parametros.id_uo
                 and fc.fecha_asignacion  <=  now()
-                and (fc.fecha_finalizacion is null or fc.fecha_finalizacion >= now() );
+                and (fc.fecha_finalizacion is null or fc.fecha_finalizacion >= now() );*/
 
                 -- recupera la uo gerencia del funcionario
-                v_id_uo_gerencia =   orga.f_get_uo_gerencia_area_ope(NULL, v_funcionario, now()::Date);
+                --v_id_uo_gerencia =   orga.f_get_uo_gerencia_area_ope(NULL, v_funcionario, now()::Date);
+                v_id_uo_gerencia =   orga.f_get_uo_gerencia_area_ope(v_parametros.id_uo,NULL, now()::Date);
 
                 IF v_id_uo_gerencia = -1 THEN
-                	raise exception 'No se encuentra su Gerencia correspondiente de la Unidad Responsable';
+                	raise exception 'No se excuentra su Gerencia correspondiente de la Unidad';
                 END IF;
 
 
@@ -108,7 +109,9 @@ BEGIN
             flujo_mod_directa,
 
             id_uo_gerencia,
-            flujo_sistema
+            flujo_sistema,
+            modalidad_directa_giro,
+            resp_proc_contratacion_directa_giro
 
           	) values(
 			'activo',
@@ -145,7 +148,9 @@ BEGIN
             v_parametros.flujo_mod_directa,
 
             v_id_uo_gerencia,
-            v_parametros.flujo_sistema
+            v_parametros.flujo_sistema,
+            v_parametros.modalidad_directa_giro,
+            v_parametros.resp_proc_contratacion_directa_giro
 
 			)RETURNING id_matriz_modalidad into v_id_matriz_modalidad;
 
@@ -180,15 +185,16 @@ BEGIN
 
             ELSE
 
-            	SELECT fc.id_funcionario
+            	/*SELECT fc.id_funcionario
                 into v_funcionario
                 FROM orga.vfuncionario_cargo fc
                 WHERE fc.id_uo = v_parametros.id_uo
                 and fc.fecha_asignacion  <=  now()
-                and (fc.fecha_finalizacion is null or fc.fecha_finalizacion >= now() );
+                and (fc.fecha_finalizacion is null or fc.fecha_finalizacion >= now() );*/
 
                 -- recupera la uo gerencia del funcionario
-                v_id_uo_gerencia =   orga.f_get_uo_gerencia_area_ope(NULL, v_funcionario, now()::Date);
+                --v_id_uo_gerencia =   orga.f_get_uo_gerencia_area_ope(NULL, v_funcionario, now()::Date);
+                v_id_uo_gerencia =   orga.f_get_uo_gerencia_area_ope(v_parametros.id_uo,NULL, now()::Date);
 
                 IF v_id_uo_gerencia = -1 THEN
                 	raise exception 'No se excuentra su Gerencia correspondiente de la Unidad';
@@ -231,7 +237,9 @@ BEGIN
             flujo_mod_directa = v_parametros.flujo_mod_directa,
 
             id_uo_gerencia = v_id_uo_gerencia,
-            flujo_sistema = v_parametros.flujo_sistema
+            flujo_sistema = v_parametros.flujo_sistema,
+            modalidad_directa_giro = v_parametros.modalidad_directa_giro,
+            resp_proc_contratacion_directa_giro = v_parametros.resp_proc_contratacion_directa_giro
 
 			where id_matriz_modalidad=v_parametros.id_matriz_modalidad;
 

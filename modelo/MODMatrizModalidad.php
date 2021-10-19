@@ -61,6 +61,9 @@ class MODMatrizModalidad extends MODbase{
 
 		$this->captura('nombre_gerencia','varchar');
 		$this->captura('flujo_sistema','varchar');
+		$this->captura('estado_reg_uo','varchar');
+		$this->captura('modalidad_directa_giro','varchar');
+		$this->captura('resp_proc_contratacion_directa_giro','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -104,6 +107,8 @@ class MODMatrizModalidad extends MODbase{
 		$this->setParametro('flujo_mod_directa','flujo_mod_directa','varchar');
 
 		$this->setParametro('flujo_sistema','flujo_sistema','varchar');
+		$this->setParametro('modalidad_directa_giro','modalidad_directa_giro','varchar');
+		$this->setParametro('resp_proc_contratacion_directa_giro','resp_proc_contratacion_directa_giro','varchar');
 
 
 		//Ejecuta la instruccion
@@ -149,6 +154,8 @@ class MODMatrizModalidad extends MODbase{
         $this->setParametro('flujo_mod_directa','flujo_mod_directa','varchar');
 
         $this->setParametro('flujo_sistema','flujo_sistema','varchar');
+        $this->setParametro('modalidad_directa_giro','modalidad_directa_giro','varchar');
+        $this->setParametro('resp_proc_contratacion_directa_giro','resp_proc_contratacion_directa_giro','varchar');
 
 
 

@@ -1201,3 +1201,15 @@ ADD COLUMN id_matriz_modalidad INTEGER;
 COMMENT ON COLUMN adq.tsolicitud.id_matriz_modalidad
 IS 'identificador de la tabla matriz_modalidad';
 /***********************************F-SCP-MAY-ADQ-0-10/09/2021****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-19/10/2021****************************************/
+ALTER TABLE adq.tmatriz_modalidad
+ADD COLUMN modalidad_directa_giro VARCHAR(50);
+ALTER TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion_directa_giro VARCHAR(300);
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.modalidad_directa_giro
+IS 'si/no';
+COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_directa_giro
+IS 'RPC/RPA';
+/***********************************F-SCP-MAY-ADQ-0-19/10/2021****************************************/

@@ -243,6 +243,23 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 {
                     config: {
+                        name: 'estado_reg_uo',
+                        fieldLabel: 'Estado Unidad Resp.',
+                        allowBlank: true,
+                        anchor: '30%',
+                        gwidth: 80,
+                        //gdisplayField: 'estado_reg_uo',//mapea al store del grid
+                        maxLength: 100
+
+                    },
+                    type: 'TextField',
+                    filters: {pfiltro: 'estado_reg_uo', type: 'string'},
+                    id_grupo: 1,
+                    grid: true,
+                    form: false
+                },
+                {
+                    config: {
                         name: 'nombre_gerencia',
                         fieldLabel: 'Gerencia',
                         allowBlank: true,
@@ -486,6 +503,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     form : true,
                     grid: false,
                 },
+
                 {
                     config: {
                         name: 'modalidad_excepcion',
@@ -521,6 +539,26 @@ header("content-type: text/javascript; charset=UTF-8");
                     },
                     type: 'ComboBox',
                     filters: {pfiltro: 'matriz.modalidad_desastres', type: 'string'},
+                    valorInicial: 'no',
+                    id_grupo: 1,
+                    grid: true,
+                    form: true
+                },
+                {
+                    config: {
+                        name: 'modalidad_directa_giro',
+                        fieldLabel: 'Modalidad Directa Giro Empresarial',
+                        allowBlank: true,
+                        anchor: '93%',
+                        gwidth: 100,
+                        maxLength: 100,
+                        typeAhead: true,
+                        triggerAction: 'all',
+                        lazyRender: true,
+                        store: ['si', 'no']
+                    },
+                    type: 'ComboBox',
+                    filters: {pfiltro: 'matriz.modalidad_directa_giro', type: 'string'},
                     valorInicial: 'no',
                     id_grupo: 1,
                     grid: true,
@@ -626,6 +664,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     grid: true,
                     form: true
                 },
+
                 {
                     config: {
                         name: 'resp_proc_contratacion_excepcion',
@@ -662,6 +701,26 @@ header("content-type: text/javascript; charset=UTF-8");
                     type: 'ComboBox',
                     filters: {pfiltro: 'matriz.resp_proc_contratacion_desastres', type: 'string'},
                     //valorInicial: 'RPC',
+                    id_grupo: 2,
+                    grid: true,
+                    form: true
+                },
+                {
+                    config: {
+                        name: 'resp_proc_contratacion_directa_giro',
+                        fieldLabel: 'Resp. Mod. Giro Empresarial',
+                        allowBlank: false,
+                        width: 60,
+                        gwidth: 100,
+                        maxLength: 100,
+                        typeAhead: true,
+                        triggerAction: 'all',
+                        lazyRender: true,
+                        store: ['RPC']
+                    },
+                    type: 'ComboBox',
+                    filters: {pfiltro: 'matriz.resp_proc_contratacion_directa_giro_empre', type: 'string'},
+                    valorInicial: 'RPC',
                     id_grupo: 2,
                     grid: true,
                     form: true
@@ -861,6 +920,9 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 {name: 'nombre_gerencia', type: 'string'},
                 {name: 'flujo_sistema', type: 'string'},
+                {name: 'estado_reg_uo', type: 'string'},
+                {name: 'modalidad_directa_giro', type: 'string'},
+                {name: 'resp_proc_contratacion_directa_giro', type: 'string'},
 
             ],
             sortInfo: {
@@ -889,6 +951,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.ocultarComponente(this.Cmp.resp_proc_contratacion_licitacion);
                 this.ocultarComponente(this.Cmp.resp_proc_contratacion_excepcion);
                 this.ocultarComponente(this.Cmp.resp_proc_contratacion_desastres);
+                this.ocultarComponente(this.Cmp.resp_proc_contratacion_directa_giro);
 
                 //24-08-2021 (may) modificacion para flujo_sistema si adq mostrar modalidades y tesoreria no tiene las modalidades
                 this.Cmp.flujo_sistema.on('select', function (cmp, rec) {
@@ -900,12 +963,14 @@ header("content-type: text/javascript; charset=UTF-8");
                         this.Cmp.modalidad_licitacion.reset();
                         this.Cmp.modalidad_excepcion.reset();
                         this.Cmp.modalidad_desastres.reset();
+                        this.Cmp.modalidad_directa_giro.reset();
 
                         this.Cmp.resp_proc_contratacion_menor.reset();
                         this.Cmp.resp_proc_contratacion_anpe.reset();
                         this.Cmp.resp_proc_contratacion_licitacion.reset();
                         this.Cmp.resp_proc_contratacion_excepcion.reset();
                         this.Cmp.resp_proc_contratacion_desastres.reset();
+                        this.Cmp.resp_proc_contratacion_directa_giro.reset();
 
                         this.ocultarComponente(this.Cmp.modalidad_directa);
                         this.ocultarComponente(this.Cmp.modalidad_menor);
@@ -913,12 +978,14 @@ header("content-type: text/javascript; charset=UTF-8");
                         this.ocultarComponente(this.Cmp.modalidad_licitacion);
                         this.ocultarComponente(this.Cmp.modalidad_excepcion);
                         this.ocultarComponente(this.Cmp.modalidad_desastres);
+                        this.ocultarComponente(this.Cmp.modalidad_directa_giro);
 
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_menor);
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_anpe);
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_licitacion);
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_excepcion);
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_desastres);
+                        this.ocultarComponente(this.Cmp.resp_proc_contratacion_directa_giro);
                     }else {
 
                         this.mostrarComponente(this.Cmp.modalidad_directa);
@@ -927,6 +994,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         this.mostrarComponente(this.Cmp.modalidad_licitacion);
                         this.mostrarComponente(this.Cmp.modalidad_excepcion);
                         this.mostrarComponente(this.Cmp.modalidad_desastres);
+                        this.mostrarComponente(this.Cmp.modalidad_directa_giro);
                     }
                 }, this);
 
@@ -1029,6 +1097,17 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 }, this);
 
+                this.Cmp.modalidad_directa_giro.on('select', function (cmp, rec) {
+                    if (this.Cmp.modalidad_directa_giro.getValue() == 'si') {
+                        this.mostrarComponente(this.Cmp.resp_proc_contratacion_directa_giro);
+                        this.ocultarComponente(this.Cmp.modalidad_directa);
+                    }else {
+                        this.ocultarComponente(this.Cmp.resp_proc_contratacion_directa_giro);
+                        this.mostrarComponente(this.Cmp.modalidad_directa);
+                    }
+
+                }, this);
+
 
             },
 
@@ -1044,6 +1123,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.ocultarComponente(this.Cmp.modalidad_licitacion);
                 this.ocultarComponente(this.Cmp.modalidad_excepcion);
                 this.ocultarComponente(this.Cmp.modalidad_desastres);
+                this.ocultarComponente(this.Cmp.modalidad_directa_giro);
             }else {
                 this.mostrarComponente(this.Cmp.modalidad_directa);
                 this.mostrarComponente(this.Cmp.modalidad_menor);
@@ -1051,6 +1131,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.mostrarComponente(this.Cmp.modalidad_licitacion);
                 this.mostrarComponente(this.Cmp.modalidad_excepcion);
                 this.mostrarComponente(this.Cmp.modalidad_desastres);
+                this.mostrarComponente(this.Cmp.modalidad_directa_giro);
             }
 
             if (this.Cmp.modalidad_directa.getValue() == 'si') {
@@ -1099,6 +1180,15 @@ header("content-type: text/javascript; charset=UTF-8");
             }else {
                 this.Cmp.modalidad_desastres.setValue('no')
                 this.ocultarComponente(this.Cmp.resp_proc_contratacion_desastres);
+            }
+
+            if (this.Cmp.modalidad_directa_giro.getValue() == 'si') {
+                this.mostrarComponente(this.Cmp.resp_proc_contratacion_directa_giro);
+                this.ocultarComponente(this.Cmp.flujo_mod_directa);
+                //this.ocultarComponente(this.Cmp.modalidad_directa);
+            }else {
+                this.Cmp.modalidad_directa_giro.setValue('no')
+                this.ocultarComponente(this.Cmp.resp_proc_contratacion_directa_giro);
             }
 
             this.Cmp.modalidad_menor.on('select', function (cmp, rec) {
@@ -1213,6 +1303,16 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.Cmp.resp_proc_contratacion_desastres.reset();
                     this.ocultarComponente(this.Cmp.resp_proc_contratacion_desastres);
                     this.mostrarComponente(this.Cmp.modalidad_menor);
+                }
+
+            }, this);
+
+            this.Cmp.modalidad_directa_giro.on('select', function (cmp, rec) {
+                if (this.Cmp.modalidad_directa_giro.getValue() == 'si') {
+                    this.mostrarComponente(this.Cmp.resp_proc_contratacion_directa_giro);
+                }else {
+                    this.Cmp.resp_proc_contratacion_desastres.reset();
+                    this.ocultarComponente(this.Cmp.resp_proc_contratacion_directa_giro);
                 }
 
             }, this);
