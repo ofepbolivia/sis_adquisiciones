@@ -31,6 +31,7 @@ header("content-type: text/javascript; charset=UTF-8");
         bactGroups:  [0,1,2],
         btestGroups: [0],
         bexcelGroups: [0,1,2],
+        bganttGroups: [0,1,2],
 
         constructor: function(config) {
 
@@ -355,7 +356,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
         fin_requerimiento:function(paneldoc)
         {
-            var d= this.sm.getSelected().data;   
+            var d= this.sm.getSelected().data;
             Phx.CP.loadingShow();
             this.cmbRPC.reset();
 
@@ -371,15 +372,15 @@ header("content-type: text/javascript; charset=UTF-8");
                 failure: this.conexionFail,
                 timeout: this.timeout,
                 scope: this
-            });         
+            });
         },
 
         //breydi.vasquez
         conexionFail:function(resp,data){
             Phx.CP.loadingHide();
-            var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));                                               
+            var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
             console.log('error=> ',reg);
-            
+
             Ext.Msg.show({
                 title:'<h1 style="font-size:15px;">Aviso!</h1>',
                 msg: '<p style="font-weight:bold; font-size:12px;">'+reg.ROOT.detalle.mensaje+'</p>',
@@ -388,14 +389,14 @@ header("content-type: text/javascript; charset=UTF-8");
                 height:200,
                 icon: Ext.MessageBox.WARNING,
                 scope:this
-            });            
+            });
 
-            if (reg.ROOT.error){                
-                
+            if (reg.ROOT.error){
+
                 if (reg.ROOT.detalle.mensaje.search('centro de costo ->') >= 0 ){
-                        Ext.Ajax.request({                
+                        Ext.Ajax.request({
                         url:'../../sis_adquisiciones/control/Solicitud/aprobarPresupuestoSolicitud',
-                        params: { id_solicitud: data.params.id_solicitud, aprobar:'no'},                
+                        params: { id_solicitud: data.params.id_solicitud, aprobar:'no'},
                         success: function(resp){
                             var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
                             !reg.ROOT.error && this.reload();
@@ -406,13 +407,13 @@ header("content-type: text/javascript; charset=UTF-8");
                     });
                 }
             }
-            
+
             this.reload();
         },
         successSinc:function(resp){
 
             Phx.CP.loadingHide();
-            var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));                        
+            var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
             console.log('succ=> ',reg);
             if(!reg.ROOT.error){
 
@@ -474,7 +475,7 @@ header("content-type: text/javascript; charset=UTF-8");
             //habilitar reporte de colicitud de comrpa y preorden de compra
             this.menuAdq.enable();
             if(data['estado']==  'borrador' || data['estado']==  'Borrador'){
-                this.getBoton('fin_requerimiento').enable();                                
+                this.getBoton('fin_requerimiento').enable();
             }
             else{
                 this.getBoton('fin_requerimiento').disable();
@@ -509,16 +510,16 @@ header("content-type: text/javascript; charset=UTF-8");
         },
 
         validarPresupuesto:function(){
-            var d= this.sm.getSelected().data; 
-            Phx.CP.loadingShow();            
-            Ext.Ajax.request({                
+            var d= this.sm.getSelected().data;
+            Phx.CP.loadingShow();
+            Ext.Ajax.request({
                 url:'../../sis_adquisiciones/control/Solicitud/aprobarPresupuestoSolicitud',
-                params: { id_solicitud: d.id_solicitud, aprobar: 'si'},                
+                params: { id_solicitud: d.id_solicitud, aprobar: 'si'},
                 success: this.successSinc,
                 failure: this.conexionFailure,
                 timeout: this.timeout,
                 scope: this
-            });            
+            });
         },
 
 

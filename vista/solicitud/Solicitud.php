@@ -17,8 +17,8 @@ header("content-type: text/javascript; charset=UTF-8");
             viewConfig: {
                 //stripeRows: false,
                 autoFill: true,
-                getRowClass: function (record) {                    
-                    
+                getRowClass: function (record) {
+
                     if (record.data.prioridad == 'C') {
                         if(record.data.presupuesto_aprobado == 'sin_presupuesto_cc'){
                             return 'sin_presupuestos_cc';
@@ -28,7 +28,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     } else if (record.data.prioridad == 'B') {
                         if(record.data.presupuesto_aprobado == 'sin_presupuesto_cc'){
                             return 'sin_presupuestos_cc';
-                        }else{                        
+                        }else{
                             return 'prioridad_importanteB';
                         }
                     } else if (record.data.prioridad == 'AOG') {
@@ -75,7 +75,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 //this.addButton('diagrama_gantt',{ grupo:[0,1,2],text:'Gantt', iconCls: 'bgantt', disabled:true, handler: this.diagramGantt, tooltip: '<b>Diagrama Gantt de proceso macro</b>'});
 
-                this.addBotonesGantt();
+                //this.addBotonesGantt();
                 this.addButton('btnChequeoDocumentosWf',
                     {
                         text: 'Documentos',
@@ -216,34 +216,34 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.tbar.add(this.menuAdq);
             },
 
-            addBotonesGantt: function () {
-                this.menuAdqGantt = new Ext.Toolbar.SplitButton({
-                    id: 'b-diagrama_gantt-' + this.idContenedor,
-                    text: 'Gantt',
-                    disabled: true,
-                    grupo: [0, 1, 2],
-                    iconCls: 'bgantt',
-                    handler: this.diagramGanttDinamico,
-                    scope: this,
-                    menu: {
-                        items: [{
-                            id: 'b-gantti-' + this.idContenedor,
-                            text: 'Gantt Imagen',
-                            tooltip: '<b>Mues un reporte gantt en formato de imagen</b>',
-                            handler: this.diagramGantt,
-                            scope: this
-                        }, {
-                            id: 'b-ganttd-' + this.idContenedor,
-                            text: 'Gantt Dinámico',
-                            tooltip: '<b>Muestra el reporte gantt facil de entender</b>',
-                            handler: this.diagramGanttDinamico,
-                            scope: this
-                        }
-                        ]
-                    }
-                });
-                this.tbar.add(this.menuAdqGantt);
-            },
+            // addBotonesGantt: function () {
+            //     this.menuAdqGantt = new Ext.Toolbar.SplitButton({
+            //         id: 'b-diagrama_gantt-' + this.idContenedor,
+            //         text: 'Gantt',
+            //         disabled: true,
+            //         grupo: [0, 1, 2],
+            //         iconCls: 'bgantt',
+            //         handler: this.diagramGanttDinamico,
+            //         scope: this,
+            //         menu: {
+            //             items: [{
+            //                 id: 'b-gantti-' + this.idContenedor,
+            //                 text: 'Gantt Imagen',
+            //                 tooltip: '<b>Mues un reporte gantt en formato de imagen</b>',
+            //                 handler: this.diagramGantt,
+            //                 scope: this
+            //             }, {
+            //                 id: 'b-ganttd-' + this.idContenedor,
+            //                 text: 'Gantt Dinámico',
+            //                 tooltip: '<b>Muestra el reporte gantt facil de entender</b>',
+            //                 handler: this.diagramGanttDinamico,
+            //                 scope: this
+            //             }
+            //             ]
+            //         }
+            //     });
+            //     this.tbar.add(this.menuAdqGantt);
+            // },
 
             Grupos: [{
                 /*layout: 'column',
@@ -1414,7 +1414,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.getBoton('btnChequeoDocumentosWf').setDisabled(false);
                 Phx.vista.Solicitud.superclass.preparaMenu.call(this, n);
                 //this.getBoton('btnReporte').setDisabled(false);
-                this.getBoton('diagrama_gantt').enable();
+                //this.getBoton('diagrama_gantt').enable();
                 this.getBoton('btnObs').enable();
                 this.getBoton('btnDetalleGasto').enable();
 
@@ -1427,7 +1427,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     //this.getBoton('btnReporte').setDisabled(true);
                     //this.getBoton('btnChequeoDocumentos').setDisabled(true);
                     this.getBoton('btnChequeoDocumentosWf').setDisabled(true);
-                    this.getBoton('diagrama_gantt').disable();
+                    //this.getBoton('diagrama_gantt').disable();
                     this.getBoton('btnObs').disable();
                     this.getBoton('btnDetalleGasto').disable();
 
@@ -1538,7 +1538,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 direction: 'DESC'
             },
             bdel: true,
-            bsave: false
+            bsave: false,
+            bgantt:true,
         }
     )
 </script>
