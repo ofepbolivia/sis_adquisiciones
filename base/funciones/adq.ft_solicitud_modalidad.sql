@@ -112,7 +112,9 @@ BEGIN
       v_padres = orga.f_get_arbol_padre_uo (v_id_uo);
 
       --obtenemos la gerencia a la que pertenece el funcionario
-      v_id_uo_sol =   orga.f_get_uo_gerencia_area_ope(NULL, v_solicitud.id_funcionario, now()::Date);
+      --25-10-2021
+      --v_id_uo_sol =   orga.f_get_uo_gerencia_area_ope(NULL, v_solicitud.id_funcionario, now()::Date);
+      v_id_uo_sol =   orga.f_get_uo_gerencia_ope(NULL, v_solicitud.id_funcionario, now()::Date);
 
       --nombre unidad
       SELECT uo.nombre_unidad
@@ -188,7 +190,9 @@ BEGIN
 
 
 												-- recupera la uo gerencia del funcionario
-                                                v_id_uo_matriz =   orga.f_get_uo_gerencia_area_ope(v_id_matriz.id_uo, NULL, now()::Date);
+                                                --25-10-2021
+                                                --v_id_uo_matriz =   orga.f_get_uo_gerencia_area_ope(v_id_matriz.id_uo, NULL, now()::Date);
+                                                v_id_uo_matriz =   orga.f_get_uo_gerencia_ope(v_id_matriz.id_uo, NULL, now()::Date);
 
 
                                                 --RAISE EXCEPTION 'MATRIZ % - %', v_id_uo_matriz,v_id_uo_sol;
