@@ -172,7 +172,7 @@ BEGIN
                                                 --RAISE NOTICE 'MATRIZ % - %',v_id_matriz.id_matriz_modalidad, v_id_matriz.id_uo;
                                                 --RAISE EXCEPTION 'MATRIZ % - %',v_id_matriz.id_matriz_modalidad, v_id_matriz.id_uo;
 
-                                                SELECT fc.id_funcionario
+                                                /*SELECT fc.id_funcionario
                                                 into v_funcionario
                                                 FROM orga.vfuncionario_cargo fc
                                                 WHERE fc.id_uo = v_id_matriz.id_uo
@@ -186,7 +186,7 @@ BEGIN
 
                                                 IF (v_funcionario is null) THEN
                                                     RAISE EXCEPTION 'No se pudo encontrar un Funcionario activo en el cargo responsable de la aprobacion: %, verificar la parametrización en la Matriz Tipo Contratación - Aprobador, Nro:%, id_uo = %.  Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre). ', v_nombre_unidad,  v_id_matriz.id_matriz_modalidad,v_id_matriz.id_uo ;
-                                                END IF;
+                                                END IF;*/
 
 
 												-- recupera la uo gerencia del funcionario
