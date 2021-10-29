@@ -332,7 +332,10 @@ BEGIN
                    mm.resp_proc_contratacion_directa,
                    mm.resp_proc_contratacion_licitacion,
                    mm.resp_proc_contratacion_desastres,
-                   mm.resp_proc_contratacion_excepcion
+                   mm.resp_proc_contratacion_excepcion,
+
+                   mm.modalidad_directa_giro,
+                   mm.resp_proc_contratacion_directa_giro
 
             into v_modalidades_matriz
             FROM  adq.tmatriz_modalidad mm
@@ -452,7 +455,10 @@ BEGIN
             resp_proc_contratacion_directa = v_modalidades_matriz.resp_proc_contratacion_directa,
             resp_proc_contratacion_licitacion = v_modalidades_matriz.resp_proc_contratacion_licitacion,
             resp_proc_contratacion_desastres = v_modalidades_matriz.resp_proc_contratacion_desastres,
-            resp_proc_contratacion_excepcion = v_modalidades_matriz.resp_proc_contratacion_excepcion
+            resp_proc_contratacion_excepcion = v_modalidades_matriz.resp_proc_contratacion_excepcion,
+
+            modalidad_directa_giro = v_modalidades_matriz.modalidad_directa_giro,
+            resp_proc_contratacion_directa_giro = v_modalidades_matriz.resp_proc_contratacion_directa_giro
 
             WHERE id_matriz_modalidad = v_id_matriz_mod.id_matriz_modalidad;
 
@@ -481,7 +487,10 @@ BEGIN
                             ms.resp_proc_contratacion_directa,
                             ms.resp_proc_contratacion_licitacion,
                             ms.resp_proc_contratacion_desastres,
-                            ms.resp_proc_contratacion_excepcion
+                            ms.resp_proc_contratacion_excepcion,
+
+                            ms.modalidad_directa_giro,
+                            ms.resp_proc_contratacion_directa_giro
 
                     INTO v_modalidades_solicitud
                     FROM adq.tmodalidad_solicitud ms
@@ -511,6 +520,17 @@ BEGIN
                           WHERE mod.condicion_menor <= v_total_det
                           and mod.condicion_mayor >= v_total_det
                           and mod.codigo = 'mod_excepcion'
+                          and mod.con_concepto = 'si';
+
+                    ELSIF v_modalidades_solicitud.modalidad_directa_giro = 'si' THEN
+
+                          --COMPARACION CON LA TABLA DE MODALIDAD que ingrese los que se parametricen con conceptos de gasto
+                          SELECT mod.codigo
+                          into v_codigo_modalidad
+                          FROM adq.tmodalidades mod
+                          WHERE mod.condicion_menor <= v_total_det
+                          and mod.condicion_mayor >= v_total_det
+                          and mod.codigo = 'mod_directa_giro'
                           and mod.con_concepto = 'si';
 
                     ELSE
@@ -625,6 +645,22 @@ BEGIN
 
                             END IF;
 
+                        ELSIF (v_codigo_modalidad ='mod_directa_giro') THEN --29-10-2021
+                        	v_modalidad = v_modalidades_solicitud.modalidad_directa_giro;
+
+                            IF v_modalidad = 'si' THEN
+                                UPDATE adq.tmodalidad_solicitud set
+                                calificacion = 'SI'
+                                WHERE id_modalidad_solicitud = v_modalidad_solicitud.id_modalidad_solicitud;
+                            ELSE
+                            	UPDATE adq.tmodalidad_solicitud set
+                                calificacion = 'NO'
+                                WHERE id_modalidad_solicitud = v_modalidad_solicitud.id_modalidad_solicitud;
+
+                            	raise exception 'Este proceso pertenece al Tipo Contratación: %, y no esta habilitado para la %  en la Matriz Tipo Contratación-Aprobador. Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre). ',v_nom_tipo_contratacion, upper(v_nombre_modalidad);
+
+                            END IF;
+
                         /*
                         ELSIF (v_modalidades_solicitud.modalidad_desastres ='si') THEN
                         	v_modalidad = 'mod_';
@@ -661,7 +697,10 @@ BEGIN
                                 ms.resp_proc_contratacion_directa,
                                 ms.resp_proc_contratacion_licitacion,
                                 ms.resp_proc_contratacion_desastres,
-                                ms.resp_proc_contratacion_excepcion
+                                ms.resp_proc_contratacion_excepcion,
+
+                                ms.modalidad_directa_giro,
+                                ms.resp_proc_contratacion_directa_giro
 
                         INTO v_solu_modalidades
                         FROM adq.tmodalidad_solicitud ms
@@ -688,6 +727,10 @@ BEGIN
                         ELSIF (v_solu_modalidades.modalidad_excepcion = 'si' and v_codigo_modalidad = 'mod_excepcion') THEN
                         	v_respuesta_modalidad = 'mod_excepcion';
                             v_proceso_contratacion = v_solu_modalidades.resp_proc_contratacion_excepcion;
+
+                        ELSIF (v_solu_modalidades.modalidad_directa_giro = 'si' and v_codigo_modalidad = 'mod_directa_giro') THEN
+                        	v_respuesta_modalidad = 'mod_directa_giro';
+                            v_proceso_contratacion = v_solu_modalidades.resp_proc_contratacion_directa_giro;
 
                         END IF;
 

@@ -1213,3 +1213,11 @@ IS 'si/no';
 COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_directa_giro
 IS 'RPC/RPA';
 /***********************************F-SCP-MAY-ADQ-0-19/10/2021****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-29/10/2021****************************************/
+ALTER TABLE adq.tmodalidad_solicitud
+ADD COLUMN modalidad_directa_giro VARCHAR(50);
+ALTER TABLE adq.tmodalidad_solicitud
+ADD COLUMN resp_proc_contratacion_directa_giro VARCHAR(300);
+
+/***********************************F-SCP-MAY-ADQ-0-29/10/2021****************************************/
