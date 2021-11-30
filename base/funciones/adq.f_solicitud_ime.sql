@@ -171,6 +171,7 @@ DECLARE
        --(may) 01-09-2021
        v_fecha_solicitud		    date;
        v_id_funcionario_sol	        integer;
+       v_codigo_poa					varchar;
 
 BEGIN
 
@@ -1314,13 +1315,15 @@ BEGIN
             s.fecha_soli,
             s.numero,
             s.estado,
-            s.id_solicitud
+            s.id_solicitud,
+            s.codigo_poa
           into
             v_id_proceso_wf,
             v_fecha_soli,
             v_numero_sol,
             v_estado_actual,
-            v_id_solicitud
+            v_id_solicitud,
+            v_codigo_poa
 
           from adq.tsolicitud s
           where s.id_proceso_wf=v_parametros.id_proceso_wf_act;
@@ -1337,8 +1340,11 @@ BEGIN
           inner join wf.ttipo_estado te on te.id_tipo_estado = ew.id_tipo_estado
           where ew.id_estado_wf = v_parametros.id_estado_wf_act;
 
-
-
+        --30-11-2021 (may) control registro datos POA
+        IF (v_codigo_estado='vbpoa' and (v_codigo_poa is null or v_codigo_poa='') ) THEN
+        	RAISE EXCEPTION 'Es necesario registrar el código POA previamente desde VoBo Solicitud(Poa).';
+        END IF;
+        --
 
            -- obtener datos tipo estado
            select
