@@ -1354,6 +1354,16 @@ header("content-type: text/javascript; charset=UTF-8");
 
                     var anio = this.Cmp.fecha_soli.getValue();
                     anio = anio.getFullYear();
+
+                    //08-12-2021(may) para ampliacion a la siguiente gestion muestre el contrato del proveedor
+                    console.log('llegagestionprecontrato', combo.value )
+                    if (combo.value == 'ampliacion_contrato') {
+                        anio = anio+1;
+                    }else{
+                        anio = anio;
+                    }
+
+
                     this.Cmp.id_contrato.reset();
                     this.Cmp.id_contrato.store.baseParams.filter = "[{\"type\":\"numeric\",\"comparison\":\"eq\", \"value\":\"" + cmb.getValue() + "\",\"field\":\"CON.id_proveedor\"}]";
                     this.Cmp.id_contrato.store.baseParams.filtro_directo = "(((CON.fecha_fin is null) or (con.fecha_fin + interval ''15 day'' )::date >= (''" + today + "''::date)) and (pw.nro_tramite LIKE ''LEGAL%'' or ((pw.nro_tramite LIKE ''CI%'' or pw.nro_tramite LIKE ''CN%'')  and  (ges.gestion < ''"+ anio +"''))))";
