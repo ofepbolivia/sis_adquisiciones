@@ -789,7 +789,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         triggerAction: 'all',
                         lazyRender: true,
                         mode: 'local',
-                        gwidth: 100,
+                        gwidth: 160,
                         store: ['no_necesita', 'contrato_nuevo', 'contrato_adhesion', 'ampliacion_contrato'],
                         anchor: '83%'
                     },
@@ -801,7 +801,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         options: ['no_necesita', 'contrato_nuevo', 'contrato_adhesion', 'ampliacion_contrato'],
                     },
                     valorInicial: 'no_necesita',
-                    grid: false,
+                    grid: true,
                     form: true
                 },
 
