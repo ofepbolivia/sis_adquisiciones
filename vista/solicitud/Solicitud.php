@@ -813,7 +813,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         typeAhead: false,
                         forceSelection: true,
                         allowBlank: true,
-                        disabled: true,
+                        disabled: false,
                         emptyText: 'Contratos...',
                         store: new Ext.data.JsonStore({
                             url: '../../sis_workflow/control/Tabla/listarTablaCombo',
@@ -1390,6 +1390,49 @@ header("content-type: text/javascript; charset=UTF-8");
 
                         )
                 }),*/
+            onButtonEdit: function () {              
+                Phx.vista.Solicitud.superclass.onButtonEdit.call(this);
+                
+                var fecha = this.Cmp.fecha_soli.getValue();
+                var combo = this.Cmp.precontrato.getValue();
+                var idProv = this.Cmp.id_proveedor.getValue();                
+                var dd = fecha.getDate();
+                var mm = fecha.getMonth() + 1; //January is 0!
+                var yyyy = fecha.getFullYear();
+                if (dd < 10) {
+                    dd = '0' + dd;
+                }
+                if (mm < 10) {
+                    mm = '0' + mm;
+                }
+
+                var today = dd + '/' + mm + '/' + yyyy;
+
+                var anio = this.Cmp.fecha_soli.getValue();
+                anio = anio.getFullYear();
+
+                // para ampliacion a la siguiente gestion muestre el contrato del proveedor                
+                if (combo == 'ampliacion_contrato') {
+                    anio = anio+1;                    
+                }else{
+                    anio = anio;                    
+                }
+
+                this.Cmp.id_proveedor.on('select', function (cmb, record, index) {                      
+
+                    this.Cmp.id_contrato.reset();
+                    this.Cmp.id_contrato.store.baseParams.id_tabla = 3;
+                    this.Cmp.id_contrato.store.baseParams.filter = "[{\"type\":\"numeric\",\"comparison\":\"eq\", \"value\":\"" + cmb.getValue() + "\",\"field\":\"CON.id_proveedor\"}]";
+                    this.Cmp.id_contrato.store.baseParams.filtro_directo = "(((CON.fecha_fin is null) or (con.fecha_fin + interval ''15 day'' )::date >= (''" + today + "''::date)) and (pw.nro_tramite LIKE ''LEGAL%'' or ((pw.nro_tramite LIKE ''CI%'' or pw.nro_tramite LIKE ''CN%'')  and  (ges.gestion < ''"+ anio +"''))))";
+                    this.Cmp.id_contrato.modificado = true;
+                }, this);
+
+                this.Cmp.id_contrato.store.baseParams.id_tabla = 3;
+                this.Cmp.id_contrato.store.baseParams.filter = "[{\"type\":\"numeric\",\"comparison\":\"eq\", \"value\":\"" + idProv + "\",\"field\":\"CON.id_proveedor\"}]";
+                this.Cmp.id_contrato.store.baseParams.filtro_directo = "(((CON.fecha_fin is null) or (con.fecha_fin + interval ''15 day'' )::date >= (''" + today + "''::date)) and (pw.nro_tramite LIKE ''LEGAL%'' or ((pw.nro_tramite LIKE ''CI%'' or pw.nro_tramite LIKE ''CN%'')  and  (ges.gestion < ''"+ anio +"''))))";
+                this.Cmp.id_contrato.modificado = true;                  
+            },  
+                        
             loadCheckDocumentosSolWf: function () {
                 var rec = this.sm.getSelected();
                 rec.data.nombreVista = this.nombreVista;

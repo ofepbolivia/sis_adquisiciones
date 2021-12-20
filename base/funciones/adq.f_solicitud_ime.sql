@@ -173,6 +173,11 @@ DECLARE
        v_id_funcionario_sol	        integer;
        v_codigo_poa					varchar;
 
+       --bvp 20/12/2021
+       v_registros_con				record;
+       v_registros_documento		record;
+       v_id_documento_wf_op			integer;
+
 BEGIN
 
     v_nombre_funcion = 'adq.f_solicitud_ime';
@@ -436,7 +441,62 @@ BEGIN
            -- verificar documentos
            v_resp_doc = wf.f_verifica_documento(p_id_usuario, v_id_estado_wf);
 
+           -- {dev:bvasquez, date: 20/12/2021, desc: adicionar contrato en documentos, relacionado a tramite}
+            IF  v_parametros.id_contrato is not null  THEN
 
+              SELECT
+                con.id_proceso_wf,
+                con.numero,
+                con.estado,
+                pwf.nro_tramite
+              INTO
+              v_registros_con
+              FROM leg.tcontrato con
+              INNER JOIN wf.tproceso_wf pwf on pwf.id_proceso_wf = con.id_proceso_wf
+              WHERE con.id_contrato = v_parametros.id_contrato;                    
+
+              -- obtenemos el documentos contrato del origen
+              SELECT
+                *
+              into
+                v_registros_documento
+              FROM wf.tdocumento_wf d
+              INNER JOIN wf.ttipo_documento td on td.id_tipo_documento = d.id_tipo_documento
+              WHERE td.codigo = 'CONTRATO' and
+                    d.id_proceso_wf = v_registros_con.id_proceso_wf;
+
+                if ( v_registros_documento.url is null or v_registros_documento.chequeado = 'no' ) then 
+                        raise exception 'El Contrato N°: %, no fue adjuntado al tramite legal: %  ', v_registros_con.numero,  v_registros_con.nro_tramite;
+                end if;
+
+                -- consulta para actulizar el contrato al tramite creado
+                  select
+                  dwf.id_documento_wf
+                into
+                  v_id_documento_wf_op
+                from wf.tdocumento_wf dwf
+                inner  join  wf.ttipo_documento td on td.id_tipo_documento = dwf.id_tipo_documento
+                where td.codigo = 'CONTRATOCN'  and dwf.id_proceso_wf = v_id_proceso_wf;
+
+                  UPDATE
+                  wf.tdocumento_wf
+                SET
+                    id_usuario_mod = p_id_usuario,
+                    fecha_mod = now(),
+                    chequeado = v_registros_documento.chequeado,
+                    url = v_registros_documento.url,
+                    extension = v_registros_documento.extension,
+                    obs = v_registros_documento.obs,
+                    chequeado_fisico = v_registros_documento.chequeado_fisico,
+                    id_usuario_upload = v_registros_documento.id_usuario_upload,
+                    fecha_upload = v_registros_documento.fecha_upload,
+                    id_proceso_wf_ori = v_registros_documento.id_proceso_wf,
+                    id_documento_wf_ori = v_registros_documento.id_documento_wf,
+                    nro_tramite_ori = v_registros_con.nro_tramite
+                  WHERE
+                  id_documento_wf = v_id_documento_wf_op;             
+                     
+            END IF;
 		   --Definicion de la respuesta
 		   v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Solicitud de Compras almacenado(a) con exito (id_solicitud'||v_id_solicitud||')');
            v_resp = pxp.f_agrega_clave(v_resp,'id_solicitud',v_id_solicitud::varchar);
@@ -464,7 +524,9 @@ BEGIN
              s.estado,
              s.num_tramite,
              s.fecha_soli,
-             s.id_categoria_compra
+             s.id_categoria_compra,
+             s.id_contrato,
+             s.id_proceso_wf
             into
              v_registros
             from
@@ -542,9 +604,69 @@ BEGIN
             precontrato = COALESCE(v_parametros.precontrato,'no'),
             nro_po = trim(both ' ' from v_parametros.nro_po),
             fecha_po = v_parametros.fecha_po,
-            prioridad = v_parametros.id_prioridad
+            prioridad = v_parametros.id_prioridad,
+            id_contrato = v_parametros.id_contrato
 
 			where id_solicitud = v_parametros.id_solicitud;
+
+      IF (v_parametros.id_contrato is not null) THEN
+
+        IF (v_registros.id_contrato != v_parametros.id_contrato) THEN
+
+          SELECT
+            con.id_proceso_wf,
+            con.numero,
+            con.estado,
+            pwf.nro_tramite
+          INTO
+          v_registros_con
+          FROM leg.tcontrato con
+          INNER JOIN wf.tproceso_wf pwf on pwf.id_proceso_wf = con.id_proceso_wf
+          WHERE con.id_contrato = v_parametros.id_contrato;                    
+
+          -- obtenemos el documentos contrato del origen
+          SELECT
+            *
+          into
+            v_registros_documento
+          FROM wf.tdocumento_wf d
+          INNER JOIN wf.ttipo_documento td on td.id_tipo_documento = d.id_tipo_documento
+          WHERE td.codigo = 'CONTRATO' and
+                d.id_proceso_wf = v_registros_con.id_proceso_wf;
+
+            if ( v_registros_documento.url is null or v_registros_documento.chequeado = 'no' ) then 
+                    raise exception 'El Contrato N°: %, no fue adjuntado al tramite legal: %  ', v_registros_con.numero,  v_registros_con.nro_tramite;
+            end if;
+
+            -- consulta para actulizar el contrato al tramite creado
+              select
+              dwf.id_documento_wf
+            into
+              v_id_documento_wf_op
+            from wf.tdocumento_wf dwf
+            inner  join  wf.ttipo_documento td on td.id_tipo_documento = dwf.id_tipo_documento
+            where td.codigo = 'CONTRATOCN'  and dwf.id_proceso_wf = v_registros.id_proceso_wf;
+
+              UPDATE
+              wf.tdocumento_wf
+            SET
+                id_usuario_mod = p_id_usuario,
+                fecha_mod = now(),
+                chequeado = v_registros_documento.chequeado,
+                url = v_registros_documento.url,
+                extension = v_registros_documento.extension,
+                obs = v_registros_documento.obs,
+                chequeado_fisico = v_registros_documento.chequeado_fisico,
+                id_usuario_upload = v_registros_documento.id_usuario_upload,
+                fecha_upload = v_registros_documento.fecha_upload,
+                id_proceso_wf_ori = v_registros_documento.id_proceso_wf,
+                id_documento_wf_ori = v_registros_documento.id_documento_wf,
+                nro_tramite_ori = v_registros_con.nro_tramite
+              WHERE
+              id_documento_wf = v_id_documento_wf_op; 
+                                    
+          END IF;            
+      END IF;
 
 			--Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Solicitud de Compras modificado(a)');
