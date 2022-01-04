@@ -218,6 +218,11 @@ BEGIN
         	raise exception 'ESTIMADO USUARIO,  A SOLICITUD DEL DEPARTAMENTO DE FINANZAS YA NO ES POSIBLE REGISTRAR SOLICITUDES CNAPD Y CINTPD PARA LA GESTION 2019.';
         end if;
 
+         --(may) 04-01-2022 para la gestion 2021 no se pueden realizar registros para procesos de compra hasta nuevo aviso
+        IF (v_fecha_aux = 2022 and v_codigo_cat in ('CNPD', 'CINPD', '')) THEN
+        	raise exception 'ESTIMADO USUARIO,  A SOLICITUD DEL DEPARTAMENTO DE ADMINISTRACION NO ES POSIBLE REGISTRAR SOLICITUDES DE COMPRA PARA LA GESTION 2022 HASTA NUEVO AVISO.';
+        end if;
+
         --reglas
 
         -- determina la fecha del periodo
