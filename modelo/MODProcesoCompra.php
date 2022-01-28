@@ -364,8 +364,9 @@ class MODProcesoCompra extends MODbase
         $this->captura('fecha_ini_proc', 'date');
         $this->captura('precio_bs', 'numeric');
         $this->captura('precio_moneda_solicitada', 'numeric');
+        $this->captura('total_adjudicado_mb', 'numeric');
         $this->captura('total_adjudicado', 'numeric');
-        
+
         $this->captura('moneda_solicitada', 'varchar');
         $this->captura('requiere_contrato', 'text');
         $this->captura('cuce', 'varchar');

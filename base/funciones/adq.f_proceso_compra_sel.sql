@@ -592,6 +592,7 @@ BEGIN
                                  pro.fecha_ini_proc,
                                  sol.precio_total_mb as precio_bs,
             					 sol.precio_total as precio_moneda_solicitada,
+                                 d.total_adjudicado_mb,
                                  d.total_adjudicado,
 
                                  sol.codigo as moneda_solicitada,
