@@ -571,7 +571,19 @@ BEGIN
             	v_filtro = ' and (pro.estados_cotizacion like ''%pago_habilitado%'' or pro.estados_cotizacion like ''%finalizada%'')';
             END IF;
 
-        	v_consulta = 'select sol.num_tramite,
+        	v_consulta = '
+                        WITH detalle as (
+                                       SELECT
+                                        cd.id_cotizacion,
+                                        sum(cd.cantidad_adju *cd.precio_unitario) as total_adjudicado,
+                                        sum(cd.cantidad_adju *cd.precio_unitario_mb) as total_adjudicado_mb
+                                      FROM  adq.tcotizacion_det  cd
+                                      WHERE cd.estado_reg = ''activo''
+                                      GROUP by cd.id_cotizacion
+
+                        )
+
+            				select sol.num_tramite,
             					 sol.justificacion,
                                  sol.desc_funcionario1 as solicitante,
        		  					 usu.desc_persona as tecnico_adquisiciones,
@@ -580,6 +592,8 @@ BEGIN
                                  pro.fecha_ini_proc,
                                  sol.precio_total_mb as precio_bs,
             					 sol.precio_total as precio_moneda_solicitada,
+                                 d.total_adjudicado,
+
                                  sol.codigo as moneda_solicitada,
             					 case when pro.requiere_contrato = ''si'' then ''Contrato''
                  					else case when sol.tipo=''bien'' then ''Orden de Bien''
@@ -599,6 +613,9 @@ BEGIN
             left join adq.tsolicitud tsol on tsol.id_solicitud = sol.id_solicitud and tsol.estado_reg = ''activo''
             left join adq.tmodalidades tmod on tmod.codigo = tsol.tipo_modalidad and tmod.estado_reg = ''activo''
             left join param.tdepto dep on dep.id_depto = sol.id_depto
+
+            inner join adq.tcotizacion cot on cot.id_proceso_compra = pro.id_proceso_compra
+            inner join detalle d on d.id_cotizacion = cot.id_cotizacion
 
             where pro.fecha_ini_proc BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin ||'''
             and sol.precio_total_mb > ' || v_parametros.monto_mayor ||'

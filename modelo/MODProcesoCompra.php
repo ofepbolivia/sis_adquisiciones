@@ -364,6 +364,8 @@ class MODProcesoCompra extends MODbase
         $this->captura('fecha_ini_proc', 'date');
         $this->captura('precio_bs', 'numeric');
         $this->captura('precio_moneda_solicitada', 'numeric');
+        $this->captura('total_adjudicado', 'numeric');
+        
         $this->captura('moneda_solicitada', 'varchar');
         $this->captura('requiere_contrato', 'text');
         $this->captura('cuce', 'varchar');
@@ -372,6 +374,8 @@ class MODProcesoCompra extends MODbase
         $this->captura('nombre_depto', 'varchar');
 
         $this->captura('nro_po', 'varchar');
+
+
 
         //Ejecuta la instruccion
         $this->armarConsulta();
