@@ -219,8 +219,9 @@ BEGIN
         end if;
 
          --(may) 04-01-2022 para la gestion 2021 no se pueden realizar registros para procesos de compra hasta nuevo aviso
+         --(may) 10-01-2022 se comenta raice inicio de procesos
         IF (v_fecha_aux = 2022 and v_codigo_cat in ('CNPD', 'CINPD', '')) THEN
-        	raise exception 'ESTIMADO USUARIO,  A SOLICITUD DEL DEPARTAMENTO DE ADMINISTRACION NO ES POSIBLE REGISTRAR SOLICITUDES DE COMPRA PARA LA GESTION 2022 HASTA NUEVO AVISO.';
+        	--raise exception 'ESTIMADO USUARIO,  A SOLICITUD DEL DEPARTAMENTO DE ADMINISTRACION NO ES POSIBLE REGISTRAR SOLICITUDES DE COMPRA PARA LA GESTION 2022 HASTA NUEVO AVISO.';
         end if;
 
         --reglas
