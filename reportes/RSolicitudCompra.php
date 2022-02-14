@@ -746,6 +746,7 @@ Class RSolicitudCompra extends Report {
         $barcodeobj = new TCPDF2DBarcode($cadena_qr, 'QRCODE,M');
         $png = $barcodeobj->getBarcodePngData($w = 8, $h = 8, $color = array(0, 0, 0));
         $im = imagecreatefromstring($png);
+        $nom = preg_replace('([^A-Za-z0-9])', '_', $nom);
         if ($im !== false) {
             header('Content-Type: image/png');
             imagepng($im, dirname(__FILE__) . "/../../reportes_generados/" . $nom . ".png");
