@@ -64,6 +64,7 @@ class MODMatrizModalidad extends MODbase{
 		$this->captura('estado_reg_uo','varchar');
 		$this->captura('modalidad_directa_giro','varchar');
 		$this->captura('resp_proc_contratacion_directa_giro','varchar');
+		$this->captura('estado_reg_cargo','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

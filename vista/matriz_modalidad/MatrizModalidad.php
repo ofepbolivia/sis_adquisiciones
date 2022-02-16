@@ -344,6 +344,22 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 {
                     config: {
+                        name: 'estado_reg_cargo',
+                        fieldLabel: 'Estado Aprobadorn',
+                        allowBlank: true,
+                        anchor: '30%',
+                        gwidth: 80,
+                        maxLength: 100
+
+                    },
+                    type: 'TextField',
+                    filters: {pfiltro: 'estado_reg_cargo', type: 'string'},
+                    id_grupo: 1,
+                    grid: true,
+                    form: false
+                },
+                {
+                    config: {
                         name: 'flujo_sistema',
                         fieldLabel: 'Flujo Sistema',
                         allowBlank: false,
@@ -923,6 +939,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {name: 'estado_reg_uo', type: 'string'},
                 {name: 'modalidad_directa_giro', type: 'string'},
                 {name: 'resp_proc_contratacion_directa_giro', type: 'string'},
+                {name: 'estado_reg_cargo', type: 'string'},
 
             ],
             sortInfo: {
@@ -943,7 +960,7 @@ header("content-type: text/javascript; charset=UTF-8");
             }],
 
             iniciarEventos: function () {
-
+                //13-12-2021 (may) a partir de la fecha adq podra parametriar varias modalidades para que el solicitante elija cual correponda
                 this.ocultarComponente(this.Cmp.flujo_mod_directa);
                 this.ocultarComponente(this.Cmp.resp_proc_contratacion_directa);
                 this.ocultarComponente(this.Cmp.resp_proc_contratacion_menor);
@@ -1003,7 +1020,8 @@ header("content-type: text/javascript; charset=UTF-8");
                         this.mostrarComponente(this.Cmp.flujo_mod_directa);
                         this.mostrarComponente(this.Cmp.resp_proc_contratacion_directa);
 
-                        this.Cmp.modalidad_menor.reset();
+                        // 20-01-2022 (may) ya no es necesario , porque podra parametrizar varias modalidades y solicitante elige
+                        /*this.Cmp.modalidad_menor.reset();
                         this.Cmp.resp_proc_contratacion_menor.reset();
                         this.Cmp.modalidad_anpe.reset();
                         this.Cmp.resp_proc_contratacion_anpe.reset();
@@ -1012,8 +1030,9 @@ header("content-type: text/javascript; charset=UTF-8");
                         this.Cmp.modalidad_excepcion.reset();
                         this.Cmp.resp_proc_contratacion_excepcion.reset();
                         this.Cmp.modalidad_desastres.reset();
-                        this.Cmp.resp_proc_contratacion_desastres.reset();
-                        this.ocultarComponente(this.Cmp.modalidad_menor);
+                        this.Cmp.resp_proc_contratacion_desastres.reset();*/
+
+                        /*this.ocultarComponente(this.Cmp.modalidad_menor);
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_menor);
                         this.ocultarComponente(this.Cmp.modalidad_anpe);
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_anpe);
@@ -1024,21 +1043,23 @@ header("content-type: text/javascript; charset=UTF-8");
                         this.ocultarComponente(this.Cmp.modalidad_desastres);
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_desastres);
                         this.ocultarComponente(this.Cmp.modalidad_directa_giro);
-                        this.ocultarComponente(this.Cmp.resp_proc_contratacion_directa_giro);
+                        this.ocultarComponente(this.Cmp.resp_proc_contratacion_directa_giro);*/
 
                     }else {
                         this.Cmp.flujo_mod_directa.reset();
                         this.Cmp.resp_proc_contratacion_directa.reset();
+                        this.ocultarComponente(this.Cmp.flujo_mod_directa);
+                        this.ocultarComponente(this.Cmp.resp_proc_contratacion_directa);
 
                         this.Cmp.modalidad_menor.setValue('no');
-                        this.ocultarComponente(this.Cmp.flujo_mod_directa);
+                        /*this.ocultarComponente(this.Cmp.flujo_mod_directa);
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_directa);
                         this.mostrarComponente(this.Cmp.modalidad_menor);
                         this.mostrarComponente(this.Cmp.modalidad_anpe);
                         this.mostrarComponente(this.Cmp.modalidad_licitacion);
                         this.mostrarComponente(this.Cmp.modalidad_excepcion);
                         this.mostrarComponente(this.Cmp.modalidad_desastres);
-                        this.mostrarComponente(this.Cmp.modalidad_directa_giro);
+                        this.mostrarComponente(this.Cmp.modalidad_directa_giro);*/
                     }
 
                 }, this);
@@ -1046,12 +1067,12 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.modalidad_menor.on('select', function (cmp, rec) {
                     if (this.Cmp.modalidad_menor.getValue() == 'si') {
                         this.mostrarComponente(this.Cmp.resp_proc_contratacion_menor);
-                        this.ocultarComponente(this.Cmp.modalidad_directa);
+                        //this.ocultarComponente(this.Cmp.modalidad_directa);
                     }else {
-                        this.Cmp.modalidad_directa.reset();
-                        this.Cmp.flujo_mod_directa.reset();
+                        //this.Cmp.modalidad_directa.reset();
+                        //this.Cmp.flujo_mod_directa.reset();
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_menor);
-                        this.mostrarComponente(this.Cmp.modalidad_directa);
+                        //this.mostrarComponente(this.Cmp.modalidad_directa);
                     }
 
                 }, this);
@@ -1059,10 +1080,10 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.modalidad_anpe.on('select', function (cmp, rec) {
                     if (this.Cmp.modalidad_anpe.getValue() == 'si') {
                         this.mostrarComponente(this.Cmp.resp_proc_contratacion_anpe);
-                        this.ocultarComponente(this.Cmp.modalidad_directa);
+                        //this.ocultarComponente(this.Cmp.modalidad_directa);
                     }else {
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_anpe);
-                        this.mostrarComponente(this.Cmp.modalidad_directa);
+                        //this.mostrarComponente(this.Cmp.modalidad_directa);
                     }
 
                 }, this);
@@ -1070,10 +1091,10 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.modalidad_licitacion.on('select', function (cmp, rec) {
                     if (this.Cmp.modalidad_licitacion.getValue() == 'si') {
                         this.mostrarComponente(this.Cmp.resp_proc_contratacion_licitacion);
-                        this.ocultarComponente(this.Cmp.modalidad_directa);
+                        //this.ocultarComponente(this.Cmp.modalidad_directa);
                     }else {
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_licitacion);
-                        this.mostrarComponente(this.Cmp.modalidad_directa);
+                        //this.mostrarComponente(this.Cmp.modalidad_directa);
                     }
 
                 }, this);
@@ -1081,10 +1102,10 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.modalidad_excepcion.on('select', function (cmp, rec) {
                     if (this.Cmp.modalidad_excepcion.getValue() == 'si') {
                         this.mostrarComponente(this.Cmp.resp_proc_contratacion_excepcion);
-                        this.ocultarComponente(this.Cmp.modalidad_directa);
+                        //this.ocultarComponente(this.Cmp.modalidad_directa);
                     }else {
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_excepcion);
-                        this.mostrarComponente(this.Cmp.modalidad_directa);
+                        //this.mostrarComponente(this.Cmp.modalidad_directa);
                     }
 
                 }, this);
@@ -1092,17 +1113,19 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.modalidad_desastres.on('select', function (cmp, rec) {
                     if (this.Cmp.modalidad_desastres.getValue() == 'si') {
                         this.mostrarComponente(this.Cmp.resp_proc_contratacion_desastres);
-                        this.ocultarComponente(this.Cmp.modalidad_directa);
+                        //this.ocultarComponente(this.Cmp.modalidad_directa);
                     }else {
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_desastres);
-                        this.mostrarComponente(this.Cmp.modalidad_directa);
+                        //this.mostrarComponente(this.Cmp.modalidad_directa);
                     }
 
                 }, this);
 
                 this.Cmp.modalidad_directa_giro.on('select', function (cmp, rec) {
                     if (this.Cmp.modalidad_directa_giro.getValue() == 'si') {
-                        this.Cmp.modalidad_directa.reset();
+                        this.mostrarComponente(this.Cmp.resp_proc_contratacion_directa_giro);
+
+                        /*this.Cmp.modalidad_directa.reset();
                         this.Cmp.modalidad_menor.reset();
                         this.Cmp.modalidad_anpe.reset();
                         this.Cmp.modalidad_licitacion.reset();
@@ -1113,23 +1136,21 @@ header("content-type: text/javascript; charset=UTF-8");
                         this.Cmp.resp_proc_contratacion_anpe.reset();
                         this.Cmp.resp_proc_contratacion_licitacion.reset();
                         this.Cmp.resp_proc_contratacion_excepcion.reset();
-                        this.Cmp.resp_proc_contratacion_desastres.reset();
-
-                        this.mostrarComponente(this.Cmp.resp_proc_contratacion_directa_giro);
-                        this.ocultarComponente(this.Cmp.modalidad_directa);
+                        this.Cmp.resp_proc_contratacion_desastres.reset();*/
+                        /*this.ocultarComponente(this.Cmp.modalidad_directa);
                         this.ocultarComponente(this.Cmp.modalidad_menor);
                         this.ocultarComponente(this.Cmp.modalidad_anpe);
                         this.ocultarComponente(this.Cmp.modalidad_licitacion);
                         this.ocultarComponente(this.Cmp.modalidad_excepcion);
-                        this.ocultarComponente(this.Cmp.modalidad_desastres);
+                        this.ocultarComponente(this.Cmp.modalidad_desastres);*/
                     }else {
                         this.ocultarComponente(this.Cmp.resp_proc_contratacion_directa_giro);
-                        this.mostrarComponente(this.Cmp.modalidad_directa);
+                        /*this.mostrarComponente(this.Cmp.modalidad_directa);
                         this.mostrarComponente(this.Cmp.modalidad_menor);
                         this.mostrarComponente(this.Cmp.modalidad_anpe);
                         this.mostrarComponente(this.Cmp.modalidad_licitacion);
                         this.mostrarComponente(this.Cmp.modalidad_excepcion);
-                        this.mostrarComponente(this.Cmp.modalidad_desastres);
+                        this.mostrarComponente(this.Cmp.modalidad_desastres);*/
                     }
 
                 }, this);
@@ -1142,6 +1163,8 @@ header("content-type: text/javascript; charset=UTF-8");
             Phx.vista.MatrizModalidad.superclass.onButtonEdit.call(this); //sobrecarga enable select
 
             //24-08-2021 (may) modificacion para flujo_sistema si adq mostrar modalidades y tesoreria no tiene las modalidades
+            //13-12-2021 (may) a partir de la fecha adq podra parametriar varias modalidades para que el solicitante elija cual correponda
+
             if (this.Cmp.flujo_sistema.getValue() == 'TESORERIA') {
                 this.ocultarComponente(this.Cmp.modalidad_directa);
                 this.ocultarComponente(this.Cmp.modalidad_menor);
@@ -1168,12 +1191,12 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.modalidad_directa.setValue('no')
                 this.ocultarComponente(this.Cmp.flujo_mod_directa);
                 this.ocultarComponente(this.Cmp.resp_proc_contratacion_directa);
-                this.mostrarComponente(this.Cmp.modalidad_menor);
+                //this.mostrarComponente(this.Cmp.modalidad_menor);
             }
 
             if (this.Cmp.modalidad_menor.getValue() == 'si') {
                 this.mostrarComponente(this.Cmp.resp_proc_contratacion_menor);
-                this.ocultarComponente(this.Cmp.flujo_mod_directa);
+                //this.ocultarComponente(this.Cmp.flujo_mod_directa);
                 //this.ocultarComponente(this.Cmp.modalidad_directa);
             }else {
                 this.Cmp.modalidad_menor.setValue('no')
@@ -1210,7 +1233,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
             if (this.Cmp.modalidad_directa_giro.getValue() == 'si') {
                 this.mostrarComponente(this.Cmp.resp_proc_contratacion_directa_giro);
-                this.ocultarComponente(this.Cmp.flujo_mod_directa);
+                //this.ocultarComponente(this.Cmp.flujo_mod_directa);
                 //this.ocultarComponente(this.Cmp.modalidad_directa);
             }else {
                 this.Cmp.modalidad_directa_giro.setValue('no')
@@ -1221,18 +1244,20 @@ header("content-type: text/javascript; charset=UTF-8");
                 if (this.Cmp.modalidad_menor.getValue() == 'si') {
                     this.mostrarComponente(this.Cmp.resp_proc_contratacion_menor);
                     this.Cmp.resp_proc_contratacion_menor.setValue('RPA');
-                    this.Cmp.modalidad_directa.reset();
-                    this.Cmp.flujo_mod_directa.reset();
                     this.Cmp.resp_proc_contratacion_directa.reset();
-                    this.ocultarComponente(this.Cmp.modalidad_directa);
-                    this.ocultarComponente(this.Cmp.flujo_mod_directa);
                     this.ocultarComponente(this.Cmp.resp_proc_contratacion_directa);
+                    //this.Cmp.modalidad_directa.reset();
+                    //this.ocultarComponente(this.Cmp.modalidad_directa);
+                    //this.Cmp.flujo_mod_directa.reset();
+                    //this.ocultarComponente(this.Cmp.flujo_mod_directa);
+
 
                 }else {
-                    this.Cmp.resp_proc_contratacion_menor.reset();
-                    this.Cmp.modalidad_directa.setValue('no')
                     this.ocultarComponente(this.Cmp.resp_proc_contratacion_menor);
-                    this.mostrarComponente(this.Cmp.modalidad_directa);
+                    //this.Cmp.resp_proc_contratacion_menor.reset();
+                    //this.mostrarComponente(this.Cmp.modalidad_directa);
+                    //this.Cmp.modalidad_directa.setValue('no')
+
                 }
 
             }, this);
@@ -1241,7 +1266,9 @@ header("content-type: text/javascript; charset=UTF-8");
                 if (this.Cmp.modalidad_directa.getValue() == 'si') {
                     this.mostrarComponente(this.Cmp.flujo_mod_directa);
                     this.mostrarComponente(this.Cmp.resp_proc_contratacion_directa);
-                    this.Cmp.modalidad_menor.reset();
+
+                    // 20-01-2022 (may) ya no es necesario , porque podra parametrizar varias modalidades y solicitante elige
+                    /*this.Cmp.modalidad_menor.reset();
                     this.Cmp.resp_proc_contratacion_menor.reset();
                     this.Cmp.modalidad_anpe.reset();
                     this.Cmp.resp_proc_contratacion_anpe.reset();
@@ -1250,8 +1277,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.Cmp.modalidad_excepcion.reset();
                     this.Cmp.resp_proc_contratacion_excepcion.reset();
                     this.Cmp.modalidad_desastres.reset();
-                    this.Cmp.resp_proc_contratacion_desastres.reset();
-                    this.ocultarComponente(this.Cmp.modalidad_menor);
+                    this.Cmp.resp_proc_contratacion_desastres.reset();*/
+
+                    /*this.ocultarComponente(this.Cmp.modalidad_menor);
                     this.ocultarComponente(this.Cmp.resp_proc_contratacion_menor);
                     this.ocultarComponente(this.Cmp.modalidad_anpe);
                     this.ocultarComponente(this.Cmp.resp_proc_contratacion_anpe);
@@ -1260,19 +1288,19 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.ocultarComponente(this.Cmp.modalidad_excepcion);
                     this.ocultarComponente(this.Cmp.resp_proc_contratacion_excepcion);
                     this.ocultarComponente(this.Cmp.modalidad_desastres);
-                    this.ocultarComponente(this.Cmp.resp_proc_contratacion_desastres);
+                    this.ocultarComponente(this.Cmp.resp_proc_contratacion_desastres);*/
                 }else {
-                    //this.detCmp.id_orden_trabajo.reset();
                     this.Cmp.flujo_mod_directa.reset();
                     this.Cmp.resp_proc_contratacion_directa.reset();
                     this.Cmp.modalidad_menor.setValue('no');
-                    this.ocultarComponente(this.Cmp.flujo_mod_directa);
+                    //this.detCmp.id_orden_trabajo.reset();
+                    /*this.ocultarComponente(this.Cmp.flujo_mod_directa);
                     this.ocultarComponente(this.Cmp.resp_proc_contratacion_directa);
                     this.mostrarComponente(this.Cmp.modalidad_menor);
                     this.mostrarComponente(this.Cmp.modalidad_anpe);
                     this.mostrarComponente(this.Cmp.modalidad_licitacion);
                     this.mostrarComponente(this.Cmp.modalidad_excepcion);
-                    this.mostrarComponente(this.Cmp.modalidad_desastres);
+                    this.mostrarComponente(this.Cmp.modalidad_desastres);*/
 
                 }
 
@@ -1281,12 +1309,12 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.modalidad_anpe.on('select', function (cmp, rec) {
                 if (this.Cmp.modalidad_anpe.getValue() == 'si') {
                     this.mostrarComponente(this.Cmp.resp_proc_contratacion_anpe);
-                    this.ocultarComponente(this.Cmp.modalidad_directa);
+                    /*this.ocultarComponente(this.Cmp.modalidad_directa);
                     this.ocultarComponente(this.Cmp.flujo_mod_directa);
-                    this.ocultarComponente(this.Cmp.resp_proc_contratacion_directa);
-                    this.Cmp.modalidad_directa.reset();
+                    this.ocultarComponente(this.Cmp.resp_proc_contratacion_directa);*/
+                    /*this.Cmp.modalidad_directa.reset();
                     this.Cmp.flujo_mod_directa.reset();
-                    this.Cmp.resp_proc_contratacion_directa.reset();
+                    this.Cmp.resp_proc_contratacion_directa.reset();*/
                     this.Cmp.resp_proc_contratacion_anpe.setValue('RPA');
                 }else {
                     this.Cmp.resp_proc_contratacion_anpe.reset();
@@ -1299,11 +1327,11 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.modalidad_licitacion.on('select', function (cmp, rec) {
                 if (this.Cmp.modalidad_licitacion.getValue() == 'si') {
                     this.mostrarComponente(this.Cmp.resp_proc_contratacion_licitacion);
-                    this.ocultarComponente(this.Cmp.modalidad_directa);
+                    //this.ocultarComponente(this.Cmp.modalidad_directa);
                 }else {
                     this.Cmp.resp_proc_contratacion_licitacion.reset();
                     this.ocultarComponente(this.Cmp.resp_proc_contratacion_licitacion);
-                    this.mostrarComponente(this.Cmp.modalidad_menor);
+                    //this.mostrarComponente(this.Cmp.modalidad_menor);
                 }
 
             }, this);
@@ -1311,12 +1339,12 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.modalidad_excepcion.on('select', function (cmp, rec) {
                 if (this.Cmp.modalidad_excepcion.getValue() == 'si') {
                     this.mostrarComponente(this.Cmp.resp_proc_contratacion_excepcion);
-                    this.ocultarComponente(this.Cmp.modalidad_directa);
+                    //this.ocultarComponente(this.Cmp.modalidad_directa);
                     this.Cmp.resp_proc_contratacion_excepcion.setValue('MAE')
                 }else {
                     this.Cmp.resp_proc_contratacion_excepcion.reset();
                     this.ocultarComponente(this.Cmp.resp_proc_contratacion_excepcion);
-                    this.mostrarComponente(this.Cmp.modalidad_menor);
+                    //this.mostrarComponente(this.Cmp.modalidad_menor);
                 }
 
             }, this);
@@ -1324,11 +1352,11 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.modalidad_desastres.on('select', function (cmp, rec) {
                 if (this.Cmp.modalidad_desastres.getValue() == 'si') {
                     this.mostrarComponente(this.Cmp.resp_proc_contratacion_desastres);
-                    this.ocultarComponente(this.Cmp.modalidad_directa);
+                    //this.ocultarComponente(this.Cmp.modalidad_directa);
                 }else {
                     this.Cmp.resp_proc_contratacion_desastres.reset();
                     this.ocultarComponente(this.Cmp.resp_proc_contratacion_desastres);
-                    this.mostrarComponente(this.Cmp.modalidad_menor);
+                    //this.mostrarComponente(this.Cmp.modalidad_menor);
                 }
 
             }, this);

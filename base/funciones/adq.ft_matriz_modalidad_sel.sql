@@ -87,7 +87,8 @@ BEGIN
                         matriz.flujo_sistema,
                         uo.estado_reg as estado_reg_uo,
                         matriz.modalidad_directa_giro,
-                        matriz.resp_proc_contratacion_directa_giro
+                        matriz.resp_proc_contratacion_directa_giro,
+                        car.estado_reg as estado_reg_cargo
 
 						from adq.tmatriz_modalidad matriz
 						inner join segu.tusuario usu1 on usu1.id_usuario = matriz.id_usuario_reg
@@ -141,7 +142,8 @@ BEGIN
                         matriz.flujo_sistema,
                         uo.estado_reg,
                         matriz.modalidad_directa_giro,
-                        matriz.resp_proc_contratacion_directa_giro  '||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+                        matriz.resp_proc_contratacion_directa_giro,
+                        car.estado_reg   '||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
 			--Devuelve la respuesta
 			return v_consulta;
