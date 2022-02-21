@@ -741,7 +741,7 @@ BEGIN
 
                         --control para que no sea el mismo funcionario aprobador con el funcionario solicitante
                         IF (v_solicitud.id_funcionario = v_solu_modalidades.id_funcionario_aprobador) THEN
-                        	RAISE EXCEPTION 'El Funcionario % esta como Solicitante y como Funcionario Aprobador, verificar la parametrizacion en la  Matriz Tipo Contratación(Aprobador), Referencia: %. Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).', v_nombre_funcionario;
+                        	RAISE EXCEPTION 'El Funcionario % esta como Solicitante y como Funcionario Aprobador, verificar la parametrizacion en la  Matriz Tipo Contratación(Aprobador), Referencia: %. Comunicarse con el Departamento de Adquisiciones (Marcelo Vidaurre).', v_nombre_funcionario, v_modalidades_solicitud.id_matriz_modalidad;
                         END IF;
 
                     	UPDATE adq.tsolicitud SET
