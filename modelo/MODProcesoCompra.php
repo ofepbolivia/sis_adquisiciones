@@ -353,6 +353,7 @@ class MODProcesoCompra extends MODbase
         $this->setParametro('id_depto', 'id_depto', 'integer');
         $this->setParametro('tipo', 'tipo', 'varchar');
         $this->setParametro('monto_mayor', 'monto_mayor', 'varchar');
+        $this->setParametro('id_gestion', 'id_gestion', 'integer');
 
         //Definicion de la lista del resultado del query
         $this->captura('num_tramite', 'varchar');
@@ -397,6 +398,7 @@ class MODProcesoCompra extends MODbase
         $this->setParametro('fecha_fin', 'fecha_fin', 'date');
         $this->setParametro('id_depto', 'id_depto', 'integer');
         $this->setParametro('monto_mayor', 'monto_mayor', 'varchar');
+        $this->setParametro('id_gestion', 'id_gestion', 'integer');
 
         //Definicion de la lista del resultado del query
         $this->captura('estado', 'text');
