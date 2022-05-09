@@ -1,19 +1,19 @@
 <?php
 /**
  *@package pXP
- *@file gen-SolicitudReq.php
- *@author  (rarteaga)
- *@date 20-09-2011 10:22:05
+ *@file gen-SolicitudMenores.php
+ *@author  (maylee.perez)
+ *@date 28-09-2020 12:12:51
  *@Interface para el inicio de solicitudes de compra
  */
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
-    Phx.vista.SolicitudReq = {
-        require:'../../../sis_adquisiciones/vista/solicitud/Solicitud.php',
-        requireclase:'Phx.vista.Solicitud',
-        title:'Solicitud',
-        nombreVista: 'solicitudReq',
+    Phx.vista.SolicitudMenores = {
+        require:'../../../sis_adquisiciones/vista/solicitud_modalidad/SolicitudModalidades.php',
+        requireclase:'Phx.vista.SolicitudModalidades',
+        title:'SolicitudModalidades',
+        nombreVista: 'solicitudModMenor',
         //layoutType: 'wizard',
 
         gruposBarraTareas:[{name:'borrador',title:'<H1 align="center"><i class="fa fa-thumbs-o-down"></i> Borradores</h1>',grupo:0,height:0},
@@ -31,7 +31,6 @@ header("content-type: text/javascript; charset=UTF-8");
         bactGroups:  [0,1,2],
         btestGroups: [0],
         bexcelGroups: [0,1,2],
-        bganttGroups: [0,1,2],
 
         constructor: function(config) {
 
@@ -51,7 +50,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
 
-            Phx.vista.SolicitudReq.superclass.constructor.call(this,config);
+            Phx.vista.SolicitudMenores.superclass.constructor.call(this,config);
             this.addButton('fin_requerimiento',{ grupo:[0],text:'Siguiente', iconCls: 'badelante', disabled: true, handler: this.fin_requerimiento, tooltip: '<b>Finalizar</b>'});
             this.addButton('btnSolpre',{ grupo:[0,],text:'Sol Pre.',iconCls: 'bemail', disabled: true, handler: this.onSolModPresupuesto, tooltip: '<b>Solicitar Presuuesto</b><p>Emite un correo para solicitar traspaso presupuestario</p>'});
 
@@ -161,8 +160,8 @@ header("content-type: text/javascript; charset=UTF-8");
         onButtonNew:function(){
             //abrir formulario de solicitud
             var me = this;
-            me.objSolForm = Phx.CP.loadWindows('../../../sis_adquisiciones/vista/solicitud/FormSolicitud.php',
-                'Formulario de Solicitud de Compra',
+            me.objSolForm = Phx.CP.loadWindows('../../../sis_adquisiciones/vista/solicitud_modalidad/FormModMenor.php',
+                'Formulario de Solicitud de Compra - Modalidad Menor',
                 {
                     modal:true,
                     width:'90%',
@@ -170,7 +169,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 }, {data:{objPadre: me}
                 },
                 this.idContenedor,
-                'FormSolicitud',
+                'FormModMenor',
                 {
                     config:[{
                         event:'successsave',
@@ -248,7 +247,7 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.precontrato.disable();
             this.Cmp.tipo_concepto.disable();
             this.Cmp.id_moneda.disable();
-            Phx.vista.SolicitudReq.superclass.onButtonEdit.call(this);
+            Phx.vista.SolicitudMenores.superclass.onButtonEdit.call(this);
 
             this.Cmp.id_funcionario.label.update('Funcionario Solicitante');
             this.Cmp.tipo_concepto.label.update('Tipo');
@@ -394,7 +393,7 @@ header("content-type: text/javascript; charset=UTF-8");
             if (reg.ROOT.error){
 
                 if (reg.ROOT.detalle.mensaje.search('centro de costo ->') >= 0 ){
-                        Ext.Ajax.request({
+                    Ext.Ajax.request({
                         url:'../../sis_adquisiciones/control/Solicitud/aprobarPresupuestoSolicitud',
                         params: { id_solicitud: data.params.id_solicitud, aprobar:'no'},
                         success: function(resp){
@@ -471,7 +470,7 @@ header("content-type: text/javascript; charset=UTF-8");
         preparaMenu:function(n){
             var data = this.getSelectedData();
             var tb =this.tbar;
-            Phx.vista.SolicitudReq.superclass.preparaMenu.call(this,n);
+            Phx.vista.SolicitudMenores.superclass.preparaMenu.call(this,n);
             //habilitar reporte de colicitud de comrpa y preorden de compra
             this.menuAdq.enable();
             if(data['estado']==  'borrador' || data['estado']==  'Borrador'){
@@ -499,7 +498,7 @@ header("content-type: text/javascript; charset=UTF-8");
             return tb
         },
         liberaMenu:function(){
-            var tb = Phx.vista.SolicitudReq.superclass.liberaMenu.call(this);
+            var tb = Phx.vista.SolicitudMenores.superclass.liberaMenu.call(this);
             if(tb){
                 this.getBoton('fin_requerimiento').disable();
                 this.getBoton('btnSolpre').disable();

@@ -856,3 +856,368 @@ ALTER TABLE adq.tsolicitud
 COMMENT ON COLUMN adq.tsolicitud.presupuesto_aprobado
 IS 'Usado para control de presupuesto.';
 /***********************************F-SCP-BVP-ADQ-0-31/01/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-29/09/2020****************************************/
+ALTER TABLE adq.tsolicitud
+  ADD COLUMN tipo_modalidad VARCHAR(300);
+
+
+CREATE TABLE adq.tmatriz_concepto (
+  id_matriz_concepto SERIAL,
+  id_matriz_modalidad INTEGER,
+  id_concepto_ingas INTEGER,
+  CONSTRAINT tmatriz_concepto_pkey PRIMARY KEY(id_matriz_concepto)
+) INHERITS (pxp.tbase)
+WITH (oids = false);
+
+
+ALTER TABLE adq.tmatriz_concepto
+  OWNER TO postgres;
+
+  CREATE TABLE adq.tmatriz_modalidad (
+  id_matriz_modalidad SERIAL,
+  referencia VARCHAR(300),
+  tipo_contratacion VARCHAR(500),
+  nacional VARCHAR(100),
+  internacional VARCHAR(100),
+  id_uo INTEGER,
+  nivel_importancia VARCHAR(50),
+  id_cargo INTEGER,
+  contrato_global VARCHAR(100),
+  modalidad_menor VARCHAR(100),
+  modalidad_anpe VARCHAR(50),
+  modalidad_licitacion VARCHAR(50),
+  modalidad_directa VARCHAR(50),
+  modalidad_excepcion VARCHAR(100),
+  modalidad_desastres VARCHAR(100),
+  punto_reorden VARCHAR(100),
+  observaciones VARCHAR(600),
+  CONSTRAINT tmatriz_conceptos_pkey PRIMARY KEY(id_matriz_modalidad)
+) INHERITS (pxp.tbase)
+WITH (oids = false);
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.referencia
+IS 'codigo de referencia del conjunto de conceptos';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.tipo_contratacion
+IS 'nombre del conjunto de conceptos';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.nacional
+IS 'si/no';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.internacional
+IS 'si/no';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.id_uo
+IS 'responsable unidad';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.nivel_importancia
+IS 'en catalogo los valores';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.id_cargo
+IS 'nivel de importamcia';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.contrato_global
+IS 'si/no';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.modalidad_menor
+IS 'si/no';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.modalidad_anpe
+IS 'si/no';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.modalidad_licitacion
+IS 'si/no';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.modalidad_directa
+IS 'si/no';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.modalidad_excepcion
+IS 'si/no';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.modalidad_desastres
+IS 'si/no';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.punto_reorden
+IS 'si/no';
+
+ALTER TABLE adq.tmatriz_modalidad
+  OWNER TO postgres;
+/***********************************F-SCP-MAY-ADQ-0-29/09/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-14/10/2020****************************************/
+ALTER TABLE adq.tmatriz_modalidad
+  ADD COLUMN list_concepto_gasto TEXT;
+/***********************************F-SCP-MAY-ADQ-0-14/10/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-14/10/2020****************************************/
+ALTER TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion VARCHAR(500);
+/***********************************F-SCP-MAY-ADQ-0-14/10/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-16/10/2020****************************************/
+CREATE TABLE adq.tmodalidad_solicitud (
+  id_modalidad_solicitud SERIAL,
+  id_concepto_ingas INTEGER,
+  modalidad VARCHAR(300),
+  id_solicitud INTEGER,
+  id_matriz_modalidad INTEGER,
+  modalidad_menor VARCHAR(100),
+  modalidad_anpe VARCHAR(100),
+  modalidad_licitacion VARCHAR(100),
+  modalidad_directa VARCHAR(100),
+  modalidad_excepcion VARCHAR(100),
+  modalidad_desastres VARCHAR(100),
+  calificacion VARCHAR(100),
+  id_funcionario_aprobador INTEGER,
+  CONSTRAINT tmodalidad_solicitud_pkey PRIMARY KEY(id_modalidad_solicitud)
+) INHERITS (pxp.tbase)
+WITH (oids = false);
+
+COMMENT ON COLUMN adq.tmodalidad_solicitud.id_funcionario_aprobador
+IS 'id_funcionario supervisor de la tabla solicitud';
+
+ALTER TABLE adq.tmodalidad_solicitud
+  OWNER TO postgres;
+
+
+  CREATE TABLE adq.tmodalidades (
+  id_modalidad SERIAL,
+  codigo VARCHAR(300),
+  nombre_modalidad VARCHAR(400),
+  condicion_menor NUMERIC(19,2),
+  condicion_mayor NUMERIC(19,2),
+  observaciones VARCHAR(600),
+  CONSTRAINT tmodalidades_pkey PRIMARY KEY(id_modalidad)
+) INHERITS (pxp.tbase)
+WITH (oids = false);
+
+ALTER TABLE adq.tmodalidades
+  OWNER TO postgres;
+/***********************************F-SCP-MAY-ADQ-0-16/10/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-22/10/2020****************************************/
+ALTER TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion_menor VARCHAR(300);
+
+ TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion_anpe VARCHAR(300);
+
+ TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion_directa VARCHAR(300);
+
+ TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion_excepcion VARCHAR(300);
+
+ TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion_desastres VARCHAR(300);
+
+TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion_licitacion VARCHAR(300);
+
+TABLE adq.tmatriz_modalidad
+ADD COLUMN flujo_mod_directa VARCHAR(500);
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_menor
+IS 'RPC/RPA';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_anpe
+IS 'RPC/RPA';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_directa
+IS 'RPC/RPA';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_excepcion
+IS 'RPC/RPA';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_desastres
+IS 'RPC/RPA';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_licitacion
+IS 'RPC/RPA';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.flujo_mod_directa
+IS 'codigo del flujo';
+
+/***********************************F-SCP-MAY-ADQ-0-22/10/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-1-22/10/2020****************************************/
+ALTER TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion_menor VARCHAR(300);
+
+ALTER TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion_anpe VARCHAR(300);
+
+ALTER TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion_directa VARCHAR(300);
+
+ALTER TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion_excepcion VARCHAR(300);
+
+ALTER TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion_desastres VARCHAR(300);
+
+ALTER TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion_licitacion VARCHAR(300);
+
+ALTER TABLE adq.tmatriz_modalidad
+ADD COLUMN flujo_mod_directa VARCHAR(500);
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_menor
+IS 'RPC/RPA';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_anpe
+IS 'RPC/RPA';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_directa
+IS 'RPC/RPA';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_excepcion
+IS 'RPC/RPA';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_desastres
+IS 'RPC/RPA';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_licitacion
+IS 'RPC/RPA';
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.flujo_mod_directa
+IS 'codigo del flujo';
+/***********************************F-SCP-MAY-ADQ-1-22/10/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-27/10/2020****************************************/
+ALTER TABLE adq.tmatriz_modalidad
+ADD COLUMN id_uo_gerencia INTEGER;
+/***********************************F-SCP-MAY-ADQ-0-27/10/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-30/10/2020****************************************/
+ALTER TABLE adq.tmodalidades
+ADD COLUMN con_concepto VARCHAR(30);
+
+
+ALTER TABLE adq.tmodalidad_solicitud
+ADD COLUMN flujo_mod_directa VARCHAR(500);
+
+ALTER TABLE adq.tmodalidad_solicitud
+ADD COLUMN resp_proc_contratacion_menor VARCHAR(300);
+
+ALTER TABLE adq.tmodalidad_solicitud
+ADD COLUMN resp_proc_contratacion_anpe VARCHAR(300);
+
+ALTER TABLE adq.tmodalidad_solicitud
+ADD COLUMN resp_proc_contratacion_directa VARCHAR(300);
+
+ALTER TABLE adq.tmodalidad_solicitud
+ADD COLUMN resp_proc_contratacion_licitacion VARCHAR(300);
+
+ALTER TABLE adq.tmodalidad_solicitud
+ADD COLUMN resp_proc_contratacion_desastres VARCHAR(300);
+
+ALTER TABLE adq.tmodalidad_solicitud
+ADD COLUMN resp_proc_contratacion_excepcion VARCHAR(300);
+
+COMMENT ON COLUMN adq.tmodalidad_solicitud.flujo_mod_directa
+IS 'codigo del flujo de modalidad directa';
+
+/***********************************F-SCP-MAY-ADQ-0-30/10/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-1-30/10/2020****************************************/
+ALTER TABLE adq.tsolicitud
+ADD COLUMN proceso_contratacion VARCHAR(100);
+
+ALTER TABLE adq.tsolicitud
+ADD COLUMN contratacion_directa VARCHAR(100);
+
+COMMENT ON COLUMN adq.tsolicitud.proceso_contratacion
+IS 'RPC/RPA';
+
+COMMENT ON COLUMN adq.tsolicitud.contratacion_directa
+IS 'si/no';
+/***********************************F-SCP-MAY-ADQ-1-30/10/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-07/12/2020****************************************/
+CREATE TABLE adq.ttresoluciones_info_pre (
+  id_resoluciones_info_pre SERIAL,
+  nro_directorio VARCHAR(500),
+  nro_nota VARCHAR(500),
+  nro_nota2 VARCHAR(500),
+  observaciones VARCHAR(500),
+  id_gestion INTEGER,
+  gestion INTEGER,
+  CONSTRAINT ttresoluciones_info_pre_pkey PRIMARY KEY(id_resoluciones_info_pre)
+) INHERITS (pxp.tbase)
+WITH (oids = false);
+
+COMMENT ON COLUMN adq.ttresoluciones_info_pre.id_resoluciones_info_pre
+IS 'identificador';
+
+COMMENT ON COLUMN adq.ttresoluciones_info_pre.nro_directorio
+IS 'nro directorio';
+
+COMMENT ON COLUMN adq.ttresoluciones_info_pre.nro_nota
+IS 'nro nota MEFP';
+
+COMMENT ON COLUMN adq.ttresoluciones_info_pre.nro_nota2
+IS 'en atencion a la nota';
+
+COMMENT ON COLUMN adq.ttresoluciones_info_pre.observaciones
+IS 'observaciones de las resoluciones';
+
+COMMENT ON COLUMN adq.ttresoluciones_info_pre.id_gestion
+IS 'identificador de la tabla param.tgestion';
+
+COMMENT ON COLUMN adq.ttresoluciones_info_pre.gestion
+IS 'nombre gestion de la tabla param.tgestion';
+
+ALTER TABLE adq.ttresoluciones_info_pre
+  OWNER TO postgres;
+/***********************************F-SCP-MAY-ADQ-0-07/12/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-09/12/2020****************************************/
+ALTER TABLE adq.ttresoluciones_info_pre
+ADD COLUMN fecha_certificacion DATE;
+
+COMMENT ON COLUMN adq.ttresoluciones_info_pre.fecha_certificacion
+IS 'fecha de la certificacion segun parametrizacion';
+/***********************************F-SCP-MAY-ADQ-0-09/12/2020****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-28/06/2021****************************************/
+ALTER TABLE adq.tsolicitud
+ADD COLUMN id_contrato INTEGER;
+
+COMMENT ON COLUMN adq.tsolicitud.id_contrato
+IS 'identificador contrato si ampliacion_contrato';
+/***********************************F-SCP-MAY-ADQ-0-28/06/2021****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-25/08/2021****************************************/
+ALTER TABLE adq.tmatriz_modalidad
+ADD COLUMN flujo_sistema VARCHAR(100);
+/***********************************F-SCP-MAY-ADQ-0-25/08/2021****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-10/09/2021****************************************/
+ALTER TABLE adq.tsolicitud
+ADD COLUMN id_matriz_modalidad INTEGER;
+
+COMMENT ON COLUMN adq.tsolicitud.id_matriz_modalidad
+IS 'identificador de la tabla matriz_modalidad';
+/***********************************F-SCP-MAY-ADQ-0-10/09/2021****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-19/10/2021****************************************/
+ALTER TABLE adq.tmatriz_modalidad
+ADD COLUMN modalidad_directa_giro VARCHAR(50);
+ALTER TABLE adq.tmatriz_modalidad
+ADD COLUMN resp_proc_contratacion_directa_giro VARCHAR(300);
+
+COMMENT ON COLUMN adq.tmatriz_modalidad.modalidad_directa_giro
+IS 'si/no';
+COMMENT ON COLUMN adq.tmatriz_modalidad.resp_proc_contratacion_directa_giro
+IS 'RPC/RPA';
+/***********************************F-SCP-MAY-ADQ-0-19/10/2021****************************************/
+
+/***********************************I-SCP-MAY-ADQ-0-29/10/2021****************************************/
+ALTER TABLE adq.tmodalidad_solicitud
+ADD COLUMN modalidad_directa_giro VARCHAR(50);
+ALTER TABLE adq.tmodalidad_solicitud
+ADD COLUMN resp_proc_contratacion_directa_giro VARCHAR(300);
+
+/***********************************F-SCP-MAY-ADQ-0-29/10/2021****************************************/

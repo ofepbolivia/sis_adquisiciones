@@ -353,6 +353,7 @@ class MODProcesoCompra extends MODbase
         $this->setParametro('id_depto', 'id_depto', 'integer');
         $this->setParametro('tipo', 'tipo', 'varchar');
         $this->setParametro('monto_mayor', 'monto_mayor', 'varchar');
+        $this->setParametro('id_gestion', 'id_gestion', 'integer');
 
         //Definicion de la lista del resultado del query
         $this->captura('num_tramite', 'varchar');
@@ -364,13 +365,25 @@ class MODProcesoCompra extends MODbase
         $this->captura('fecha_ini_proc', 'date');
         $this->captura('precio_bs', 'numeric');
         $this->captura('precio_moneda_solicitada', 'numeric');
+        $this->captura('total_adjudicado_mb', 'numeric');
+        $this->captura('total_adjudicado', 'numeric');
+
         $this->captura('moneda_solicitada', 'varchar');
         $this->captura('requiere_contrato', 'text');
+        $this->captura('cuce', 'varchar');
+
+        $this->captura('tipo_modalidad', 'varchar');
+        $this->captura('nombre_depto', 'varchar');
+
+        $this->captura('nro_po', 'varchar');
+
+
 
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();
         //Devuelve la respuesta
+        //var_dump($this->respuesta) ;exit;
         return $this->respuesta;
     }
 
@@ -385,6 +398,7 @@ class MODProcesoCompra extends MODbase
         $this->setParametro('fecha_fin', 'fecha_fin', 'date');
         $this->setParametro('id_depto', 'id_depto', 'integer');
         $this->setParametro('monto_mayor', 'monto_mayor', 'varchar');
+        $this->setParametro('id_gestion', 'id_gestion', 'integer');
 
         //Definicion de la lista del resultado del query
         $this->captura('estado', 'text');

@@ -1,17 +1,17 @@
 <?php
 /**
  * @package pXP
- * @file    FormSolicitud.php
- * @author  Rensi Arteaga Copari
- * @date    30-01-2014
+ * @file    FormModMenor.php
+ * @author  (maylee.perez)
+ * @date 28-09-2020 12:12:51
  * @description permites subir archivos a la tabla de documento_sol
  */
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 
 <script>
-    Phx.vista.FormSolicitud = Ext.extend(Phx.frmInterfaz, {
-        ActSave: '../../sis_adquisiciones/control/Solicitud/insertarSolicitudCompleta',
+    Phx.vista.FormModMenor = Ext.extend(Phx.frmInterfaz, {
+        ActSave: '../../sis_adquisiciones/control/SolicitudModalidades/insertarSolicitudCompletaMenor',
         tam_pag: 10,
         //layoutType: 'wizard',
         layout: 'fit',
@@ -30,7 +30,7 @@ header("content-type: text/javascript; charset=UTF-8");
             this.buildDetailGrid();
             this.buildGrupos();
 
-            Phx.vista.FormSolicitud.superclass.constructor.call(this, config);
+            Phx.vista.FormModMenor.superclass.constructor.call(this, config);
             this.obtenerVariableGlobal('adq_precotizacion_obligatorio')
             this.init();
             this.iniciarEventos();
@@ -39,7 +39,6 @@ header("content-type: text/javascript; charset=UTF-8");
 
             this.Cmp.tipo_concepto.store.loadData(this.arrayStore['Bien'].concat(this.arrayStore['Servicio']));
 
-            this.construyeVariablesContratos();
         },
         buildComponentesDetalle: function () {
             this.detCmp = {
@@ -394,7 +393,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
         bloqueaRequisitos: function (sw) {
             this.Cmp.id_depto.setDisabled(sw);
-            //this.Cmp.id_moneda.setDisabled(sw);
+            this.Cmp.id_moneda.setDisabled(sw);
 
             this.Cmp.tipo_concepto.setDisabled(sw);
             this.Cmp.fecha_soli.setDisabled(sw);
@@ -756,7 +755,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
         loadValoresIniciales: function () {
 
-            Phx.vista.FormSolicitud.superclass.loadValoresIniciales.call(this);
+            Phx.vista.FormModMenor.superclass.loadValoresIniciales.call(this);
 
 
         },
@@ -776,9 +775,8 @@ header("content-type: text/javascript; charset=UTF-8");
             ],
             'Servicio': [
                 ['servicio', 'Servicios'],
-                ['consultoria_personal', 'Consultoria Individual de Línea'],
-                ['consultoria_empresa', 'Consultoria por Producto'],
-                ['obra', 'Obra'],
+                ['consultoria_personal', 'Consultoria de Personas'],
+                ['consultoria_empresa', 'Consultoria de Empresas'],
                 //['alquiler_inmueble','Alquiler Inmuebles']
             ]
         },
@@ -815,6 +813,43 @@ header("content-type: text/javascript; charset=UTF-8");
                 type: 'Field',
                 form: true
             },
+
+            /*{
+                config: {
+                    name: 'tipo_modalidad',
+                    fieldLabel: 'Tipo Modalidad',
+                    allowBlank: true,
+                    emptyText: 'Tipo Obligacion',
+                    width: '80%',
+                    renderer: function (value, p, record) {
+                        var dato = '';
+                        dato = (dato == '' && value == 'mod_menor') ? 'Modalidad Menor' : dato;
+                        dato = (dato == '' && value == 'aduisiciones') ? 'Adquisiciones' : dato;
+                        return String.format('{0}', dato);
+                    },
+
+                    store: new Ext.data.ArrayStore({
+                        fields: ['variable', 'valor'],
+                        data: [
+                            ['mod_menor', 'Modalidad Menor']
+                        ]
+                    }),
+                    valueField: 'variable',
+                    displayField: 'valor',
+                    forceSelection: true,
+                    triggerAction: 'all',
+                    lazyRender: true,
+                    mode: 'local',
+                    wisth: 250
+                },
+                type: 'ComboBox',
+                filters: {pfiltro: 'sol.tipo_modalidad', type: 'string'},
+                //valorInicial: 'mod_menor',
+                id_grupo: 0,
+                grid: false,
+                form: false
+            },*/
+
             {
                 config: {
                     name: 'tipo_concepto',
@@ -934,38 +969,13 @@ header("content-type: text/javascript; charset=UTF-8");
                 form: true
             },
 
-            //04-12-2020 (may) gestion para el formulario solicitud
-            {
-                config:{
-                    name : 'id_gestion',
-                    origen : 'GESTION',
-                    fieldLabel : 'Gestión',
-                    allowBlank : false,
-                    resizable:true,
-                    gdisplayField : 'gestion',//mapea al store del grid
-                    width: 177,
-                    gwidth : 100,
-                    renderer : function (value, p, record){return String.format('{0}', record.data['gestion']);}
-                },
-                type : 'ComboRec',
-                id_grupo : 2,
-                filters : {
-                    pfiltro : 'ges.gestion',
-                    type : 'numeric'
-                },
-
-                grid : false,
-                form : true
-            },
-
             {
                 config: {
                     name: 'fecha_soli',
                     fieldLabel: 'Fecha Solicitud',
                     allowBlank: false,
-                    //(maylee.perez) modificacion por la fecha debe ser la fecha actual de la solicitud
-                    disabled: true,
-                    readOnly: true,
+                    disabled: false,
+                    readOnly: false,
                     width: 177,
                     format: 'd/m/Y',
                     msgTarget: 'side',
@@ -1041,11 +1051,11 @@ header("content-type: text/javascript; charset=UTF-8");
             {
                 config: {
                     name: 'justificacion',
-                    fieldLabel: 'Necesidad de la Contratación',
+                    fieldLabel: 'Justificación Compra',
                     qtip: 'Justifique, ¿por que la necesidad de esta compra?',
                     allowBlank: false,
                     width: '92%',
-                    maxLength: 10000,
+                    maxLength: 1000,
                     msgTarget: 'side'
                 },
                 type: 'TextArea',
@@ -1091,68 +1101,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 valorInicial: 'no_necesita',
                 grid: false,
-                form: true
-            },
-
-            {
-                config: {
-                    name: 'id_contrato',
-                    hiddenName: 'id_contrato',
-                    fieldLabel: 'Contrato',
-                    typeAhead: false,
-                    forceSelection: true,
-                    allowBlank: false,
-                    disabled: false,
-                    emptyText: 'Contratos...',
-                    store: new Ext.data.JsonStore({
-                        url: '../../sis_workflow/control/Tabla/listarTablaCombo',
-                        id: 'id_contrato',
-                        root: 'datos',
-                        sortInfo: {
-                            field: 'id_contrato',
-                            direction: 'ASC'
-                        },
-                        totalProperty: 'total',
-                        fields: ['id_contrato','nro_tramite', 'numero', 'tipo', 'objeto', 'estado', 'desc_proveedor', 'monto', 'moneda', 'fecha_inicio', 'fecha_fin'],
-                        // turn on remote sorting
-                        remoteSort: true,
-                        baseParams: {
-                            //02-06-2021 (may) modificacion para filtro, no hay con.nro_tramite
-                            //par_filtro: 'con.nro_tramite#con.numero#con.tipo#con.monto#prov.desc_proveedor#con.objeto#con.monto',
-                            par_filtro: 'con.numero#con.tipo#con.monto#prov.desc_proveedor#con.objeto#con.monto',
-                            tipo_proceso: "CON",
-                            tipo_estado: "finalizado"
-                        }
-                    }),
-                    valueField: 'id_contrato',
-                    displayField: 'numero',
-                    gdisplayField: 'desc_contrato',
-                    triggerAction: 'all',
-                    lazyRender: true,
-                    resizable: true,
-                    mode: 'remote',
-                    pageSize: 20,
-                    queryDelay: 200,
-                    listWidth: 380,
-                    minChars: 2,
-                    gwidth: 100,
-                    anchor: '83%',
-                    renderer: function (value, p, record) {
-                        if (record.data['desc_contrato']) {
-                            return String.format('{0}', record.data['desc_contrato']);
-                        }
-                        return '';
-
-                    },
-                    tpl: '<tpl for="."><div class="x-combo-list-item"><p><b>Nro: {numero} ({tipo})</b></p><p>Obj: <strong>{objeto}</strong></p><p>Prov : {desc_proveedor}</p> <p>Nro.Trámite: {nro_tramite}</p><p>Monto: {monto} {moneda}</p><p>Rango: {fecha_inicio} al {fecha_fin}</p></div></tpl>'
-                },
-                type: 'ComboBox',
-                id_grupo: 2,
-                filters: {
-                    pfiltro: 'con.numero',
-                    type: 'numeric'
-                },
-                grid: true,
                 form: true
             },
 
@@ -1251,6 +1199,10 @@ header("content-type: text/javascript; charset=UTF-8");
             this.cmpIdDepto = this.getComponente('id_depto');
             this.cmpIdGestion = this.getComponente('id_gestion');
 
+            //this.cmptipoModalidad = this.getComponente('tipo_modalidad');
+
+            //this.cmptipoModalidad.disable();
+
             this.ocultarComponente(this.Cmp.nro_po);
             this.ocultarComponente(this.Cmp.fecha_po);
 
@@ -1277,18 +1229,15 @@ header("content-type: text/javascript; charset=UTF-8");
                 if (this.Cmp.tipo.getValue() == 'Bien') {
                     this.Cmp.lugar_entrega.setValue('Almacenes de Oficina Cochabamba');
                     this.ocultarComponente(this.Cmp.fecha_inicio);
-                    this.mostrarComponente(this.Cmp.dias_plazo_entrega);
                     this.Cmp.dias_plazo_entrega.allowBlank = false;
 
                 }
                 else {
                     this.Cmp.lugar_entrega.setValue('');
                     this.mostrarComponente(this.Cmp.fecha_inicio);
-                    this.ocultarComponente(this.Cmp.dias_plazo_entrega);
                     this.Cmp.dias_plazo_entrega.allowBlank = true;
                 }
-                //(maylee.perez) 09/10/2020 se comenta porq no debe mostrar para de tipo srvicio los dias de entrega
-                //this.mostrarComponente(this.Cmp.dias_plazo_entrega);
+                this.mostrarComponente(this.Cmp.dias_plazo_entrega);
 
 
             }, this);
@@ -1319,64 +1268,16 @@ header("content-type: text/javascript; charset=UTF-8");
 
             }, this);
 
-            //28-06-2021 (may)
-            this.ocultarComponente(this.Cmp.id_contrato);
-
-
-            this.Cmp.id_proveedor.on('select', function (cmb, record, index) {
+            this.Cmp.id_proveedor.on('select', function (combo, record, index) {
 
                 this.Cmp.correo_proveedor.reset();
                 this.Cmp.correo_proveedor.setValue(record.data.email);
-
-                //28-06-2021 (may) se aumenta contrato si opcion Tipo de Contrato == ampliacion_contrato
-                this.Cmp.precontrato.on('select', function (combo, record, index) {
-                    if (combo.value == 'ampliacion_contrato') {
-                        this.mostrarComponente(this.Cmp.id_contrato);
-                    }else {
-                        this.ocultarComponente(this.Cmp.id_contrato);
-                        this.Cmp.id_contrato.reset();
-                    }
-
-
-                    var fecha = this.Cmp.fecha_soli.getValue();
-
-                    var dd = fecha.getDate();
-                    var mm = fecha.getMonth() + 1; //January is 0!
-                    var yyyy = fecha.getFullYear();
-                    if (dd < 10) {
-                        dd = '0' + dd;
-                    }
-                    if (mm < 10) {
-                        mm = '0' + mm;
-                    }
-
-                    var today = dd + '/' + mm + '/' + yyyy;
-
-                    var anio = this.Cmp.fecha_soli.getValue();
-                    anio = anio.getFullYear();
-
-                    //08-12-2021(may) para ampliacion a la siguiente gestion muestre el contrato del proveedor
-                    console.log('llegagestionprecontrato', combo.value )
-                    if (combo.value == 'ampliacion_contrato') {
-                        anio = anio+1;
-                    }else{
-                        anio = anio;
-                    }
-
-
-                    this.Cmp.id_contrato.reset();
-                    this.Cmp.id_contrato.store.baseParams.filter = "[{\"type\":\"numeric\",\"comparison\":\"eq\", \"value\":\"" + cmb.getValue() + "\",\"field\":\"CON.id_proveedor\"}]";
-                    //this.Cmp.id_contrato.store.baseParams.filtro_directo = "(((CON.fecha_fin is null) or (con.fecha_fin + interval ''15 day'' )::date >= (''" + today + "''::date)) and (pw.nro_tramite LIKE ''LEGAL%'' or ((pw.nro_tramite LIKE ''CI%'' or pw.nro_tramite LIKE ''CN%'')  and  (ges.gestion < ''"+ anio +"''))))";
-                    this.Cmp.id_contrato.store.baseParams.filtro_directo = "(pw.nro_tramite LIKE ''LEGAL%'' or (pw.nro_tramite LIKE ''CI%'' or pw.nro_tramite LIKE ''CN%'') )";
-                    this.Cmp.id_contrato.modificado = true;
-
-                }, this);
 
 
             }, this);
 
             this.Cmp.id_categoria_compra.on('select', function (combo, record, index) {
-
+                console.log('llega tipo ', combo.lastSelectionText )
                 if (combo.lastSelectionText == 'Compra Internacional') {
                     this.mostrarComponente(this.Cmp.nro_po);
                     this.mostrarComponente(this.Cmp.fecha_po);
@@ -1435,9 +1336,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 }
 
 
+
             }, this);
-
-
 
         },
 
@@ -1473,10 +1373,12 @@ header("content-type: text/javascript; charset=UTF-8");
             this.cmpIdDepto.disable();
             this.Cmp.id_categoria_compra.disable();
 
+            //this.cmptipoModalidad.disable();
+
 
             this.Cmp.tipo.disable();
             this.Cmp.tipo_concepto.disable();
-            //this.Cmp.id_moneda.disable();
+            this.Cmp.id_moneda.disable();
             this.Cmp.id_funcionario.store.baseParams.fecha = this.cmpFechaSoli.getValue().dateFormat(this.cmpFechaSoli.format);
             //this.Cmp.fecha_soli.fireEvent('change');
 
@@ -1501,6 +1403,7 @@ header("content-type: text/javascript; charset=UTF-8");
             }
 
             this.Cmp.id_categoria_compra.enable();
+            //this.Cmp.tipo_modalidad.disable();
 
             this.Cmp.id_funcionario.disable();
             this.Cmp.fecha_soli.enable();
@@ -1508,7 +1411,7 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.fecha_soli.fireEvent('change');
             this.Cmp.tipo.enable();
             this.Cmp.tipo_concepto.enable();
-            //this.Cmp.id_moneda.disable();
+            this.Cmp.id_moneda.disable();
 
 
             this.Cmp.id_categoria_compra.store.load({
@@ -1566,7 +1469,7 @@ header("content-type: text/javascript; charset=UTF-8");
             };
 
             if (i > 0 && !this.editorDetail.isVisible()) {
-                //Phx.vista.FormSolicitud.superclass.onSubmit.call(this, o, undefined, true);
+                //Phx.vista.FormModMenor.superclass.onSubmit.call(this, o, undefined, true);
 
                 if (this.Cmp.id_categoria_compra.getRawValue() == 'Compra Internacional') {
                     Ext.Ajax.request({
@@ -1583,7 +1486,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                 Ext.Msg.alert('Alerta', 'El P.O. Nro. <b>' + this.Cmp.nro_po.getValue() + '</b> ya fue registrado por el Funcionario <b> ' + reg.ROOT.datos.v_id_funcionario + '</b> , desea continuar el registro ');
                             }
                             else {
-                                Phx.vista.FormSolicitud.superclass.onSubmit.call(this, o, undefined, true);
+                                Phx.vista.FormModMenor.superclass.onSubmit.call(this, o, undefined, true);
                             }
 
                         },
@@ -1593,7 +1496,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     });
                 }
                 else {
-                    Phx.vista.FormSolicitud.superclass.onSubmit.call(this, o, undefined, true);
+                    Phx.vista.FormModMenor.superclass.onSubmit.call(this, o, undefined, true);
                 }
 
             }
@@ -1653,41 +1556,6 @@ header("content-type: text/javascript; charset=UTF-8");
             });
 
         },
-
-        construyeVariablesContratos: function () {
-            Phx.CP.loadingShow();
-            Ext.Ajax.request({
-                url: '../../sis_workflow/control/Tabla/cargarDatosTablaProceso',
-                params: {"tipo_proceso": "CON", "tipo_estado": "finalizado", "limit": "100", "start": "0"},
-                success: this.successCotratos,
-                failure: this.conexionFailure,
-                timeout: this.timeout,
-                scope: this
-            });
-
-
-        },
-        successCotratos: function (resp) {
-            Phx.CP.loadingHide();
-            var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
-            if (reg.datos) {
-
-                this.ID_CONT = reg.datos[0].atributos.id_tabla
-
-                this.Cmp.id_contrato.store.baseParams.id_tabla = this.ID_CONT;
-
-            } else {
-                alert('Error al cargar datos de contratos')
-            }
-        },
-
-        sistema: 'ADQ',
-        id_cotizacion: 0,
-        id_proceso_compra: 0,
-        id_solicitud: 0,
-        auxFuncion: 'onBtnAdq',
-        tabla_id: 'id_obligacion_pago',
-        tabla: 'tes.tobligacion_pago',
 
 
     })

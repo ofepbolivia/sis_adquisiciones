@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION adq.f_fun_inicio_solicitud_wf (
   p_id_usuario integer,
   p_id_usuario_ai integer,
@@ -107,9 +105,11 @@ BEGIN
                 raise exception 'revise la configuracion globa de la variable adq_tope_compra_regional para compras en regioanles no puede ser nula';
              END IF;
            
-             IF  v_registros.prioridad = 2 and  (v_total_soli  >= v_tope_compra and v_tope_compra != 0)   THEN
+             --13-01-2021 (may) se comenta el control,por	que yanose controla losimportesmayores segun eldepto
+             /*IF  v_registros.prioridad = 2 and  (v_total_soli  >= v_tope_compra and v_tope_compra != 0)   THEN
                  raise exception 'Las compras en las regionales no pueden estar por encima de % (moneda base)',v_tope_compra;
              END IF;
+             */
             
                   
              -- validamos que el monsto de la oslicitud no supere el tope configurado

@@ -1,6 +1,4 @@
---------------- SQL ---------------
-
-CREATE OR REPLACE FUNCTION adq.f_genera_obligacion_pago (   
+CREATE OR REPLACE FUNCTION adq.f_genera_obligacion_pago (
   p_id_usuario integer,
   p_id_usuario_ai integer,
   p_usuario_ai varchar,
@@ -35,7 +33,7 @@ DECLARE
     v_num_contrato					varchar;
     v_adq_comprometer_presupuesto	varchar;
 
-	
+	v_funcionario	integer;
 
 BEGIN
 
@@ -117,7 +115,14 @@ BEGIN
             --  RAC  02/08/2017
             --  marca la bolgacigacion como comproemtido en funcion a varaible global de adquisiciones
             v_adq_comprometer_presupuesto = pxp.f_get_variable_global('adq_comprometer_presupuesto');
-            
+
+            --10-05-2021 (may) a solicitud de  PATRICIA LOPEZ interina
+            IF (v_registros_cotizacion.id_funcionario = 370) THEN
+            	v_funcionario  = 762; -- PATRICIA LOPEZ interina
+            ELSE
+            	v_funcionario  = v_registros_cotizacion.id_funcionario;
+            END IF;
+
           
             INSERT INTO 
               tes.tobligacion_pago 
@@ -163,7 +168,7 @@ BEGIN
               v_registros_cotizacion.id_categoria_compra,
               v_registros_cotizacion.tipo,
               v_registros_cotizacion.tipo_concepto,
-              v_registros_cotizacion.id_funcionario,
+              v_funcionario, --(may) v_registros_cotizacion.id_funcionario,
               v_id_contrato,
               v_registros_cotizacion.justificacion,
               v_registros_cotizacion.id_funcionario_aprobador,

@@ -160,6 +160,24 @@ DECLARE
        --bvp
 	   v_llave_aprobado			varchar;
 	   v_si_no					varchar;
+
+       --(may)
+       v_id_funcionario_eswf		integer;
+       v_proceso_wf					integer;
+       v_solicitud					record;
+       v_max_monto_min				numeric;
+       v_id_rpc						integer;
+       v_desc_funcionario			varchar;
+       --(may) 01-09-2021
+       v_fecha_solicitud		    date;
+       v_id_funcionario_sol	        integer;
+       v_codigo_poa					varchar;
+
+       --bvp 20/12/2021
+       v_registros_con				record;
+       v_registros_documento		record;
+       v_id_documento_wf_op			integer;
+
 BEGIN
 
     v_nombre_funcion = 'adq.f_solicitud_ime';
@@ -198,6 +216,12 @@ BEGIN
         IF (v_fecha_aux = 2019 and v_codigo_cat in ('CNPD', 'CINPD', '')) THEN
         --if(v_fecha_aux = 2019)then
         	raise exception 'ESTIMADO USUARIO,  A SOLICITUD DEL DEPARTAMENTO DE FINANZAS YA NO ES POSIBLE REGISTRAR SOLICITUDES CNAPD Y CINTPD PARA LA GESTION 2019.';
+        end if;
+
+         --(may) 04-01-2022 para la gestion 2021 no se pueden realizar registros para procesos de compra hasta nuevo aviso
+         --(may) 10-01-2022 se comenta raice inicio de procesos
+        IF (v_fecha_aux = 2022 and v_codigo_cat in ('CNPD', 'CINPD', '')) THEN
+        	--raise exception 'ESTIMADO USUARIO,  A SOLICITUD DEL DEPARTAMENTO DE ADMINISTRACION NO ES POSIBLE REGISTRAR SOLICITUDES DE COMPRA PARA LA GESTION 2022 HASTA NUEVO AVISO.';
         end if;
 
         --reglas
@@ -331,7 +355,10 @@ BEGIN
             nro_po,
             fecha_po,
             prioridad,
-            presupuesto_aprobado
+            presupuesto_aprobado,
+            --(28-06-2021) may
+            id_contrato
+
           	) values(
 			'activo',
 			--v_parametros.id_solicitud_ext,
@@ -372,7 +399,9 @@ BEGIN
             trim(both ' ' from v_parametros.nro_po),
             v_parametros.fecha_po,
 			v_parametros.prioridad,
-            'verificar'
+            'verificar',
+            --(28-06-2021) may
+            v_parametros.id_contrato
 
 			)RETURNING id_solicitud into v_id_solicitud;
 
@@ -418,7 +447,62 @@ BEGIN
            -- verificar documentos
            v_resp_doc = wf.f_verifica_documento(p_id_usuario, v_id_estado_wf);
 
+           -- {dev:bvasquez, date: 20/12/2021, desc: adicionar contrato en documentos, relacionado a tramite}
+            IF  v_parametros.id_contrato is not null  THEN
 
+              SELECT
+                con.id_proceso_wf,
+                con.numero,
+                con.estado,
+                pwf.nro_tramite
+              INTO
+              v_registros_con
+              FROM leg.tcontrato con
+              INNER JOIN wf.tproceso_wf pwf on pwf.id_proceso_wf = con.id_proceso_wf
+              WHERE con.id_contrato = v_parametros.id_contrato;                    
+
+              -- obtenemos el documentos contrato del origen
+              SELECT
+                *
+              into
+                v_registros_documento
+              FROM wf.tdocumento_wf d
+              INNER JOIN wf.ttipo_documento td on td.id_tipo_documento = d.id_tipo_documento
+              WHERE td.codigo = 'CONTRATO' and
+                    d.id_proceso_wf = v_registros_con.id_proceso_wf;
+
+                if ( v_registros_documento.url is null or v_registros_documento.chequeado = 'no' ) then 
+                        raise exception 'El Contrato N°: %, no fue adjuntado al tramite legal: %  ', v_registros_con.numero,  v_registros_con.nro_tramite;
+                end if;
+
+                -- consulta para actulizar el contrato al tramite creado
+                  select
+                  dwf.id_documento_wf
+                into
+                  v_id_documento_wf_op
+                from wf.tdocumento_wf dwf
+                inner  join  wf.ttipo_documento td on td.id_tipo_documento = dwf.id_tipo_documento
+                where td.codigo = 'CONTRATOCN'  and dwf.id_proceso_wf = v_id_proceso_wf;
+
+                  UPDATE
+                  wf.tdocumento_wf
+                SET
+                    id_usuario_mod = p_id_usuario,
+                    fecha_mod = now(),
+                    chequeado = v_registros_documento.chequeado,
+                    url = v_registros_documento.url,
+                    extension = v_registros_documento.extension,
+                    obs = v_registros_documento.obs,
+                    chequeado_fisico = v_registros_documento.chequeado_fisico,
+                    id_usuario_upload = v_registros_documento.id_usuario_upload,
+                    fecha_upload = v_registros_documento.fecha_upload,
+                    id_proceso_wf_ori = v_registros_documento.id_proceso_wf,
+                    id_documento_wf_ori = v_registros_documento.id_documento_wf,
+                    nro_tramite_ori = v_registros_con.nro_tramite
+                  WHERE
+                  id_documento_wf = v_id_documento_wf_op;             
+                     
+            END IF;
 		   --Definicion de la respuesta
 		   v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Solicitud de Compras almacenado(a) con exito (id_solicitud'||v_id_solicitud||')');
            v_resp = pxp.f_agrega_clave(v_resp,'id_solicitud',v_id_solicitud::varchar);
@@ -444,7 +528,11 @@ BEGIN
 
             select
              s.estado,
-             s.num_tramite
+             s.num_tramite,
+             s.fecha_soli,
+             s.id_categoria_compra,
+             s.id_contrato,
+             s.id_proceso_wf
             into
              v_registros
             from
@@ -476,8 +564,23 @@ BEGIN
                        pxp.aggarray(id_funcionario)
                      into
                        va_id_funcionario_gerente
-                     FROM orga.f_get_aprobadores_x_funcionario(v_parametros.fecha_soli, v_parametros.id_funcionario , 'todos', 'si', 'todos', 'ninguno') AS (id_funcionario integer);
+                     --08-12-2020(may) modificacion de la fecha para que sea de una fecha actual para que rescate su correspondiente gerente aprobador actual
+					 --FROM orga.f_get_aprobadores_x_funcionario(v_parametros.fecha_soli, v_parametros.id_funcionario , 'todos', 'si', 'todos', 'ninguno') AS (id_funcionario integer);
+                     FROM orga.f_get_aprobadores_x_funcionario(now()::date, v_parametros.id_funcionario , 'todos', 'si', 'todos', 'ninguno') AS (id_funcionario integer);
                     --NOTA el valor en la primera posicion del array es el gerente  de menor nivel
+                END IF;
+            END IF;
+
+            --(may) 01-09-2021 desde estado dar siguiente para ver la matriz y poner su funcionario supervisor
+            --CONTROL PARA QUE NO INGRESEN LOS TRAMITES PASADOS A LA SECCION DE INICIO DE LAS MODALIDADES
+
+            --SOLO PARA tramites nacionales CNAPD
+            IF (v_registros.estado = 'borrador' and v_registros.id_categoria_compra = 1) THEN
+
+                IF (v_registros.fecha_soli >= '2020-10-1') THEN
+
+                     v_resp = adq.ft_solicitud_modalidad(v_parametros.id_solicitud, p_id_usuario);
+
                 END IF;
             END IF;
 
@@ -507,8 +610,69 @@ BEGIN
             precontrato = COALESCE(v_parametros.precontrato,'no'),
             nro_po = trim(both ' ' from v_parametros.nro_po),
             fecha_po = v_parametros.fecha_po,
-            prioridad = v_parametros.id_prioridad
+            prioridad = v_parametros.id_prioridad,
+            id_contrato = v_parametros.id_contrato
+
 			where id_solicitud = v_parametros.id_solicitud;
+
+      IF (v_parametros.id_contrato is not null) THEN
+
+        IF (v_registros.id_contrato != v_parametros.id_contrato) THEN
+
+          SELECT
+            con.id_proceso_wf,
+            con.numero,
+            con.estado,
+            pwf.nro_tramite
+          INTO
+          v_registros_con
+          FROM leg.tcontrato con
+          INNER JOIN wf.tproceso_wf pwf on pwf.id_proceso_wf = con.id_proceso_wf
+          WHERE con.id_contrato = v_parametros.id_contrato;                    
+
+          -- obtenemos el documentos contrato del origen
+          SELECT
+            *
+          into
+            v_registros_documento
+          FROM wf.tdocumento_wf d
+          INNER JOIN wf.ttipo_documento td on td.id_tipo_documento = d.id_tipo_documento
+          WHERE td.codigo = 'CONTRATO' and
+                d.id_proceso_wf = v_registros_con.id_proceso_wf;
+
+            if ( v_registros_documento.url is null or v_registros_documento.chequeado = 'no' ) then 
+                    raise exception 'El Contrato N°: %, no fue adjuntado al tramite legal: %  ', v_registros_con.numero,  v_registros_con.nro_tramite;
+            end if;
+
+            -- consulta para actulizar el contrato al tramite creado
+              select
+              dwf.id_documento_wf
+            into
+              v_id_documento_wf_op
+            from wf.tdocumento_wf dwf
+            inner  join  wf.ttipo_documento td on td.id_tipo_documento = dwf.id_tipo_documento
+            where td.codigo = 'CONTRATOCN'  and dwf.id_proceso_wf = v_registros.id_proceso_wf;
+
+              UPDATE
+              wf.tdocumento_wf
+            SET
+                id_usuario_mod = p_id_usuario,
+                fecha_mod = now(),
+                chequeado = v_registros_documento.chequeado,
+                url = v_registros_documento.url,
+                extension = v_registros_documento.extension,
+                obs = v_registros_documento.obs,
+                chequeado_fisico = v_registros_documento.chequeado_fisico,
+                id_usuario_upload = v_registros_documento.id_usuario_upload,
+                fecha_upload = v_registros_documento.fecha_upload,
+                id_proceso_wf_ori = v_registros_documento.id_proceso_wf,
+                id_documento_wf_ori = v_registros_documento.id_documento_wf,
+                nro_tramite_ori = v_registros_con.nro_tramite
+              WHERE
+              id_documento_wf = v_id_documento_wf_op; 
+                                    
+          END IF;            
+      END IF;
 
 			--Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Solicitud de Compras modificado(a)');
@@ -686,9 +850,34 @@ BEGIN
                 v_fecha_aux = EXTRACT(YEAR FROM v_fecha_sol::date);
 
                 IF (v_estado = 'borrador') THEN
+
                 	IF (v_fecha_aux = 2019 and v_codigo_sol_pc in ('CNPD', 'CINPD', '') and v_tipo != 'Boa') THEN
                         raise exception 'ESTIMADO USUARIO,  A SOLICITUD DEL DEPARTAMENTO DE FINANZAS YA NO ES POSIBLE PASAR AL SIGUIENTE ESTADO LAS SOLICITUDES CNAPD Y CINTPD PARA LA GESTION 2019.';
                     end if;
+
+
+                    --(may) 01-09-2021 desde estado dar siguiente para ver la matriz y poner su funcionario supervisor
+                    --CONTROL PARA QUE NO INGRESEN LOS TRAMITES PASADOS A LA SECCION DE INICIO DE LAS MODALIDADES
+
+                    SELECT sol.fecha_soli, sol.id_funcionario, sol.id_categoria_compra
+                    into v_fecha_solicitud, v_id_funcionario_sol, v_id_categoria_compra
+                    FROM adq.tsolicitud sol
+                    WHERE sol.id_solicitud = v_parametros.id_solicitud;
+
+
+                    --SOLO PARA tramites nacionales CNAPD
+                    IF v_id_categoria_compra = 1 THEN
+
+                        IF (v_fecha_solicitud >= '2020-10-1') THEN
+
+                             v_resp = adq.ft_solicitud_modalidad(v_parametros.id_solicitud, p_id_usuario);
+
+                        END IF;
+                    END IF;
+
+                    ---
+
+
                 END IF;
                 --
 
@@ -796,10 +985,12 @@ BEGIN
 
                   --prioridad 2 regionales nacioanles, 3 internacionales, 1 central,  0 reservado
                   --si la el tope de compra es igual a 0 entonces no tiene limite
+                  --13-01-2021 (may) se comenta el control,por	que yanose controla losimportesmayores segun eldepto
 
-                  IF  v_prioridad_depto = 2 and  (v_total_soli  >= v_tope_compra and v_tope_compra != 0)   THEN
+                  /*IF  v_prioridad_depto = 2 and  (v_total_soli  >= v_tope_compra and v_tope_compra != 0)   THEN
                    raise exception 'Las compras en las regionales no pueden estar por encima de % (moneda base)',v_tope_compra;
                   END IF;
+                  */
 
 
 
@@ -1252,13 +1443,15 @@ BEGIN
             s.fecha_soli,
             s.numero,
             s.estado,
-            s.id_solicitud
+            s.id_solicitud,
+            s.codigo_poa
           into
             v_id_proceso_wf,
             v_fecha_soli,
             v_numero_sol,
             v_estado_actual,
-            v_id_solicitud
+            v_id_solicitud,
+            v_codigo_poa
 
           from adq.tsolicitud s
           where s.id_proceso_wf=v_parametros.id_proceso_wf_act;
@@ -1275,8 +1468,11 @@ BEGIN
           inner join wf.ttipo_estado te on te.id_tipo_estado = ew.id_tipo_estado
           where ew.id_estado_wf = v_parametros.id_estado_wf_act;
 
-
-
+        --30-11-2021 (may) control registro datos POA
+        IF (v_codigo_estado='vbpoa' and (v_codigo_poa is null or v_codigo_poa='') ) THEN
+        	RAISE EXCEPTION 'Es necesario registrar el código POA previamente desde VoBo Solicitud(Poa).';
+        END IF;
+        --
 
            -- obtener datos tipo estado
            select
@@ -1350,6 +1546,52 @@ BEGIN
                                                              v_titulo);
 
 
+
+          --(may) 16-11-2020
+
+          IF (v_codigo_estado_siguiente in ('vbrpa', 'vbrpc')) THEN
+
+          	SELECT esw.id_funcionario, esw.id_proceso_wf
+            INTO v_id_funcionario_eswf, v_proceso_wf
+            FROM wf.testado_wf esw
+            WHERE esw.id_estado_wf = v_id_estado_actual;
+
+            SELECT sol.id_uo, sol.fecha_soli, sol.id_categoria_compra
+            INTO v_solicitud
+            FROM adq.tsolicitud sol
+            WHERE sol.id_solicitud = v_id_solicitud;
+
+            SELECT  max(ruo.monto_min), rpc.id_rpc
+			INTO v_max_monto_min, v_id_rpc
+            FROM adq.trpc_uo ruo
+            inner join adq.trpc rpc on rpc.id_rpc = ruo.id_rpc
+            WHERE ruo.estado_reg = 'activo'
+              and  ruo.id_uo = v_solicitud.id_uo
+              and  ruo.id_categoria_compra = v_solicitud.id_categoria_compra
+              and ((ruo.fecha_ini <= v_solicitud.fecha_soli and ruo.fecha_fin >=v_solicitud.fecha_soli )
+                   or
+                   (ruo.fecha_ini <= v_solicitud.fecha_soli and ruo.fecha_fin is null ))
+            GROUP BY rpc.id_rpc;
+
+
+            SELECT fc.desc_funcionario1, fc.id_funcionario
+			INTO v_desc_funcionario, v_id_funcionario
+            FROM adq.trpc rpc
+            inner join orga.vfuncionario_cargo fc on fc.id_cargo = rpc.id_cargo
+            WHERE rpc.id_rpc = v_id_rpc
+            and ((v_solicitud.fecha_soli BETWEEN fc.fecha_asignacion and fc.fecha_finalizacion)  or fc.fecha_finalizacion is null);
+
+       	 	--raise exception 'llega % - % ',v_id_funcionario_eswf,v_id_funcionario ;
+            IF (v_id_funcionario_eswf = v_id_funcionario) THEN -- 35 KARINA BARRANCOS RIOS
+            	UPDATE adq.tsolicitud  SET
+                id_depto = '2'  --ADQ central cochabamba
+                WHERE id_proceso_wf  = v_proceso_wf;
+            END IF;
+
+
+          END IF;
+
+          --
 
           --------------------------------------
           -- registra los procesos disparados

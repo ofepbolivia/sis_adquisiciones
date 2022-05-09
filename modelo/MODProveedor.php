@@ -56,16 +56,20 @@ class MODProveedor extends MODbase{
         $this->captura('cel_instit','varchar');
         $this->captura('telf_instit','varchar');
 		$this->captura('id_beneficiario','varchar');
+        // 14-04-2022 ANPM Igualacion de parametros con resultado de BD (num_proveedor -> varchar)
+		$this->captura('condicion','varchar');
+		$this->captura('actividad','varchar');
+		$this->captura('num_proveedor','varchar');
 
-		// $this->captura('condicion','varchar');
-		// $this->captura('actividad','varchar');
-		// $this->captura('num_proveedor','int4');
-
-		// $this->captura('nombre_persona','varchar');
-		// $this->captura('apellido_paterno','varchar');
-		// $this->captura('apellido_materno','varchar');
-		// $this->captura('codigo_telf','varchar');
-		// $this->captura('codigo_telf_institucion','varchar');
+		$this->captura('nombre_persona','varchar');
+		$this->captura('apellido_paterno','varchar');
+		$this->captura('apellido_materno','varchar');
+		$this->captura('codigo_telf','varchar');
+		$this->captura('codigo_telf_institucion','varchar');
+        //////////////////////////////////////////////////////////
+		$this->captura('id_lugar_fk','int4');
+		$this->captura('id_lugar_fk2','int4');
+		$this->captura('razon_social_sigep','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -130,9 +134,12 @@ class MODProveedor extends MODbase{
 
 		$this->setParametro('condicion','condicion','varchar');
 		$this->setParametro('actividad','actividad','varchar');
-		$this->setParametro('num_proveedor','num_proveedor','int4');
+		$this->setParametro('num_proveedor','num_proveedor','varchar');
 		$this->setParametro('codigo_telf','codigo_telf','varchar');
 		$this->setParametro('codigo_telf_institucion','codigo_telf_institucion','varchar');
+
+		$this->setParametro('id_lugar_fk','id_lugar_fk','int4');
+		$this->setParametro('id_lugar_fk2','id_lugar_fk2','int4');
 
 
 		//Ejecuta la instruccion
@@ -199,9 +206,12 @@ class MODProveedor extends MODbase{
 
 		$this->setParametro('condicion','condicion','varchar');
 		$this->setParametro('actividad','actividad','varchar');
-		$this->setParametro('num_proveedor','num_proveedor','int4');
+		$this->setParametro('num_proveedor','num_proveedor','varchar');
 		$this->setParametro('codigo_telf','codigo_telf','varchar');
 		$this->setParametro('codigo_telf_institucion','codigo_telf_institucion','varchar');
+
+		$this->setParametro('id_lugar_fk','id_lugar_fk','integer');
+		$this->setParametro('id_lugar_fk2','id_lugar_fk2','integer');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

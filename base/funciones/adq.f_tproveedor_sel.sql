@@ -99,7 +99,11 @@ BEGIN
                         person.ap_paterno as apellido_paterno,
                         person.ap_materno as apellido_materno,
                         per.codigo_telf,
-                        instit.codigo_telf_institucion
+                        instit.codigo_telf_institucion,
+
+                        provee.id_lugar_departamento as id_lugar_fk,
+                        provee.id_lugar_ciudad as id_lugar_fk2,
+						            provee.razon_social_sigep
 
                         from param.tproveedor provee
 						inner join segu.tusuario usu1 on usu1.id_usuario = provee.id_usuario_reg

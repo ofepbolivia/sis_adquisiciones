@@ -17,8 +17,8 @@ header("content-type: text/javascript; charset=UTF-8");
             viewConfig: {
                 //stripeRows: false,
                 autoFill: true,
-                getRowClass: function (record) {                    
-                    
+                getRowClass: function (record) {
+
                     if (record.data.prioridad == 'C') {
                         if(record.data.presupuesto_aprobado == 'sin_presupuesto_cc'){
                             return 'sin_presupuestos_cc';
@@ -28,7 +28,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     } else if (record.data.prioridad == 'B') {
                         if(record.data.presupuesto_aprobado == 'sin_presupuesto_cc'){
                             return 'sin_presupuestos_cc';
-                        }else{                        
+                        }else{
                             return 'prioridad_importanteB';
                         }
                     } else if (record.data.prioridad == 'AOG') {
@@ -75,7 +75,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 //this.addButton('diagrama_gantt',{ grupo:[0,1,2],text:'Gantt', iconCls: 'bgantt', disabled:true, handler: this.diagramGantt, tooltip: '<b>Diagrama Gantt de proceso macro</b>'});
 
-                this.addBotonesGantt();
+                //this.addBotonesGantt();
                 this.addButton('btnChequeoDocumentosWf',
                     {
                         text: 'Documentos',
@@ -216,34 +216,34 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.tbar.add(this.menuAdq);
             },
 
-            addBotonesGantt: function () {
-                this.menuAdqGantt = new Ext.Toolbar.SplitButton({
-                    id: 'b-diagrama_gantt-' + this.idContenedor,
-                    text: 'Gantt',
-                    disabled: true,
-                    grupo: [0, 1, 2],
-                    iconCls: 'bgantt',
-                    handler: this.diagramGanttDinamico,
-                    scope: this,
-                    menu: {
-                        items: [{
-                            id: 'b-gantti-' + this.idContenedor,
-                            text: 'Gantt Imagen',
-                            tooltip: '<b>Mues un reporte gantt en formato de imagen</b>',
-                            handler: this.diagramGantt,
-                            scope: this
-                        }, {
-                            id: 'b-ganttd-' + this.idContenedor,
-                            text: 'Gantt Dinámico',
-                            tooltip: '<b>Muestra el reporte gantt facil de entender</b>',
-                            handler: this.diagramGanttDinamico,
-                            scope: this
-                        }
-                        ]
-                    }
-                });
-                this.tbar.add(this.menuAdqGantt);
-            },
+            // addBotonesGantt: function () {
+            //     this.menuAdqGantt = new Ext.Toolbar.SplitButton({
+            //         id: 'b-diagrama_gantt-' + this.idContenedor,
+            //         text: 'Gantt',
+            //         disabled: true,
+            //         grupo: [0, 1, 2],
+            //         iconCls: 'bgantt',
+            //         handler: this.diagramGanttDinamico,
+            //         scope: this,
+            //         menu: {
+            //             items: [{
+            //                 id: 'b-gantti-' + this.idContenedor,
+            //                 text: 'Gantt Imagen',
+            //                 tooltip: '<b>Mues un reporte gantt en formato de imagen</b>',
+            //                 handler: this.diagramGantt,
+            //                 scope: this
+            //             }, {
+            //                 id: 'b-ganttd-' + this.idContenedor,
+            //                 text: 'Gantt Dinámico',
+            //                 tooltip: '<b>Muestra el reporte gantt facil de entender</b>',
+            //                 handler: this.diagramGanttDinamico,
+            //                 scope: this
+            //             }
+            //             ]
+            //         }
+            //     });
+            //     this.tbar.add(this.menuAdqGantt);
+            // },
 
             Grupos: [{
                 /*layout: 'column',
@@ -342,8 +342,9 @@ header("content-type: text/javascript; charset=UTF-8");
                 ],
                 'Servicio': [
                     ['servicio', 'Servicios'],
-                    ['consultoria_personal', 'Consultoria de Personas'],
-                    ['consultoria_empresa', 'Consultoria de Empresas'],
+                    ['consultoria_personal', 'Consultoria Individual de Línea'],
+                    ['consultoria_empresa', 'Consultoria por Producto'],
+                    ['obra', 'Obra'],
                     //['alquiler_inmueble','Alquiler Inmuebles']
                 ]
             },
@@ -462,8 +463,9 @@ header("content-type: text/javascript; charset=UTF-8");
                         renderer: function (value, p, record) {
                             var dato = '';
                             dato = (value == 'alquiler_inmueble') ? 'Alquiler Inmuebles' : dato;
-                            dato = (dato == '' && value == 'consultoria_empresa') ? 'Consultoria de Empresas' : dato;
-                            dato = (dato == '' && value == 'consultoria_personal') ? 'Consultoria de Personas' : dato;
+                            dato = (dato == '' && value == 'consultoria_empresa') ? 'Consultoria Individual de Línea' : dato;
+                            dato = (dato == '' && value == 'consultoria_personal') ? 'Consultoria por Producto' : dato;
+                            dato = (dato == '' && value == 'obra') ? 'Obra' : dato;
                             dato = (dato == '' && value == 'servicio') ? 'Servicios' : dato;
                             dato = (dato == '' && value == 'vehiculo') ? 'Vehiculos' : dato;
                             dato = (dato == '' && value == 'inmueble') ? 'Inmuebles' : dato;
@@ -608,6 +610,23 @@ header("content-type: text/javascript; charset=UTF-8");
                     grid: true,
                     form: false
                 },
+
+                {
+                    config: {
+                        name: 'tipo_modalidad',
+                        fieldLabel: 'Tipo Modalidad',
+                        allowBlank: true,
+                        width: 100,
+                        gwidth: 200,
+                        maxLength: 255
+                    },
+                    type: 'TextField',
+                    id_grupo: 0,
+                    filters: {pfiltro: 'tcat2.tipo_modalidad', type: 'string'},
+                    grid: true,
+                    form: false
+                },
+
                 {
                     config: {
                         name: 'id_uo',
@@ -770,7 +789,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         triggerAction: 'all',
                         lazyRender: true,
                         mode: 'local',
-                        gwidth: 100,
+                        gwidth: 160,
                         store: ['no_necesita', 'contrato_nuevo', 'contrato_adhesion', 'ampliacion_contrato'],
                         anchor: '83%'
                     },
@@ -782,7 +801,69 @@ header("content-type: text/javascript; charset=UTF-8");
                         options: ['no_necesita', 'contrato_nuevo', 'contrato_adhesion', 'ampliacion_contrato'],
                     },
                     valorInicial: 'no_necesita',
-                    grid: false,
+                    grid: true,
+                    form: true
+                },
+
+                {
+                    config: {
+                        name: 'id_contrato',
+                        hiddenName: 'id_contrato',
+                        fieldLabel: 'Contrato',
+                        typeAhead: false,
+                        forceSelection: true,
+                        allowBlank: true,
+                        disabled: false,
+                        emptyText: 'Contratos...',
+                        store: new Ext.data.JsonStore({
+                            url: '../../sis_workflow/control/Tabla/listarTablaCombo',
+                            id: 'id_contrato',
+                            root: 'datos',
+                            sortInfo: {
+                                field: 'id_contrato',
+                                direction: 'ASC'
+                            },
+                            totalProperty: 'total',
+                            fields: ['id_contrato','nro_tramite', 'numero', 'tipo', 'objeto', 'estado', 'desc_proveedor', 'monto', 'moneda', 'fecha_inicio', 'fecha_fin'],
+                            // turn on remote sorting
+                            remoteSort: true,
+                            baseParams: {
+                                //02-06-2021 (may) modificacion para filtro, no hay con.nro_tramite
+                                //par_filtro: 'con.nro_tramite#con.numero#con.tipo#con.monto#prov.desc_proveedor#con.objeto#con.monto',
+                                par_filtro: 'con.numero#con.tipo#con.monto#prov.desc_proveedor#con.objeto#con.monto',
+                                tipo_proceso: "CON",
+                                tipo_estado: "finalizado"
+                            }
+                        }),
+                        valueField: 'id_contrato',
+                        displayField: 'numero',
+                        gdisplayField: 'desc_contrato',
+                        triggerAction: 'all',
+                        lazyRender: true,
+                        resizable: true,
+                        mode: 'remote',
+                        pageSize: 20,
+                        queryDelay: 200,
+                        listWidth: 380,
+                        minChars: 2,
+                        gwidth: 100,
+                        anchor: '80%',
+                        renderer: function (value, p, record) {
+                            if (record.data['desc_contrato']) {
+                                return String.format('{0}', record.data['desc_contrato']);
+                            }
+                            return '';
+
+                        },
+                        tpl: '<tpl for="."><div class="x-combo-list-item"><p><b>Nro: {numero} ({tipo})</b></p><p>Obj: <strong>{objeto}</strong></p><p>Prov : {desc_proveedor}</p> <p>Nro.Trámite: {nro_tramite}</p><p>Monto: {monto} {moneda}</p><p>Rango: {fecha_inicio} al {fecha_fin}</p></div></tpl>'
+                    },
+                    type: 'ComboBox',
+                    id_grupo: 2,
+                    filters: {
+                        pfiltro: 'con.numero',
+                        type: 'numeric'
+                    },
+                    grid: true,
                     form: true
                 },
 
@@ -863,12 +944,12 @@ header("content-type: text/javascript; charset=UTF-8");
                 {
                     config: {
                         name: 'justificacion',
-                        fieldLabel: 'Justificacion',
+                        fieldLabel: 'Necesidad de la Contratación',
                         qtip: 'Justifique, ¿por que la necesidad de esta compra?',
                         allowBlank: false,
                         anchor: '80%',
                         gwidth: 100,
-                        maxLength: 500,
+                        maxLength: 10000,
                         msgTarget: 'side',
                         anchor: '95%'
                     },
@@ -1282,12 +1363,15 @@ header("content-type: text/javascript; charset=UTF-8");
                 'cuce',
                 {name: 'fecha_conclusion', type: 'date', dateFormat: 'Y-m-d'},
                 {name: 'presupuesto_aprobado', type: 'string'},
+                {name: 'tipo_modalidad', type: 'string'},
+                'id_contrato', 'desc_contrato'
             ],
 
             arrayDefaultColumHidden: ['id_fecha_reg', 'id_fecha_mod',
                 'fecha_mod', 'usr_reg', 'estado_reg', 'fecha_reg', 'usr_mod',
                 'id_depto', 'numero', 'obs', 'id_funcionario_aprobador', 'desc_funcionario_rpc', 'fecha_apro', 'id_categoria_compra', 'justificacion',
-                'lugar_entrega', 'fecha_inicio', 'dias_plazo_entrega', 'posibles_proveedores', 'comite_calificacion', 'extendida', 'obs_presupuestos'],
+                'lugar_entrega', 'fecha_inicio', 'dias_plazo_entrega', 'posibles_proveedores', 'comite_calificacion', 'extendida', 'obs_presupuestos',
+                'id_contrato'],
 
 
             /*rowExpander: new Ext.ux.grid.RowExpander({
@@ -1306,6 +1390,49 @@ header("content-type: text/javascript; charset=UTF-8");
 
                         )
                 }),*/
+            onButtonEdit: function () {              
+                Phx.vista.Solicitud.superclass.onButtonEdit.call(this);
+                
+                var fecha = this.Cmp.fecha_soli.getValue();
+                var combo = this.Cmp.precontrato.getValue();
+                var idProv = this.Cmp.id_proveedor.getValue();                
+                var dd = fecha.getDate();
+                var mm = fecha.getMonth() + 1; //January is 0!
+                var yyyy = fecha.getFullYear();
+                if (dd < 10) {
+                    dd = '0' + dd;
+                }
+                if (mm < 10) {
+                    mm = '0' + mm;
+                }
+
+                var today = dd + '/' + mm + '/' + yyyy;
+
+                var anio = this.Cmp.fecha_soli.getValue();
+                anio = anio.getFullYear();
+
+                // para ampliacion a la siguiente gestion muestre el contrato del proveedor                
+                if (combo == 'ampliacion_contrato') {
+                    anio = anio+1;                    
+                }else{
+                    anio = anio;                    
+                }
+
+                this.Cmp.id_proveedor.on('select', function (cmb, record, index) {                      
+
+                    this.Cmp.id_contrato.reset();
+                    this.Cmp.id_contrato.store.baseParams.id_tabla = 3;
+                    this.Cmp.id_contrato.store.baseParams.filter = "[{\"type\":\"numeric\",\"comparison\":\"eq\", \"value\":\"" + cmb.getValue() + "\",\"field\":\"CON.id_proveedor\"}]";
+                    this.Cmp.id_contrato.store.baseParams.filtro_directo = "(((CON.fecha_fin is null) or (con.fecha_fin + interval ''15 day'' )::date >= (''" + today + "''::date)) and (pw.nro_tramite LIKE ''LEGAL%'' or ((pw.nro_tramite LIKE ''CI%'' or pw.nro_tramite LIKE ''CN%'')  and  (ges.gestion < ''"+ anio +"''))))";
+                    this.Cmp.id_contrato.modificado = true;
+                }, this);
+
+                this.Cmp.id_contrato.store.baseParams.id_tabla = 3;
+                this.Cmp.id_contrato.store.baseParams.filter = "[{\"type\":\"numeric\",\"comparison\":\"eq\", \"value\":\"" + idProv + "\",\"field\":\"CON.id_proveedor\"}]";
+                this.Cmp.id_contrato.store.baseParams.filtro_directo = "(((CON.fecha_fin is null) or (con.fecha_fin + interval ''15 day'' )::date >= (''" + today + "''::date)) and (pw.nro_tramite LIKE ''LEGAL%'' or ((pw.nro_tramite LIKE ''CI%'' or pw.nro_tramite LIKE ''CN%'')  and  (ges.gestion < ''"+ anio +"''))))";
+                this.Cmp.id_contrato.modificado = true;                  
+            },  
+                        
             loadCheckDocumentosSolWf: function () {
                 var rec = this.sm.getSelected();
                 rec.data.nombreVista = this.nombreVista;
@@ -1330,7 +1457,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.getBoton('btnChequeoDocumentosWf').setDisabled(false);
                 Phx.vista.Solicitud.superclass.preparaMenu.call(this, n);
                 //this.getBoton('btnReporte').setDisabled(false);
-                this.getBoton('diagrama_gantt').enable();
+                //this.getBoton('diagrama_gantt').enable();
                 this.getBoton('btnObs').enable();
                 this.getBoton('btnDetalleGasto').enable();
 
@@ -1343,7 +1470,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     //this.getBoton('btnReporte').setDisabled(true);
                     //this.getBoton('btnChequeoDocumentos').setDisabled(true);
                     this.getBoton('btnChequeoDocumentosWf').setDisabled(true);
-                    this.getBoton('diagrama_gantt').disable();
+                    //this.getBoton('diagrama_gantt').disable();
                     this.getBoton('btnObs').disable();
                     this.getBoton('btnDetalleGasto').disable();
 
@@ -1454,7 +1581,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 direction: 'DESC'
             },
             bdel: true,
-            bsave: false
+            bsave: false,
+            bgantt:true,
         }
     )
 </script>

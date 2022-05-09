@@ -104,6 +104,20 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.register='before_registered';
                 },this);
 
+                //09-03_2020 (may) filtro para campo departamento segun el pais
+                this.getComponente('id_lugar').on('select',function(cmp, rec, indice){
+                    this.Cmp.id_lugar_fk.reset();
+                    this.Cmp.id_lugar_fk.store.baseParams.id_lugar_fk = rec.data.id_lugar;
+                    this.Cmp.id_lugar_fk.modificado = true;
+                },this);
+
+                //09-03_2020 (may) filtro para campo ciudad segun el departamento
+                this.Cmp.id_lugar_fk.on('select',function(cmp, rec, indice){
+                    this.Cmp.id_lugar_fk2.reset();
+                    this.Cmp.id_lugar_fk2.store.baseParams.id_lugar_fk = rec.data.id_lugar;
+                    this.Cmp.id_lugar_fk2.modificado = true;
+                },this);
+
             },
             Atributos:[
                 {
@@ -291,6 +305,28 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 {
                     config: {
+                        name: 'razon_social_sigep',
+                        fieldLabel: 'Rótulo SIGEP',
+                        allowBlank: false,
+                        anchor: '100%',
+                        gwidth: 100,
+                        style: 'text-transform:uppercase;',
+                        qtip: 'Rótulo SIGEP / Razón Social',
+                        maxLength: 150,
+                        renderer : function(value, p, record) {
+                            return String.format('<b style="color: green">{0}</b>', record.data['razon_social_sigep']);
+                        }
+                    },
+                    type: 'TextField',
+                    filters: {pfiltro: 'provee.rotulo_comercial', type: 'string'},
+                    id_grupo: 0,
+                    grid: true,
+                    form: true,
+                    bottom_filter: true
+                },
+
+                {
+                    config: {
                         name: 'tipo_prov',
                         fieldLabel: 'Tipo Proveedor',
                         allowBlank: true,
@@ -403,7 +439,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {
                     config:{
                         name: 'id_lugar',
-                        fieldLabel: 'Lugar',
+                        fieldLabel: 'País',
                         allowBlank: true,
                         emptyText:'Lugar...',
                         store:new Ext.data.JsonStore(
@@ -444,8 +480,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 {
                     config:{
-                        name: 'id_lugar',
-                        fieldLabel: 'Localidad',
+                        name: 'id_lugar_fk',
+                        fieldLabel: 'Departamento / Provincia',
                         allowBlank: true,
                         emptyText:'Lugar...',
                         store:new Ext.data.JsonStore(
@@ -462,12 +498,12 @@ header("content-type: text/javascript; charset=UTF-8");
                                 // turn on remote sorting
                                 remoteSort: true,
                                 // baseParams:{tipos:"''departamento'',''pais'',''localidad''",par_filtro:'nombre'}
-                                baseParams:{tipos:"''localidad''",par_filtro:'nombre'}
+                                baseParams:{tipos:"''departamento'', ''provincia''",par_filtro:'nombre'}
                             }),
-                        valueField: 'id_lugar',
+                        valueField: 'id_lugar_fk',
                         displayField: 'nombre',
                         gdisplayField:'lugar',
-                        hiddenName: 'id_lugar',
+                        hiddenName: 'id_lugar_fk',
                         triggerAction: 'all',
                         lazyRender:true,
                         mode:'remote',
@@ -487,8 +523,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 {
                     config:{
-                        name: 'id_lugar',
-                        fieldLabel: 'Provincia',
+                        name: 'id_lugar_fk2',
+                        fieldLabel: 'Ciudad',
                         allowBlank: true,
                         emptyText:'Lugar...',
                         store:new Ext.data.JsonStore(
@@ -504,7 +540,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                 fields: ['id_lugar','id_lugar_fk','codigo','nombre','tipo','sw_municipio','sw_impuesto','codigo_largo'],
                                 // turn on remote sorting
                                 remoteSort: true,
-                                baseParams:{tipos:"''provincia''",par_filtro:'nombre'}
+                                baseParams:{tipos:"''ciudad''",par_filtro:'nombre'}
                             }),
                         valueField: 'id_lugar',
                         displayField: 'nombre',
@@ -570,7 +606,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         typeAhead:true,
                         triggerAction:'all',
                         mode:'local',
-                        store:['Administrativo', 'Operativa']
+                        store:['Administrativo', 'Operativa', 'Bienes', 'Comercial']
                     },
                     type:'ComboBox',
                     filters:{pfiltro:'provee.actividad',type:'string'},
@@ -1175,7 +1211,12 @@ header("content-type: text/javascript; charset=UTF-8");
                 'apellido_paterno',
                 'apellido_materno',
                 'codigo_telf',
-                'codigo_telf_institucion'
+                'codigo_telf_institucion',
+
+                {name:'id_lugar_fk', type: 'numeric'},
+                {name:'id_lugar_fk2', type: 'numeric'},
+                'razon_social_sigep'
+
             ],
             // arrayDefaultColumHidden: ['correo', 'email_instit', 'pag_web', 'cel_persona', 'telf_persona',
             //     'cel_instit','telf_instit'],
@@ -1244,11 +1285,11 @@ header("content-type: text/javascript; charset=UTF-8");
             successProc:function(resp){
                 Phx.CP.loadingHide();
                 var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
-                console.log('successProc;',reg);
-                var rest = reg.ROOT.datos;
+
+                var rest = reg.ROOT.datos;console.log('successProc SIGEP:',rest);
                 //var proveedor = reg.ROOT.datos.id_proveedor;
                 Ext.Ajax.request({
-                    url: '../../sis_sigep/control/SigepAdq/statusC31',
+                    url: '../../sis_sigep/control/SigepAdq/StatusC31',
                     params: {
                         id_service_request: rest.id_service_request,
                         id_proveedor: rest.id_proveedor
@@ -1266,14 +1307,15 @@ header("content-type: text/javascript; charset=UTF-8");
             successSta:function(resp){
                 Phx.CP.loadingHide();
                 var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
-                console.log('successSta;',reg);
-                var rest = reg.ROOT.datos;
-                //var proveedor = reg.ROOT.datos.id_proveedor;
+
+                var rest = reg.ROOT.datos;console.log('success Registro',rest);
+
                 Ext.Ajax.request({
                     url: '../../sis_sigep/control/SigepAdq/registrarBeneficiario',
                     params: {
                         id_proveedor: rest.id_proveedor,
-                        id_beneficiario: rest.id_beneficiario
+                        id_beneficiario: rest.id_beneficiario,
+                        razon_social_sigep: rest.razon_social
                     },
                     success: this.successAll,
                     failure: this.failureCheck, //chequea si esta en verificacion presupeusto para enviar correo de transferencia

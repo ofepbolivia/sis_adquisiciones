@@ -53,6 +53,14 @@ DECLARE
     v_des_con_ingas			varchar;
     v_num_tramite			varchar;
     v_orden_trabajo2		integer;
+    v_descripcion_cc		varchar;
+
+ 	v_fecha_solicitud		date;
+    v_id_funcionario_sol	integer;
+    v_id_categoria_compra	integer;
+    v_id_solicitud			integer;
+
+    v_id_caracteristica_sol_det 	integer;
 
 
 BEGIN
@@ -213,6 +221,29 @@ BEGIN
 
 			)RETURNING id_solicitud_det into v_id_solicitud_det;
 
+            ---
+            --01-09-2021(may) se modifica para verificar la matriz hara al dar siguiente
+            /*--(may) 05-10-2020
+            --CONTROL PARA QUE NO INGRESEN LOS TRAMITES PASADOS A LA SECCION DE INICIO DE LAS MODALIDADES
+            SELECT sol.fecha_soli, sol.id_funcionario, sol.id_categoria_compra
+            into v_fecha_solicitud, v_id_funcionario_sol, v_id_categoria_compra
+            FROM adq.tsolicitud sol
+            WHERE sol.id_solicitud = v_parametros.id_solicitud;
+
+
+            --SOLO PARA tramites nacionales CNAPD
+            IF v_id_categoria_compra = 1 THEN
+
+                IF (v_fecha_solicitud >= '2020-10-1') THEN
+
+                     v_resp = adq.ft_solicitud_modalidad(v_parametros.id_solicitud, p_id_usuario);
+
+                END IF;
+            END IF;*/
+
+
+            ---
+
              --para que sea obligatorio el orden de trabajo
             IF (v_parametros.id_orden_trabajo is Null ) THEN
             	RAISE EXCEPTION 'Completar el campo de Orden de Trabajo';
@@ -295,12 +326,12 @@ BEGIN
             where  s.id_solicitud = v_parametros.id_solicitud;
 
             --en el campo v_parametros.id_centro_costo llegara el codigo de centro de costo
-            SELECT cc.id_centro_costo
-            into v_id_centro_costo
+            SELECT cc.id_centro_costo, (cc.codigo_tcc||'-'||cc.descripcion_tcc)::varchar as descripcion_cc
+            into v_id_centro_costo, v_descripcion_cc
             from param.vcentro_costo cc
-            where cc.codigo_tcc::integer = v_parametros.id_centro_costo
+            where (trim(cc.codigo_tcc))::integer = (trim(v_parametros.id_centro_costo::varchar))::integer
             and cc.id_gestion = v_id_gestion;
-
+--raise exception 'llega % - %',v_id_centro_costo, v_descripcion_cc;
            --recupera el nombre del concepto de gasto
 
             select
@@ -312,7 +343,7 @@ BEGIN
             and 'adquisiciones' = ANY(cig.sw_autorizacion);
 
             IF v_registros_cig.id_concepto_ingas IS NULL THEN
-            	raise exception 'No se encontro parametrizado el concepto de gasto %', v_parametros.concepto_gasto;
+            	raise exception 'Error al guardar la columna: No se encuentra parametrizado el Concepto de Gasto %.', v_parametros.concepto_gasto;
             END IF;
 
              --obtener partida, cuenta auxiliar del concepto de gasto
@@ -330,12 +361,13 @@ BEGIN
               v_id_partida,
               v_id_cuenta,
               v_id_auxiliar
-           FROM conta.f_get_config_relacion_contable('CUECOMP', v_id_gestion, v_registros_cig.id_concepto_ingas, v_id_centro_costo,  'No se encontro relación contable para el conceto de gasto: '||v_registros_cig.desc_ingas||'. <br> Mensaje: ');
+           FROM conta.f_get_config_relacion_contable('CUECOMP', v_id_gestion, v_registros_cig.id_concepto_ingas, v_id_centro_costo,  'No se encontro relación contable para el concepto de gasto: '||v_registros_cig.desc_ingas||'. <br> Mensaje: ');
+
 
 
         IF  v_id_partida  is NULL  THEN
 
-        	raise exception 'No se encontro partida para el concepto de gasto y el centro de costos solicitados';
+        	raise exception 'Error al guardar la columna: No se encontro la Partida  para el Concepto de Gasto % y el Centro de Costos % solicitados.',v_parametros.concepto_gasto, v_descripcion_cc ;
 
         END IF;
 
@@ -609,7 +641,31 @@ raise exception '%, %', v_orden_trabajo2, v_parametros.orden_trabajo;*/
 
 			where id_solicitud_det=v_parametros.id_solicitud_det;
 
+            -------------
+             --01-09-2021(may) se modifica para verificar la matriz hara al dar siguiente
+            /*--(may) 05-10-2020
+            --CONTROL PARA QUE NO INGRESEN LOS TRAMITES PASADOS A LA SECCION DE INICIO DE LAS MODALIDADES
+            SELECT sol.fecha_soli, sol.id_funcionario, sol.id_categoria_compra
+            into v_fecha_solicitud, v_id_funcionario_sol, v_id_categoria_compra
+            FROM adq.tsolicitud sol
+            WHERE sol.id_solicitud = v_parametros.id_solicitud;
+
+
+            --SOLO PARA tramites nacionales CNAPD
+            IF v_id_categoria_compra = 1 THEN
+
+                IF (v_fecha_solicitud >= '2020-10-1') THEN
+
+                     v_resp = adq.ft_solicitud_modalidad(v_parametros.id_solicitud, p_id_usuario);
+
+                END IF;
+            END IF;*/
+
+            -------------
+
           -----------------------------------------------
+
+
 
              select cin.desc_ingas
              into v_des_concepto_ingas
@@ -662,8 +718,38 @@ raise exception '%, %', v_orden_trabajo2, v_parametros.orden_trabajo;*/
             --delete from adq.tsolicitud_det
             --where id_solicitud_det=v_parametros.id_solicitud_det;
 
+            -------------
+
+            SELECT sd.id_solicitud
+            into v_id_solicitud
+            FROM  adq.tsolicitud_det sd
+            WHERE sd.id_solicitud_det = v_parametros.id_solicitud_det;
+
+            --01-09-2021(may) se modifica para verificar la matriz hara al dar siguiente
+            /*--(may) 05-10-2020
+            --CONTROL PARA QUE NO INGRESEN LOS TRAMITES PASADOS A LA SECCION DE INICIO DE LAS MODALIDADES
+            SELECT sol.fecha_soli, sol.id_funcionario, sol.id_categoria_compra
+            into v_fecha_solicitud, v_id_funcionario_sol, v_id_categoria_compra
+            FROM adq.tsolicitud sol
+            WHERE sol.id_solicitud = v_id_solicitud;
+
+
+            --SOLO PARA tramites nacionales CNAPD
+            IF v_id_categoria_compra = 1 THEN
+
+                IF (v_fecha_solicitud >= '2020-10-1') THEN
+
+                     v_resp = adq.ft_solicitud_modalidad_eli(v_id_solicitud, p_id_usuario, v_parametros.id_solicitud_det);
+
+                END IF;
+            END IF;*/
+
+            -------------
+
             update adq.tsolicitud_det set
-            estado_reg = 'inactivo'
+            estado_reg = 'inactivo',
+            id_usuario_mod = p_id_usuario,
+            fecha_mod = now()
             where id_solicitud_det=v_parametros.id_solicitud_det;
 
             --Definicion de la respuesta

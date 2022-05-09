@@ -100,7 +100,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
             this.getBoton('btnChequeoDocumentosWf').setDisabled(false);
             Phx.vista.Solicitud.superclass.preparaMenu.call(this, n);
-            this.getBoton('diagrama_gantt').enable();
+            //this.getBoton('diagrama_gantt').enable();
             this.getBoton('btnObs').enable();
             this.getBoton('btnDetalleGasto').enable();
             // this.getBoton('verificar_presupuesto').enable();
@@ -114,7 +114,7 @@ header("content-type: text/javascript; charset=UTF-8");
             if (tb) {
 
                 this.getBoton('btnChequeoDocumentosWf').setDisabled(true);
-                this.getBoton('diagrama_gantt').disable();
+                //this.getBoton('diagrama_gantt').disable();
                 this.getBoton('btnObs').disable();
                 this.getBoton('btnDetalleGasto').disable();
                 // this.getBoton('verificar_presupuesto').disable();
