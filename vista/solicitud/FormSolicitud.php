@@ -630,7 +630,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         align: 'center',
                         width: 200,
                         renderer: function (value, p, record) {
-                            return String.format('{0}', record.data['lista']);
+                            return record.data['lista'] ? String.format('{0}', record.data['lista']) : '';// ANPM 08-06-2022 Condicional para formateo de dato
 
                         },
                         editor: this.detCmp.id_activo_fijo
