@@ -54,13 +54,15 @@ header("content-type: text/javascript; charset=UTF-8");
 
             },
             iniciarEventos : function () {
+                
                 Phx.vista.Proveedor.superclass.iniciarEventos.call();
+                
                 this.getComponente('id_persona').on('select',function(c,r,n){
-
+                    
                     if (this.register != 'update') {
                         this.getComponente('rotulo_comercial').setValue(r.data.nombre_completo1);
                     }
-
+console.log('perdomassssssssss:');
                     //this.getComponente('nombre').setDisabled(true);
                     this.getComponente('nombre_persona').setDisabled(true);
                     this.getComponente('apellido_paterno').setDisabled(true);
@@ -1349,7 +1351,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 this.ocultarGrupo(1);
                 this.ocultarGrupo(2);
-
+                
                 if(this.cmbProveedor.getValue()==='persona'){
 
                     //this.getComponente('tipo').on('select',function(c,r,n){
@@ -1363,8 +1365,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.mostrarGrupo(1);
                     this.ocultarGrupo(2);
                     this.getComponente('nombre_institucion').allowBlank = true;
-                    this.getComponente('nombre').allowBlank = false;
+                    this.getComponente('nombre_persona').allowBlank = false;
                     this.getComponente('apellido_paterno').allowBlank = false;
+                    this.getComponente('ci').allowBlank = false;
                     //this.getComponente('id_institucion').allowBlank=true;
                     //this.getComponente('id_persons').allowBlank=false;
                     this.getComponente('id_institucion').reset();
@@ -1392,8 +1395,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 //jrr:provisionalmente se ocultan estos campos
                 this.ocultarComponente(this.getComponente('codigo_institucion'));
                 this.ocultarComponente(this.getComponente('codigo_banco'));
-                //
-
+                
+                console.log('onButtonNew:',this.register);
 
             },
 
